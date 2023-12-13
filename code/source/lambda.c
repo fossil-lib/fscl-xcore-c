@@ -1,5 +1,5 @@
 /*  ----------------------------------------------------------------------------
-    File: module.c
+    File: lambda.c
 
     Description:
     This source file contains the code entry point for the Trilobite Stdlib project.
@@ -29,13 +29,16 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include "trilobite/module.h"
+#include "trilobite/xcore/lambda.h"
 
-
-int add(int a, int b) {
-    return a + b;
+void lambda_init(clambda* lambda, CLambdaFunc func) {
+    if (lambda) {
+        lambda->func = func;
+    }
 } // end of func
 
-int subtract(int a, int b) {
-    return a - b;
+void lambda_invoke(clambda* lambda, void* data) {
+    if (lambda && lambda->func && data) {
+        lambda->func(data);
+    }
 } // end of func

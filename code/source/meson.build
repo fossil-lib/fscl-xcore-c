@@ -1,9 +1,13 @@
-code = files('module.c')
+code = files(
+    'json.c', 'csv.c', 'ini.c', 'lambda.c',
+    'fossil.c', 'datetime.c', 'reader.c',
+    'regex.c', 'stream.c', 'thread.c',
+)
 
-lib = static_library('tscl-c',
+lib = static_library('tscl-xcore-c',
     code,
     include_directories: dir)
 
-tscl_c_dep = declare_dependency(
+tscl_xcore_c_dep = declare_dependency(
     link_with: lib,
     include_directories: dir)
