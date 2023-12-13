@@ -1,0 +1,5 @@
+# - ############## - #
+#   Project Option   #
+# - ############## - #
+option('with_demo', type : 'feature', value : 'disabled', description : 'Enable demo projects for this project')
+option('with_test', type : 'feature', value : 'disabled', description : 'Enable Xunit testing for this project')
