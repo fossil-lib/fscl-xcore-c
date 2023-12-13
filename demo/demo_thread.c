@@ -1,5 +1,5 @@
 /*  ----------------------------------------------------------------------------
-    File: demo.c
+    File: demo_thread.c
 
     Description:
     This demo file serves as a showcase of the Trilobite Stdlib in action. It provides
@@ -29,25 +29,49 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include <trilobite/module.h>
-#include <stdio.h>
+#include <trilobite/xcore/thread.h>
+#include <trilobite/xcore/stream.h>
+
+// Function to simulate robot movements
+cthread_task(robot_movement, arg) {
+    cstream *log_stream = (cstream *)arg;
+
+    // Log robot movements
+    log_to_file(log_stream, "Robot starts moving forward.\n");
+    thread_sleep(1000);
+    
+    log_to_file(log_stream, "Robot turns right.\n");
+    thread_sleep(500);
+    
+    log_to_file(log_stream, "Robot continues moving forward.\n");
+    thread_sleep(1500);
+    
+    log_to_file(log_stream, "Robot moves backward.\n");
+    thread_sleep(1000);
+    
+    log_to_file(log_stream, "Robot stops.\n");
+
+    return CTHREAD_CNULLPTR;
+} // end of func
 
 int main() {
-    int result = add(5, 3);
+    // Create a log file
+    cstream log_stream;
+    stream_create(&log_stream, "robot_log.txt");
 
-    if (result == 8) {
-        printf("add() test passed!\n");
-    } else {
-        printf("add() test failed. Expected: 8, Got: %d\n", result);
-    } // end statment
+    // Create a thread for robot movement
+    cthread robot_thread = thread_create(robot_movement, (void *)&log_stream);
 
-    result = subtract(5, 3);
+    // Wait for the robot thread to finish
+    thread_join(robot_thread);
 
-    if (result == 2) {
-        printf("subtract() test passed!\n");
-    } else {
-        printf("subtract() test failed. Expected: 2, Got: %d\n", result);
-    } // end statment
+    // Destroy the robot thread handle
+    thread_erase(robot_thread);
+
+    // Close the log file
+    stream_close(&log_stream);
+
+    printf("Robotics demo completed. Check 'robot_log.txt' for the log.\n");
 
     return 0;
 } // end of func
