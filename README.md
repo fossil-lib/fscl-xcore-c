@@ -1,6 +1,20 @@
-# Project Template README
+# TSCL Core Libraries - **C**
 
-Welcome to the **Project Template** repository! This README provides user-friendly instructions for setting up, compiling, testing, and running a project using the Meson build system on Windows, macOS, and Linux systems. Please note that the Meson build system is required for successfully building this project.
+The TSCL Core is a robust and versatile set of libraries designed to serve as the foundational framework for essential programming tasks, ensuring seamless development across a variety of applications. At its core, TSCL (Thread, Stream, Lambda, and Input Reader) provides a comprehensive suite of tools that empower developers to create efficient and responsive software solutions.
+
+1. **Thread Management:**
+   TSCL Core simplifies concurrent programming by offering a powerful thread management library. Developers can effortlessly implement multithreading capabilities, enhancing the performance and responsiveness of their applications. This feature is particularly valuable for handling parallel tasks and optimizing resource utilization.
+
+2. **File Stream Operations:**
+   With a focus on efficient file handling, TSCL Core includes a robust file stream library. Developers can easily read from and write to files, ensuring seamless data manipulation and storage. This capability is crucial for applications that involve data persistence, logging, or any file-based operations.
+
+3. **Lambda Functions Support:**
+   TSCL Core embraces the flexibility and expressiveness of lambda functions, providing developers with a streamlined way to define and use anonymous functions within their code. Lambda functions empower developers to write concise and expressive code, enhancing code readability and maintainability.
+
+4. **Input Readers:**
+   The TSCL Core includes versatile input readers that simplify the process of user input handling. Whether dealing with command-line inputs, user interfaces, or other input sources, these readers facilitate a consistent and user-friendly experience. This feature is especially beneficial for applications that rely on interactive user input.
+
+By combining these essential components, the TSCL Core ensures a solid foundation for software development, promoting code efficiency, maintainability, and scalability. Whether you're building a multi-threaded application, managing file operations, leveraging lambda functions, or handling user inputs, TSCL Core provides a comprehensive toolkit to streamline your development process and elevate the performance of your software projects.
 
 ## Who is This For?
 
