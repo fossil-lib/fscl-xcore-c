@@ -1,10 +1,10 @@
 /*  ----------------------------------------------------------------------------
-    File: module.c
+    File: demo_lambda.c
 
     Description:
-    This source file contains the code entry point for the Trilobite Stdlib project.
-    It demonstrates the usage of various utilities and functions provided by the
-    Trilobite Stdlib to enhance software development.
+    This demo file serves as a showcase of the Trilobite Stdlib in action. It provides
+    example code snippets and usage scenarios to help users understand how to leverage
+    the library's features and functions in their own projects.
 
     Author: Michael Gene Brockus (Dreamer)
     Email: michaelbrockus@gmail.com
@@ -29,13 +29,23 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include "trilobite/module.h"
+#include "trilobite/xcore/lambda.h" // lib source code
 
-
-int add(int a, int b) {
-    return a + b;
+// Lambda function that prints an integer
+void print_integer_lambda(void* data) {
+    int* value = (int*)data;
+    printf("Lambda invoked with value: %d\n", *value);
 } // end of func
 
-int subtract(int a, int b) {
-    return a - b;
+int main() {
+    clambda lambda;
+    int data = 42;
+
+    // Initialize the lambda with the print_integer_lambda function
+    lambda_init(&lambda, print_integer_lambda);
+
+    // Invoke the lambda with an integer data
+    lambda_invoke(&lambda, (void*)&data);
+
+    return 0;
 } // end of func

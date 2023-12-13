@@ -37,36 +37,28 @@
 
    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
 */
-#ifndef TSCL_MOD_H
-#define TSCL_MOD_H
+#ifndef TSCL_XCORE_H
+#define TSCL_XCORE_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-/**
- * Adds two integers.
- *
- * This function takes two integer values, 'a' and 'b', and returns their sum.
- *
- * @param a The first integer.
- * @param b The second integer.
- * @return The sum of 'a' and 'b'.
- */
-int add(int a, int b);
+#include "xcore/datetime.h"
+#include "xcore/thread.h"
+#include "xcore/stream.h"
+#include "xcore/lambda.h"
+#include "xcore/fossil.h"
+#include "xcore/reader.h"
+#include "xcore/regex.h"
+#include "xcore/json.h"
+#include "xcore/ini.h"
+#include "xcore/csv.h"
 
-/**
- * Subtracts one integer from another.
- *
- * This function takes two integer values, 'a' and 'b', and returns the result of
- * subtracting 'b' from 'a'.
- *
- * @param a The integer from which 'b' will be subtracted.
- * @param b The integer to subtract from 'a'.
- * @return The result of 'a' - 'b'.
- */
-int subtract(int a, int b);
+inline const char* tscl_codename() {
+    return "Ptychopariida";
+}
 
 #ifdef __cplusplus
 }

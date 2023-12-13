@@ -1,0 +1,13 @@
+# program.fossil
+
+fossil main() -> int:
+    libraryFunction():
+    return 0:
+
+# Sample library file: sample_library.fossil
+
+fossil libraryFunction() -> unit:
+    print("Executing libraryFunction"):
+    return:
+
+# End of file
