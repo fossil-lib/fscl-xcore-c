@@ -1,5 +1,5 @@
 /*  ----------------------------------------------------------------------------
-    File: format.c
+    File: datetime.c
 
     Description:
     This source file contains the code entry point for the Trilobite Stdlib project.
@@ -29,14 +29,14 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include "trilobite/xcore/format.h"
+#include "trilobite/xcore/datetime.h"
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
 #include <stdlib.h>
 
 // Function to get the month index from a month name
-char* format_get_current_month(int month) {
+char* datetime_get_current_month(int month) {
     char *months[] = {"", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
     if (month >= 1 && month <= 12) {
@@ -46,7 +46,7 @@ char* format_get_current_month(int month) {
     }
 } // end of func
 
-char* format_get_current_ampm(int hour) {
+char* datetime_get_current_ampm(int hour) {
     if (hour >= 0 && hour <= 11) {
         return "AM";
     } else if (hour >= 12 && hour <= 23) {
@@ -57,7 +57,7 @@ char* format_get_current_ampm(int hour) {
 } // end of func
 
 // Function to parse a DateTime string in 24-hour format (military time)
-bool format_get_current_parse_military(const char *str, cdatetime *datetime) {
+bool datetime_get_current_parse_military(const char *str, cdatetime *datetime) {
     // Error checking for NULL pointers
     if (str == NULL || datetime == NULL) {
         return false;
@@ -75,7 +75,7 @@ bool format_get_current_parse_military(const char *str, cdatetime *datetime) {
 } // end of func
 
 // Function to parse a DateTime string in 12-hour format with AM/PM
-bool format_get_current_parse_12_hour(const char *str, cdatetime *datetime) {
+bool datetime_get_current_parse_12_hour(const char *str, cdatetime *datetime) {
     // Error checking for NULL pointers
     if (str == NULL || datetime == NULL) {
         return false;
@@ -93,7 +93,7 @@ bool format_get_current_parse_12_hour(const char *str, cdatetime *datetime) {
 } // end of func
 
 // Function to parse a DateTime string in human-readable format
-bool format_get_current_parse_human_readable(const char *str, cdatetime *datetime) {
+bool datetime_get_current_parse_human_readable(const char *str, cdatetime *datetime) {
     // Error checking for NULL pointers
     if (str == NULL || datetime == NULL) {
         return false;
@@ -101,9 +101,9 @@ bool format_get_current_parse_human_readable(const char *str, cdatetime *datetim
 
     // Parse the string in human-readable format
     if (sscanf(str, "%d-%3s-%d, %d:%d %2s",
-               &datetime->year, format_get_current_month(datetime->month),
+               &datetime->year, datetime_get_current_month(datetime->month),
                &datetime->day, &datetime->hour, &datetime->minute,
-               format_get_current_ampm(datetime->ampm)) != 6) {
+               datetime_get_current_ampm(datetime->ampm)) != 6) {
         return false; // Parsing failed
     }
 
@@ -111,7 +111,7 @@ bool format_get_current_parse_human_readable(const char *str, cdatetime *datetim
 } // end of func
 
 // Function to format a cdatetime object into a custom string
-void format_get_current_custom(const cdatetime *datetime, char *str, size_t max_size) {
+void datetime_get_current_custom(const cdatetime *datetime, char *str, size_t max_size) {
     // Error checking for NULL pointers
     if (datetime == NULL || str == NULL) {
         return;
@@ -124,7 +124,7 @@ void format_get_current_custom(const cdatetime *datetime, char *str, size_t max_
              datetime->timezone);
 } // end of func
 
-void format_get_current_get_current(cdatetime *datetime) {
+void datetime_get_current_get_current(cdatetime *datetime) {
     time_t current_time;
     struct tm *time_info;
 
@@ -143,22 +143,22 @@ void format_get_current_get_current(cdatetime *datetime) {
 } // end of func
 
 // Formats a ccalendar object into a string with the format "YYYY-MM-DD".
-void format_get_current_calendar_yyyy_mm_dd(const ccalendar *calendar, char *str, size_t max_size) {
+void datetime_get_current_calendar_yyyy_mm_dd(const ccalendar *calendar, char *str, size_t max_size) {
     snprintf(str, max_size, "%04d-%02d-%02d", calendar->year, calendar->month, calendar->day);
 } // end of func
 
 // Formats a ccalendar object into a string with the format "DD/MM/YYYY".
-void format_get_current_calendar_dd_mm_yyyy(const ccalendar *calendar, char *str, size_t max_size) {
+void datetime_get_current_calendar_dd_mm_yyyy(const ccalendar *calendar, char *str, size_t max_size) {
     snprintf(str, max_size, "%02d/%02d/%04d", calendar->day, calendar->month, calendar->year);
 } // end of func
 
 // Formats a ccalendar object into a string with the format "Month DD, YYYY".
-void format_get_current_calendar_month_dd_yyyy(const ccalendar *calendar, char *str, size_t max_size) {
+void datetime_get_current_calendar_month_dd_yyyy(const ccalendar *calendar, char *str, size_t max_size) {
     static const char *months[] = {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
     snprintf(str, max_size, "%s %02d, %04d", months[calendar->month], calendar->day, calendar->year);
 } // end of func
 
 // Checks if a given year is a leap year.
-bool format_get_current_is_leap_year(int year) {
+bool datetime_get_current_is_leap_year(int year) {
     return ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
 } // end of func
