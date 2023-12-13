@@ -56,6 +56,10 @@ extern "C"
 #include "xcore/ini.h"
 #include "xcore/csv.h"
 
+inline const char* tscl_codename() {
+    return "Ptychopariida";
+}
+
 #ifdef __cplusplus
 }
 #endif
