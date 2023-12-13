@@ -37,36 +37,67 @@
 
    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
 */
-#ifndef TSCL_MOD_H
-#define TSCL_MOD_H
+#ifndef TSCL_INI_H
+#define TSCL_INI_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-/**
- * Adds two integers.
- *
- * This function takes two integer values, 'a' and 'b', and returns their sum.
- *
- * @param a The first integer.
- * @param b The second integer.
- * @return The sum of 'a' and 'b'.
- */
-int add(int a, int b);
+#include <stdio.h>
+#include <stdlib.h>
+
+enum {TRILO_INI_FILE_LENGTH = 1555};
+
+// Structure to store INI data
+typedef struct {
+    char key[TRILO_INI_FILE_LENGTH];
+    char value[TRILO_INI_FILE_LENGTH];
+} cini_entry;
+
+typedef struct {
+    cini_entry* entries;
+    size_t size;
+} cini;
 
 /**
- * Subtracts one integer from another.
+ * @brief Creates a new cini structure.
  *
- * This function takes two integer values, 'a' and 'b', and returns the result of
- * subtracting 'b' from 'a'.
- *
- * @param a The integer from which 'b' will be subtracted.
- * @param b The integer to subtract from 'a'.
- * @return The result of 'a' - 'b'.
+ * @param data Pointer to the cini structure pointer.
  */
-int subtract(int a, int b);
+void ini_parser_create(cini** data);
+
+/**
+ * @brief Erases a cini structure, freeing allocated memory.
+ *
+ * @param data Pointer to the cini structure pointer.
+ */
+void ini_parser_erase(cini** data);
+
+/**
+ * @brief Parses an INI file and populates a cini structure.
+ *
+ * @param file File pointer to the opened INI file.
+ * @param data Pointer to the cini structure pointer.
+ */
+void ini_parser_parse(FILE* file, cini** data);
+
+/**
+ * @brief Updates or adds an entry in a cini structure.
+ *
+ * @param data Pointer to the cini structure pointer.
+ * @param update String containing the update in the format "key=value".
+ */
+void ini_parser_setter(cini** data, const char* update);
+
+/**
+ * @brief Gets the cini structure.
+ *
+ * @param data Pointer to the cini structure pointer.
+ * @return Pointer to the cini structure.
+ */
+cini* ini_parser_getter(cini** data);
 
 #ifdef __cplusplus
 }
