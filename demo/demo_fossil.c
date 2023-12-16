@@ -30,10 +30,53 @@
     ----------------------------------------------------------------------------
 */
 #include <trilobite/xcore/fossil.h>
+#include <string.h>
 #include <stdio.h>
 
-int main() {
-    fossil_dsl_parse("main.fossil");
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <input_file.fossil>\n", argv[0]);
+        return 1;
+    }
+
+    // Check if the input file has the correct extension
+    const char *file_extension = strrchr(argv[1], '.');
+    if (file_extension == NULL) {
+        fprintf(stderr, "Error: The input file must have a valid extension\n");
+        return 1;
+    }
+
+    FossilDSL dsl;
+    fossil_dsl_create(&dsl, "output.tape");
+
+    if (dsl.error_code != 0) {
+        fprintf(stderr, "Error: %s\n", dsl.error_message);
+        return dsl.error_code;
+    }
+
+    // Define the main function as the entry point
+    fossil_dsl_add_function(&dsl, "main");
+
+    // Read the DSL script from the provided file
+    FILE *script_file = fopen(argv[1], "r");
+    if (script_file == NULL) {
+        fprintf(stderr, "Error: Unable to open the input file\n");
+        return 1;
+    }
+
+    // Read the script line by line and add DSL operations
+    char line[256];
+    while (fgets(line, sizeof(line), script_file) != NULL) {
+        // Assuming each line represents a DSL operation
+        // Modify this logic based on your actual DSL syntax
+        fossil_dsl_print_value(dsl.tape_file, (FossilDSLValue) {.type = STRING, .string_value = line});
+        fprintf(dsl.tape_file, "\n");
+    }
+
+    fclose(script_file);
+
+    fossil_dsl_close_block(&dsl);  // Close main function block
+    fossil_dsl_erase(&dsl);
 
     return 0;
 } // end of func

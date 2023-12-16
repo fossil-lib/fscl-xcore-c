@@ -33,307 +33,168 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Helper function to duplicate a string
-char* dsl_duplicate_string(const char* source) {
-    if (source == NULL) {
-        return NULL;  // Handle NULL input
+// Initialize the DSL with a tape file
+void fossil_dsl_create(FossilDSL *dsl, const char *tape_filename) {
+    dsl->tape_file = fopen(tape_filename, "w");
+    if (!dsl->tape_file) {
+        dsl->error_code = EXIT_FAILURE;
+        snprintf(dsl->error_message, sizeof(dsl->error_message), "Error opening tape file");
+        return;
     }
+    dsl->error_code = 0;
+    dsl->error_message[0] = '\0';
+    dsl->indentation_level = 0;
+    dsl->debug_enabled = 0; // Debugging is disabled by default
+}
 
-    size_t length = strlen(source) + 1;  // Include space for the null terminator
-    char* destination = (char*)malloc(length);
-
-    if (destination != NULL) {
-        strcpy(destination, source);
+// Helper function to add indentation based on the current level
+void fossil_dsl_indent(FossilDSL *dsl) {
+    for (int i = 0; i < dsl->indentation_level; ++i) {
+        fprintf(dsl->tape_file, "    ");
     }
-
-    return destination;
 }
 
-// Helper function to check if a file has the .fossil extension
-bool has_fossil_extension(const char* filename) {
-    const char* extension = ".fossil";
-    size_t len_filename = strlen(filename);
-    size_t len_extension = strlen(extension);
-
-    return (len_filename > len_extension) &&
-           (strcmp(filename + len_filename - len_extension, extension) == 0);
-}
-
-// Helper function to check if a function call is in the list
-bool is_function_called(const char* function_name, FunctionCall* calls, size_t call_count) {
-    for (size_t i = 0; i < call_count; i++) {
-        if (strcmp(calls[i].function_name, function_name) == 0) {
-            return true;
-        }
+// Add a debugging statement to the tape
+void fossil_dsl_debug(FossilDSL *dsl, const char *message) {
+    if (dsl->debug_enabled) {
+        fossil_dsl_indent(dsl);
+        fprintf(dsl->tape_file, "DEBUG \"%s\"\n", message);
     }
-    return false;
 }
 
-// Helper function to add a function call to the list
-void add_function_call(const char* function_name, const char* return_type, FunctionCall** calls, size_t* call_count) {
-    (*call_count)++;
-    *calls = realloc(*calls, sizeof(FunctionCall) * (*call_count));
-    (*calls)[*call_count - 1].function_name = dsl_duplicate_string(function_name);
-    (*calls)[*call_count - 1].return_type = dsl_duplicate_string(return_type);
+// Enable debugging in the DSL
+void fossil_dsl_enable_debug(FossilDSL *dsl) {
+    dsl->debug_enabled = 1;
 }
 
-// Global variables to store parsed function and other state
-static Function parsed_function;
+// Add a condition header to the tape
+void fossil_dsl_add_condition_header(FossilDSL *dsl, FossilDSLValue condition, const char *true_branch, const char *false_branch) {
+    fossil_dsl_indent(dsl);
+    fprintf(dsl->tape_file, "CONDITION ");
 
-// Gets the parsed function after calling fossil_dsl_parse.
-Function fossil_dsl_get_parsed_function(void) {
-    // Create a copy of the parsed function
-    Function copy;
-    copy.name = dsl_duplicate_string(parsed_function.name);
-
-    if (parsed_function.param_count > 0) {
-        copy.parameters = malloc(sizeof(Parameter) * parsed_function.param_count);
-        for (size_t i = 0; i < parsed_function.param_count; ++i) {
-            copy.parameters[i].name = dsl_duplicate_string(parsed_function.parameters[i].name);
-            copy.parameters[i].type = dsl_duplicate_string(parsed_function.parameters[i].type);
-        }
-    } else {
-        copy.parameters = NULL;
-    }
-
-    copy.param_count = parsed_function.param_count;
-    copy.return_type = dsl_duplicate_string(parsed_function.return_type);
-
-    return copy;
-}
-
-// Resets the internal state of the DSL parser.
-void fossil_dsl_reset(void) {
-    // Free memory of the parsed function
-    free(parsed_function.name);
-    parsed_function.name = NULL;
-
-    if (parsed_function.param_count > 0) {
-        for (size_t i = 0; i < parsed_function.param_count; ++i) {
-            free(parsed_function.parameters[i].name);
-            free(parsed_function.parameters[i].type);
-        }
-        free(parsed_function.parameters);
-        parsed_function.parameters = NULL;
-    }
-
-    parsed_function.param_count = 0;
-
-    free(parsed_function.return_type);
-    parsed_function.return_type = NULL;
-}
-
-// DSL parser implementation
-void fossil_dsl_parse(char* input) {
-    Token* tokens;
-    size_t token_count;
-
-    fossil_dsl_tokenize(input, &tokens, &token_count);
-
-    // Initialize function structure
-    Function mainFunction;
-    mainFunction.name = NULL;
-    mainFunction.parameters = NULL;
-    mainFunction.param_count = 0;
-    mainFunction.return_type = NULL;
-
-    // Initialize function call list
-    FunctionCall* function_calls = NULL;
-    size_t call_count = 0;
-
-    size_t i = 0;
-    while (i < token_count) {
-        // Check for function name
-        if (tokens[i].type == FSL_NAME && strcmp(tokens[i].value, "main") == 0) {
-            mainFunction.name = dsl_duplicate_string(tokens[i].value);
-            i++;
-        } else if (tokens[i].type == FSL_KEYWORD && strcmp(tokens[i].value, "(") == 0) {
-            // Parse parameters
-            i++; // Move past '('
-            while (i < token_count && tokens[i].type != FSL_KEYWORD && strcmp(tokens[i].value, ")") != 0) {
-                if (tokens[i].type == FSL_NAME) {
-                    mainFunction.param_count++;
-                    mainFunction.parameters = realloc(mainFunction.parameters, sizeof(Parameter) * mainFunction.param_count);
-                    mainFunction.parameters[mainFunction.param_count - 1].name = dsl_duplicate_string(tokens[i].value);
-                    i++; // Move past parameter name
-
-                    if (i < token_count && tokens[i].type == FSL_COLON) {
-                        i++; // Move past ':'
-                        if (i < token_count && tokens[i].type == FSL_TYPE) {
-                            mainFunction.parameters[mainFunction.param_count - 1].type = dsl_duplicate_string(tokens[i].value);
-                            i++; // Move past parameter type
-                        } else {
-                            // Handle error: Expected parameter type
-                            fprintf(stderr, "Error: Expected parameter type.\n");
-                            break;
-                        }
-                    } else {
-                        // Handle error: Expected ':'
-                        fprintf(stderr, "Error: Expected ':'.\n");
-                        break;
-                    }
-
-                } else {
-                    // Handle error: Expected parameter name
-                    fprintf(stderr, "Error: Expected parameter name.\n");
-                    break;
+    switch (condition.type) {
+        case INTEGER:
+            fprintf(dsl->tape_file, "INT %d", condition.int_value);
+            break;
+        case UNSIGNED_INT:
+            fprintf(dsl->tape_file, "UINT %u", condition.unsigned_int_value);
+            break;
+        case FLOAT:
+            fprintf(dsl->tape_file, "FLOAT %f", condition.float_value);
+            break;
+        case CHAR:
+            fprintf(dsl->tape_file, "CHAR %c", condition.char_value);
+            break;
+        case STRING:
+            fprintf(dsl->tape_file, "STRING %s", condition.string_value);
+            break;
+        case TOFU:
+            fprintf(dsl->tape_file, "TOFU %p", condition.tofu_value);
+            break;
+        case BOOL:
+            fprintf(dsl->tape_file, "BOOL %s", condition.bool_value ? "TRUE" : "FALSE");
+            break;
+        case ARRAY:
+            fprintf(dsl->tape_file, "ARRAY { ");
+            for (int i = 0; i < MAX_ARRAY_SIZE; ++i) {
+                fprintf(dsl->tape_file, "%d", condition.array[i]);
+                if (i < MAX_ARRAY_SIZE - 1) {
+                    fprintf(dsl->tape_file, ", ");
                 }
             }
+            fprintf(dsl->tape_file, " }");
+            break;
+    }
 
-            // Move past ')'
-            i++;
+    fprintf(dsl->tape_file, " THEN %s ELSE %s START\n", true_branch, false_branch);
+    dsl->indentation_level++;
+}
 
-        } else if (tokens[i].type == FSL_ARROW) {
-            // Parse return type
-            i++; // Move past '->'
-            if (i < token_count && tokens[i].type == FSL_TYPE) {
-                mainFunction.return_type = dsl_duplicate_string(tokens[i].value);
-                i++; // Move past return type
-            } else {
-                // Handle error: Expected return type
-                fprintf(stderr, "Error: Expected return type.\n");
-                break;
+// Add a condition statement to the tape
+void fossil_dsl_add_condition(FossilDSL *dsl, FossilDSLValue condition, const char *true_branch, const char *false_branch) {
+    fossil_dsl_add_condition_header(dsl, condition, true_branch, false_branch);
+}
+
+// Add a function definition to the tape
+void fossil_dsl_add_function(FossilDSL *dsl, const char *func_name) {
+    fossil_dsl_debug(dsl, "Entering function");
+    fossil_dsl_indent(dsl);
+    fprintf(dsl->tape_file, "FUNCTION %s()\n", func_name);
+    dsl->indentation_level++;
+}
+
+// Helper function to print a value based on its type
+void fossil_dsl_print_value(FILE *tape_file, FossilDSLValue value) {
+    switch (value.type) {
+        case INTEGER:
+            fprintf(tape_file, "INT %d", value.int_value);
+            break;
+        case UNSIGNED_INT:
+            fprintf(tape_file, "UINT %u", value.unsigned_int_value);
+            break;
+        case FLOAT:
+            fprintf(tape_file, "FLOAT %f", value.float_value);
+            break;
+        case CHAR:
+            fprintf(tape_file, "CHAR %c", value.char_value);
+            break;
+        case STRING:
+            fprintf(tape_file, "STRING %s", value.string_value);
+            break;
+        case TOFU:
+            fprintf(tape_file, "TOFU %p", value.tofu_value);
+            break;
+        case ARRAY:
+            fprintf(tape_file, "ARRAY { ");
+            for (int i = 0; i < MAX_ARRAY_SIZE; ++i) {
+                fprintf(tape_file, "%d", value.array[i]);
+                if (i < MAX_ARRAY_SIZE - 1) {
+                    fprintf(tape_file, ", ");
+                }
             }
-        } else if (tokens[i].type == FSL_NAME) {
-            // Check for function calls and add to the list
-            if (is_function_called(tokens[i].value, function_calls, call_count)) {
-                // Function is already in the list
-                i++;
-                continue;
-            }
-
-            add_function_call(tokens[i].value, "unknown", &function_calls, &call_count);
-            i++;
-        } else {
-            // Skip other tokens
-            i++;
-        }
-    }
-
-    // Print only the functions that are called from main
-    for (size_t j = 0; j < call_count; j++) {
-        for (size_t k = 0; k < token_count; k++) {
-            if (tokens[k].type == FSL_NAME && strcmp(tokens[k].value, function_calls[j].function_name) == 0) {
-                fossil_dsl_print_function(&mainFunction);
-                break;
-            }
-        }
-    }
-
-    // Free memory
-    fossil_dsl_erase_function(&mainFunction);
-    fossil_dsl_erase_function_calls(function_calls, call_count);
-    fossil_dsl_erase_tokens(tokens, token_count);
-}
-
-// Function to free allocated memory for a function
-void fossil_dsl_erase_function(Function* func) {
-    free(func->name);
-    for (size_t i = 0; i < func->param_count; i++) {
-        free(func->parameters[i].name);
-        free(func->parameters[i].type);
-    }
-    free(func->parameters);
-    free(func->return_type);
-}
-
-// Function to print a parsed function
-void fossil_dsl_print_function(Function* func) {
-    printf("Function Name: %s\n", func->name);
-    printf("Parameters:\n");
-    for (int i = 0; i < func->param_count; i++) {
-        printf("  Parameter %d: Name=%s, Type=%s\n", (int)i + (int)1, func->parameters[i].name, func->parameters[i].type);
-    }
-    printf("Return Type: %s\n", func->return_type);
-    printf("\n");
-}
-
-// Tokenization function
-void fossil_dsl_tokenize(char* input, Token** tokens, size_t* token_count) {
-    const char* delimiters = " \t\n";
-    const char* comment_start = "/*";
-    const char* comment_end = "*/";
-
-    // Tokenize the input string
-    char* token_str = strtok(input, delimiters);
-    *tokens = NULL;
-    *token_count = 0;
-
-    while (token_str != NULL) {
-        // Check for comments
-        if (strstr(token_str, comment_start) != NULL) {
-            // Skip until the end of the comment
-            while (token_str != NULL && strstr(token_str, comment_end) == NULL) {
-                token_str = strtok(NULL, delimiters);
-            }
-            // If the comment end is found, move to the next token
-            if (token_str != NULL) {
-                token_str = strtok(NULL, delimiters);
-                continue;
-            }
-        }
-
-        (*token_count)++;
-        *tokens = realloc(*tokens, sizeof(Token) * (*token_count));
-
-        // Determine the token type based on the keyword
-        if (strcmp(token_str, "fossil") == 0) {
-            (*tokens)[*token_count - 1].type = FSL_KEYWORD;
-        } else if (strcmp(token_str, "->") == 0) {
-            (*tokens)[*token_count - 1].type = FSL_ARROW;
-        } else if (strcmp(token_str, "unit") == 0 || strcmp(token_str, "void") == 0) {
-            (*tokens)[*token_count - 1].type = FSL_UNIT;
-        } else if (strcmp(token_str, ":") == 0) {
-            (*tokens)[*token_count - 1].type = FSL_COLON;
-        } else if (strcmp(token_str, "int") == 0 || strcmp(token_str, "uint") == 0 || strcmp(token_str, "unsigned") == 0) {
-            (*tokens)[*token_count - 1].type = FSL_TYPE;
-            (*tokens)[*token_count - 1].value = dsl_duplicate_string(token_str);
-        } else if (strcmp(token_str, "string") == 0 || strcmp(token_str, "char") == 0) {
-            (*tokens)[*token_count - 1].type = FSL_TYPE;
-            (*tokens)[*token_count - 1].value = dsl_duplicate_string(token_str);
-        } else if (strcmp(token_str, "(") == 0) {
-            (*tokens)[*token_count - 1].type = FSL_KEYWORD; // Opening parenthesis
-        } else if (strcmp(token_str, ")") == 0) {
-            (*tokens)[*token_count - 1].type = FSL_KEYWORD; // Closing parenthesis
-        } else {
-            // Assume it's a function name or some other identifier
-            (*tokens)[*token_count - 1].type = FSL_NAME;
-            (*tokens)[*token_count - 1].value = dsl_duplicate_string(token_str);
-        }
-
-        token_str = strtok(NULL, delimiters);
+            fprintf(tape_file, " }");
+            break;
     }
 }
 
-// Function to free allocated memory for tokens
-void fossil_dsl_erase_tokens(Token* tokens, size_t token_count) {
-    for (size_t i = 0; i < token_count; i++) {
-        if (tokens[i].type == FSL_TYPE || tokens[i].type == FSL_NAME) {
-            free(tokens[i].value);
-        }
-    }
-
-    free(tokens);
+// Helper function to add a binary operation to the tape
+void fossil_dsl_add_binary_operation(FossilDSL *dsl, const char *operation, const char *type, FossilDSLValue operand1, FossilDSLValue operand2) {
+    fossil_dsl_indent(dsl);
+    fprintf(dsl->tape_file, "%s_%s(", operation, type);
+    fossil_dsl_print_value(dsl->tape_file, operand1);
+    fprintf(dsl->tape_file, ", ");
+    fossil_dsl_print_value(dsl->tape_file, operand2);
+    fprintf(dsl->tape_file, ")\n");
 }
 
-// Function to free allocated memory for function calls
-void fossil_dsl_erase_function_calls(FunctionCall* calls, size_t call_count) {
-    for (size_t i = 0; i < call_count; i++) {
-        free(calls[i].function_name);
-        free(calls[i].return_type);
-    }
-    free(calls);
+// Add a bitwise operation to the tape
+void fossil_dsl_add_bitwise_operation(FossilDSL *dsl, const char *operation, FossilDSLValue operand1, FossilDSLValue operand2) {
+    fossil_dsl_add_binary_operation(dsl, "BITWISE", operation, operand1, operand2);
 }
 
-// Function to load a custom library and add function calls to the list
-void fossil_dsl_load_library(const char* library_name, FunctionCall** calls, size_t* call_count) {
-    // This is a placeholder function; you can extend it to load custom libraries
-    // and add functions to the list based on the library content.
-    // For simplicity, we'll add a sample library with a function called "libraryFunction".
+// Add a loop header to the tape
+void fossil_dsl_add_loop_header(FossilDSL *dsl, const char *loop_variable, int start_value, int end_value) {
+    fossil_dsl_indent(dsl);
+    fprintf(dsl->tape_file, "LOOP %s FROM %d TO %d START\n", loop_variable, start_value, end_value);
+    dsl->indentation_level++;
+}
 
-    if (strcmp(library_name, "sample") == 0) {
-        add_function_call("libraryFunction", "unknown", calls, call_count);
-    } else {
-        fprintf(stderr, "Error: Unknown library '%s'.\n", library_name);
+// Add a loop to the tape
+void fossil_dsl_add_loop(FossilDSL *dsl, const char *loop_variable, int start_value, int end_value) {
+    fossil_dsl_add_loop_header(dsl, loop_variable, start_value, end_value);
+}
+
+// Helper function to close the current block in the tape
+void fossil_dsl_close_block(FossilDSL *dsl) {
+    dsl->indentation_level--;
+    fossil_dsl_indent(dsl);
+    fprintf(dsl->tape_file, "END\n");
+}
+
+// Finalize and close the tape file
+void fossil_dsl_erase(FossilDSL *dsl) {
+    fossil_dsl_debug(dsl, "End of program");
+    if (dsl->tape_file) {
+        fclose(dsl->tape_file);
     }
 }
