@@ -10,7 +10,7 @@
 #include <trilobite/xassert.h> // extra asserts
 
 XTEST_DATA(DSLDummy) {
-    FossilDSL *dsl;
+    FossilDSL dsl;
 } compiler;
 
 XTEST_FIXTURE(dsl_fixture);
