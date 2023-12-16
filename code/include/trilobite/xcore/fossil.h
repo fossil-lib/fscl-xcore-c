@@ -73,6 +73,7 @@ typedef union {
     float float_value;
     char char_value;
     char *string_value;
+    void *null_type;
     void *tofu_value; // Generic type
     int array[DSL_ARRAY_SIZE]; // New array type
     int bool_value;  // New BOOL type
