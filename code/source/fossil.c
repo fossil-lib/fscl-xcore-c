@@ -96,9 +96,9 @@ void fossil_dsl_add_condition_header(FossilDSL *dsl, FossilDSLValue condition, c
             break;
         case ARRAY:
             fprintf(dsl->tape_file, "ARRAY { ");
-            for (int i = 0; i < MAX_ARRAY_SIZE; ++i) {
+            for (int i = 0; i < DSL_ARRAY_SIZE; ++i) {
                 fprintf(dsl->tape_file, "%d", condition.array[i]);
-                if (i < MAX_ARRAY_SIZE - 1) {
+                if (i < DSL_ARRAY_SIZE - 1) {
                     fprintf(dsl->tape_file, ", ");
                 }
             }
@@ -144,11 +144,14 @@ void fossil_dsl_print_value(FILE *tape_file, FossilDSLValue value) {
         case TOFU:
             fprintf(tape_file, "TOFU %p", value.tofu_value);
             break;
+        case BOOL:
+            fprintf(tape_file, "BOOL %s", value.bool_value? "TRUE" : "FALSE");
+            break;
         case ARRAY:
             fprintf(tape_file, "ARRAY { ");
-            for (int i = 0; i < MAX_ARRAY_SIZE; ++i) {
+            for (int i = 0; i < DSL_ARRAY_SIZE; ++i) {
                 fprintf(tape_file, "%d", value.array[i]);
-                if (i < MAX_ARRAY_SIZE - 1) {
+                if (i < DSL_ARRAY_SIZE - 1) {
                     fprintf(tape_file, ", ");
                 }
             }

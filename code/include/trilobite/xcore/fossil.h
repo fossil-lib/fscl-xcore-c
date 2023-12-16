@@ -74,7 +74,7 @@ typedef union {
     char char_value;
     char *string_value;
     void *tofu_value; // Generic type
-    int array[MAX_ARRAY_SIZE]; // New array type
+    int array[DSL_ARRAY_SIZE]; // New array type
     int bool_value;  // New BOOL type
     FossilDSLType type;  // New type member
 } FossilDSLValue;
@@ -82,7 +82,7 @@ typedef union {
 typedef struct {
     FILE *tape_file;
     int error_code;
-    char error_message[COMEDY_ERROR];
+    char error_message[DSL_COMEDY_ERROR];
     int indentation_level;
     int debug_enabled; // Added flag to enable/disable debugging
 } FossilDSL;
