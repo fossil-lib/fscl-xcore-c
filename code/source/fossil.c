@@ -92,7 +92,7 @@ void fossil_dsl_add_condition_header(FossilDSL *dsl, FossilDSLValue condition, c
             fprintf(dsl->tape_file, "TOFU %p", condition.tofu_value);
             break;
         case NULL_TYPE:
-            fprintf(dsl->tape_file, "NULL %d", condition.null_type);
+            fprintf(dsl->tape_file, "NULL %p", condition.null_type);
             break;
         case BOOL:
             fprintf(dsl->tape_file, "BOOL %s", condition.bool_value ? "TRUE" : "FALSE");
@@ -148,7 +148,7 @@ void fossil_dsl_print_value(FILE *tape_file, FossilDSLValue value) {
             fprintf(tape_file, "TOFU %p", value.tofu_value);
             break;
         case NULL_TYPE:
-            fprintf(tape_file, "NULL %d", value.null_type);
+            fprintf(tape_file, "NULL %p", value.null_type);
             break;
         case BOOL:
             fprintf(tape_file, "BOOL %s", value.bool_value? "TRUE" : "FALSE");
