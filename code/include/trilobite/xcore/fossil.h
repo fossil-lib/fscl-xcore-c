@@ -118,7 +118,16 @@ void fossil_dsl_debug(FossilDSL *dsl, const char *message);
  */
 void fossil_dsl_enable_debug(FossilDSL *dsl);
 
-// Call a function in the tape
+/**
+ * @brief Call a function within the DSL script.
+ *
+ * @param dsl A pointer to the FossilDSL structure.
+ * @param func_name The name of the function to be called.
+ * @param arguments An array of arguments to be passed to the function.
+ * @param num_arguments The number of arguments in the 'arguments' array.
+ *
+ * @return void
+ */
 void fossil_dsl_call_function(FossilDSL *dsl, const char *func_name, FossilDSLValue *arguments, int num_arguments);
 
 /**
