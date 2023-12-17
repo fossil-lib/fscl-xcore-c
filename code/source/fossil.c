@@ -118,6 +118,34 @@ void fossil_dsl_add_condition(FossilDSL *dsl, FossilDSLValue condition, const ch
     fossil_dsl_add_condition_header(dsl, condition, true_branch, false_branch);
 }
 
+// Call a function in the tape
+void fossil_dsl_call_function(FossilDSL *dsl, const char *func_name, FossilDSLValue *arguments, int num_arguments) {
+    // Check for valid arguments and handle the function call
+    if (dsl == NULL || func_name == NULL) {
+        fprintf(stderr, "Error: Invalid arguments for function call\n");
+        return;
+    }
+
+    // Print the function call to the tape
+    fprintf(dsl->tape_file, "%s(", func_name);
+
+    // Print function arguments
+    for (int i = 0; i < num_arguments; ++i) {
+        fossil_dsl_print_value(dsl->tape_file, arguments[i]);
+
+        // Add a comma for multiple arguments
+        if (i < num_arguments - 1) {
+            fprintf(dsl->tape_file, ", ");
+        }
+    }
+
+    // Close the function call
+    fprintf(dsl->tape_file, "):\n");
+
+    // Add indentation for the function block
+    fossil_dsl_indent(dsl);
+}
+
 // Add a function definition to the tape
 void fossil_dsl_add_function(FossilDSL *dsl, const char *func_name) {
     fossil_dsl_debug(dsl, "Entering function");

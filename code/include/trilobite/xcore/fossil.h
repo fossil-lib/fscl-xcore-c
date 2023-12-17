@@ -118,6 +118,9 @@ void fossil_dsl_debug(FossilDSL *dsl, const char *message);
  */
 void fossil_dsl_enable_debug(FossilDSL *dsl);
 
+// Call a function in the tape
+void fossil_dsl_call_function(FossilDSL *dsl, const char *func_name, FossilDSLValue *arguments, int num_arguments)
+
 /**
  * @brief Add a function definition to the tape.
  *
