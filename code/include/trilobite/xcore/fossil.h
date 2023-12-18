@@ -50,120 +50,156 @@ extern "C"
 #include <stdbool.h>
 #include <string.h>
 
-// Define token types
+enum {
+    DSL_ARRAY_SIZE   = 100,
+    DSL_COMEDY_ERROR = 555
+};
+
 typedef enum {
-    FSL_KEYWORD,
-    FSL_NAME,
-    FSL_COLON,
-    FSL_TYPE,
-    FSL_ARROW,
-    FSL_UNIT,
-    FSL_COMMENT,
-    FSL_END
-} TokenType;
+    INTEGER,
+    UNSIGNED_INT,
+    FLOAT,
+    CHAR,
+    STRING,
+    TOFU, // New generic type
+    ARRAY,
+    BOOL,  // New BOOL type
+    NULL_TYPE
+} FossilDSLType;
 
-// Define a token structure
+typedef union {
+    int int_value;
+    unsigned int unsigned_int_value;
+    float float_value;
+    char char_value;
+    char *string_value;
+    void *null_type;
+    void *tofu_value; // Generic type
+    int array[DSL_ARRAY_SIZE]; // New array type
+    int bool_value;  // New BOOL type
+    FossilDSLType type;  // New type member
+} FossilDSLValue;
+
 typedef struct {
-    TokenType type;
-    char* value;
-} Token;
-
-// Define a structure to represent a function parameter
-typedef struct {
-    char* name;
-    char* type;
-} Parameter;
-
-// Define a structure to represent a function
-typedef struct {
-    char* name;
-    Parameter* parameters;
-    size_t param_count;
-    char* return_type;
-} Function;
-
-// Define a structure to represent a function call
-typedef struct {
-    char* function_name;
-    char* return_type;
-} FunctionCall;
-
-// Define a structure to represent a library
-typedef struct {
-    char* name;
-    char** functions;
-    size_t function_count;
-} Library;
+    FILE *tape_file;
+    int error_code;
+    char error_message[DSL_COMEDY_ERROR];
+    int indentation_level;
+    int debug_enabled; // Added flag to enable/disable debugging
+} FossilDSL;
 
 /**
- * @brief Parses a DSL input file and processes the functions.
+ * @brief Initialize the DSL with a tape file.
  *
- * @param input The content of the DSL file to be parsed.
+ * @param dsl A pointer to the FossilDSL structure to be initialized.
+ * @param tape_filename The filename of the tape to be generated.
  */
-void fossil_dsl_parse(char* input);
+void fossil_dsl_create(FossilDSL *dsl, const char *tape_filename);
 
 /**
- * @brief Tokenizes the input string and generates an array of tokens.
+ * @brief Helper function to add indentation based on the current level.
  *
- * @param input The input string to be tokenized.
- * @param tokens Pointer to the array of tokens (output parameter).
- * @param token_count Pointer to the variable storing the token count (output parameter).
+ * @param dsl A pointer to the FossilDSL structure.
  */
-void fossil_dsl_tokenize(char* input, Token** tokens, size_t* token_count);
+void fossil_dsl_indent(FossilDSL *dsl);
 
 /**
- * @brief Frees the memory allocated for an array of tokens.
+ * @brief Add a debugging statement to the tape.
  *
- * @param tokens The array of tokens to be erased.
- * @param token_count The number of tokens in the array.
+ * @param dsl A pointer to the FossilDSL structure.
+ * @param message The debugging message to be added.
  */
-void fossil_dsl_erase_tokens(Token* tokens, size_t token_count);
+void fossil_dsl_debug(FossilDSL *dsl, const char *message);
 
 /**
- * @brief Frees the memory allocated for a parsed function.
+ * @brief Enable debugging in the DSL.
  *
- * @param func The function to be erased.
+ * @param dsl A pointer to the FossilDSL structure.
  */
-void fossil_dsl_erase_function(Function* func);
+void fossil_dsl_enable_debug(FossilDSL *dsl);
 
 /**
- * @brief Frees the memory allocated for an array of function calls.
+ * @brief Call a function within the DSL script.
  *
- * @param calls The array of function calls to be erased.
- * @param call_count The number of function calls in the array.
+ * @param dsl A pointer to the FossilDSL structure.
+ * @param func_name The name of the function to be called.
+ * @param arguments An array of arguments to be passed to the function.
+ * @param num_arguments The number of arguments in the 'arguments' array.
+ *
+ * @return void
  */
-void fossil_dsl_erase_function_calls(FunctionCall* calls, size_t call_count);
+void fossil_dsl_call_function(FossilDSL *dsl, const char *func_name, FossilDSLValue *arguments, int num_arguments);
 
 /**
- * @brief Prints information about a parsed function.
+ * @brief Add a function definition to the tape.
  *
- * @param func The function to be printed.
+ * @param dsl A pointer to the FossilDSL structure.
+ * @param func_name The name of the function to be added.
  */
-void fossil_dsl_print_function(Function* func);
+void fossil_dsl_add_function(FossilDSL *dsl, const char *func_name);
 
 /**
- * @brief Loads a custom library and adds function calls to the list.
+ * @brief Helper function to print a value based on its type.
  *
- * @param library_name The name of the custom library to load.
- * @param calls Pointer to the array of function calls (output parameter).
- * @param call_count Pointer to the variable storing the number of function calls (output parameter).
+ * @param tape_file The file pointer to the tape file.
+ * @param value The value to be printed.
  */
-void fossil_dsl_load_library(const char* library_name, FunctionCall** calls, size_t* call_count);
+void fossil_dsl_print_value(FILE *tape_file, FossilDSLValue value);
 
 /**
- * @brief Gets the parsed function after calling fossil_dsl_parse.
+ * @brief Helper function to add a binary operation to the tape.
  *
- * @return A copy of the parsed function. The caller is responsible for freeing the memory.
+ * @param dsl A pointer to the FossilDSL structure.
+ * @param operation The binary operation to be added.
+ * @param type The type of the operation.
+ * @param operand1 The first operand.
+ * @param operand2 The second operand.
  */
-Function fossil_dsl_get_parsed_function(void);
+void fossil_dsl_add_binary_operation(FossilDSL *dsl, const char *operation, const char *type, FossilDSLValue operand1, FossilDSLValue operand2);
 
 /**
- * @brief Resets the internal state of the DSL parser.
+ * @brief Add a bitwise operation to the tape.
  *
- * This function should be called before parsing a new file.
+ * @param dsl A pointer to the FossilDSL structure.
+ * @param operation The bitwise operation to be added.
+ * @param operand1 The first operand.
+ * @param operand2 The second operand.
  */
-void fossil_dsl_reset(void);
+void fossil_dsl_add_bitwise_operation(FossilDSL *dsl, const char *operation, FossilDSLValue operand1, FossilDSLValue operand2);
 
+/**
+ * @brief Add a loop to the tape.
+ *
+ * @param dsl A pointer to the FossilDSL structure.
+ * @param loop_variable The loop variable.
+ * @param start_value The starting value of the loop.
+ * @param end_value The ending value of the loop.
+ */
+void fossil_dsl_add_loop(FossilDSL *dsl, const char *loop_variable, int start_value, int end_value);
+
+/**
+ * @brief Add a conditional statement to the tape.
+ *
+ * @param dsl A pointer to the FossilDSL structure.
+ * @param condition The condition for the conditional statement.
+ * @param true_branch The label for the true branch.
+ * @param false_branch The label for the false branch.
+ */
+void fossil_dsl_add_condition(FossilDSL *dsl, FossilDSLValue condition, const char *true_branch, const char *false_branch);
+
+/**
+ * @brief Helper function to close the current block in the tape.
+ *
+ * @param dsl A pointer to the FossilDSL structure.
+ */
+void fossil_dsl_close_block(FossilDSL *dsl);
+
+/**
+ * @brief Finalize and close the tape file.
+ *
+ * @param dsl A pointer to the FossilDSL structure.
+ */
+void fossil_dsl_erase(FossilDSL *dsl);
 
 #ifdef __cplusplus
 }

@@ -1,13 +1,25 @@
-# program.fossil
+# example_script.fossil
 
-fossil main() -> int:
-    libraryFunction():
+# Define a generic function
+fossil generic_function() -> int:
+    print("Executing generic_function"):
     return 0:
 
-# Sample library file: sample_library.fossil
+# Define a pizza ordering function
+fossil order_pizza(size: string, toppings: string[]) -> int:
+    print("Ordering pizza with size:", size)
+    print("Toppings:", toppings)
+    return 0:
 
-fossil libraryFunction() -> unit:
-    print("Executing libraryFunction"):
-    return:
+# Main program
+fossil main() -> int:
+    print("Welcome to the Fossil DSL Demo Program"):
 
-# End of file
+    # Call the generic function
+    generic_function():
+
+    # Call the pizza ordering function
+    order_pizza("Large", ["Pepperoni", "Mushrooms", "Extra Cheese"]):
+
+    print("Program execution completed.")
+    return 0:

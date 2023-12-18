@@ -8,62 +8,46 @@
 
 #include <trilobite/xtest.h>   // basic test tools
 #include <trilobite/xassert.h> // extra asserts
-#include <stdio.h>
-#include <string.h>
+
+XTEST_DATA(DSLDummy) {
+    FossilDSL dsl;
+} compiler;
+
+XTEST_FIXTURE(dsl_fixture);
+XTEST_SETUP(dsl_fixture) {
+    fossil_dsl_create(&compiler.dsl, "test_output.tape");
+}
+
+XTEST_TEARDOWN(dsl_fixture) {
+    fossil_dsl_erase(&compiler.dsl);
+}
 
 //
 // XUNIT TEST CASES
 //
 
-// Test case for ini_parser_parse
-XTEST_CASE(test_parse_main_function) {
-    char filename[] = "program.fossil";
-    // Clear any previous state
-    fossil_dsl_reset();
-
-    fossil_dsl_parse(filename);
-
-    // Get the parsed function
-    Function parsedFunction = fossil_dsl_get_parsed_function();
-
-    // Check if the parsed function name is correct
-    TEST_ASSERT_EQUAL_STRING("main", parsedFunction.name);
-
-    // Check if the parsed parameters and return type are correct
-    TEST_ASSERT_EQUAL_INT(0, parsedFunction.param_count);
-    TEST_ASSERT_NULL_PTR(parsedFunction.parameters);
-    TEST_ASSERT_EQUAL_STRING("int", parsedFunction.return_type);
-
-    // Clean up
-    fossil_dsl_erase_function(&parsedFunction);
+XTEST_CASE_FIXTURE(dsl_fixture, test_add_function) {
+    fossil_dsl_add_function(&compiler.dsl, "test_function");
+    TEST_ASSERT_EQUAL_INT(0, compiler.dsl.error_code);
 }
 
-XTEST_CASE(test_parse_library_function) {
-    char filename[] = "program.fossil";
-    // Clear any previous state
-    fossil_dsl_reset();
+XTEST_CASE_FIXTURE(dsl_fixture, test_call_function) {
+    fossil_dsl_add_function(&compiler.dsl, "test_main");
+    fossil_dsl_call_function(&compiler.dsl, "test_function", NULL, 0);
+    TEST_ASSERT_EQUAL_INT(0, compiler.dsl.error_code);
+}
 
-    fossil_dsl_parse(filename);
-
-    // Get the parsed function
-    Function parsedFunction = fossil_dsl_get_parsed_function();
-
-    // Check if the parsed function name is correct
-    TEST_ASSERT_EQUAL_STRING("libraryFunction", parsedFunction.name);
-
-    // Check if the parsed parameters and return type are correct
-    TEST_ASSERT_EQUAL_INT(0, parsedFunction.param_count);
-    TEST_ASSERT_NULL_PTR(parsedFunction.parameters);
-    TEST_ASSERT_EQUAL_STRING("unit", parsedFunction.return_type);
-
-    // Clean up
-    fossil_dsl_erase_function(&parsedFunction);
+XTEST_CASE_FIXTURE(dsl_fixture, test_add_condition_header) {
+    fossil_dsl_add_function(&compiler.dsl, "test_main");
+    fossil_dsl_add_condition(&compiler.dsl, (FossilDSLValue){.type = NULL_TYPE}, "true_branch", "false_branch");
+    TEST_ASSERT_EQUAL_INT(0, compiler.dsl.error_code);
 }
 
 //
 // XUNIT-TEST RUNNER
 //
 XTEST_GROUP_DEFINE(test_fossil_group) {
-    XTEST_RUN_UNIT(test_parse_main_function,  runner);
-    XTEST_RUN_UNIT(test_parse_library_function,  runner);
+    XTEST_RUN_FIXTURE(test_add_function,         dsl_fixture, runner);
+    XTEST_RUN_FIXTURE(test_call_function,        dsl_fixture, runner);
+    XTEST_RUN_FIXTURE(test_add_condition_header, dsl_fixture, runner);
 } // end of function main
