@@ -116,9 +116,9 @@ void tscl_console_out_color(const char *color_name, const char *format, ...) {
 // Clear Screen Function
 void tscl_console_clear() {
 #ifdef _WIN32
-    system("cls");
+    (void)system("cls");
 #else
-    system("clear");
+    (void)system("clear");
 #endif
 }
 
@@ -295,9 +295,17 @@ char* tscl_console_in_read_password(const char* prompt) {
 
     size_t bufsize = 0;
     char* password = NULL;
-    getline(&password, &bufsize, stdin);
+    
+    // Ensure getline is declared explicitly
+    ssize_t bytesRead = getline(&password, &bufsize, stdin);
 
     enable_echo();
+
+    // Check if getline was successful
+    if (bytesRead == -1) {
+        perror("getline");
+        exit(EXIT_FAILURE);
+    }
 
     // Remove newline character at the end of the password
     size_t len = strlen(password);
