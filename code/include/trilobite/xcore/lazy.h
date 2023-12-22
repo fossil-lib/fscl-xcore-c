@@ -45,6 +45,8 @@ extern "C"
 {
 #endif
 
+#include <stdbool.h>
+
 // Define a simple string type
 typedef struct {
     char *data;
@@ -96,8 +98,19 @@ const char* tscl_lazy_force_string(clazy *lazy);
 // =================================================================
 // addintal functions
 // =================================================================
-clazy tscl_lazy_sequence();
+clazy tscl_lazy_sequence(void);
 int tscl_lazy_sequence_force(clazy *lazy, int n);
+void tscl_lazy_set_int(clazy *lazy, int value);
+void tscl_lazy_set_cstring(clazy *lazy, const char *value);
+void tscl_lazy_set_bool(clazy *lazy, bool value);
+void tscl_lazy_set_letter(clazy *lazy, char value);
+void tscl_lazy_conditional_eval(clazy *lazy, int condition);
+void tscl_lazy_map_int(clazy *lazy, int (*mapFunction)(int));
+void tscl_lazy_map_bool(clazy *lazy, bool (*mapFunction)(bool));
+void tscl_lazy_map_char(clazy *lazy, char (*mapFunction)(char));
+void tscl_lazy_map_cstring(clazy *lazy, const char* (*mapFunction)(const char*));
+void tscl_lazy_concat_cstrings(clazy *result, clazy *str1, clazy *str2);
+void tscl_lazy_print(clazy *lazy);
 
 #ifdef __cplusplus
 }

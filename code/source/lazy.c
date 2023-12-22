@@ -125,3 +125,102 @@ int tscl_lazy_sequence_force(clazy *lazy, int n) {
     }
     return lazy->cache.memoized_int;
 }
+
+// Utility function to set the value of a lazy integer
+void tscl_lazy_set_int(clazy *lazy, int value) {
+    lazy->is_evaluated = 1;
+    lazy->data.int_value = value;
+}
+
+// Setter function for lazy string
+void tscl_lazy_set_cstring(clazy *lazy, const char *value) {
+    lazy->is_evaluated = 1;
+    size_t len = strlen(value);
+    lazy->data.string_value.data = malloc(len + 1);
+    strcpy(lazy->data.string_value.data, value);
+    lazy->cache.memoized_string = lazy->data.string_value;
+}
+
+// Utility function to set the value of a lazy integer
+void tscl_lazy_set_bool(clazy *lazy, bool value) {
+    lazy->is_evaluated = 1;
+    lazy->data.bool_value = value;
+}
+
+// Utility function to set the value of a lazy integer
+void tscl_lazy_set_letter(clazy *lazy, char value) {
+    lazy->is_evaluated = 1;
+    lazy->data.char_value = value;
+}
+
+// Utility function for conditional evaluation of lazy type
+void tscl_lazy_conditional_eval(clazy *lazy, int condition) {
+    if (condition) {
+        tscl_lazy_force(lazy);
+    }
+}
+
+// Utility function to map a function over a lazy integer
+void tscl_lazy_map_int(clazy *lazy, int (*mapFunction)(int)) {
+    tscl_lazy_force(lazy);
+    lazy->data.int_value = mapFunction(lazy->data.int_value);
+}
+
+// Utility function to map a function over a lazy bool
+void tscl_lazy_map_bool(clazy *lazy, bool (*mapFunction)(bool)) {
+    tscl_lazy_force(lazy);
+    lazy->data.bool_value = mapFunction(lazy->data.bool_value);
+}
+
+// Utility function to map a function over a lazy char
+void tscl_lazy_map_char(clazy *lazy, char (*mapFunction)(char)) {
+    tscl_lazy_force(lazy);
+    lazy->data.char_value = mapFunction(lazy->data.char_value);
+}
+
+// Utility function to map a function over a lazy string
+void tscl_lazy_map_cstring(clazy *lazy, const char* (*mapFunction)(const char*)) {
+    tscl_lazy_force(lazy);
+    const char* result = mapFunction(lazy->data.string_value.data);
+    size_t len = strlen(result);
+    lazy->data.string_value.data = realloc(lazy->data.string_value.data, len + 1);
+    strcpy(lazy->data.string_value.data, result);
+}
+
+// Utility function for string concatenation of two lazy strings
+void tscl_lazy_concat_cstrings(clazy *result, clazy *str1, clazy *str2) {
+    tscl_lazy_force(str1);
+    tscl_lazy_force(str2);
+
+    size_t len1 = strlen(str1->cache.memoized_string.data);
+    size_t len2 = strlen(str2->cache.memoized_string.data);
+
+    result->data.string_value.data = malloc(len1 + len2 + 1);
+    strcpy(result->data.string_value.data, str1->cache.memoized_string.data);
+    strcat(result->data.string_value.data, str2->cache.memoized_string.data);
+
+    result->is_evaluated = 1;
+    result->type = CLAZY_STRING;
+}
+
+// Utility function to print the value of a lazy type
+void tscl_lazy_print(clazy *lazy) {
+    tscl_lazy_force(lazy);
+    switch (lazy->type) {
+        case CLAZY_INT:
+            printf("Value (int): %d\n", lazy->data.int_value);
+            break;
+        case CLAZY_BOOL:
+            printf("Value (bool): %s\n", lazy->data.bool_value ? "true" : "false");
+            break;
+        case CLAZY_CHAR:
+            printf("Value (char): %c\n", lazy->data.char_value);
+            break;
+        case CLAZY_STRING:
+            printf("Value (string): %s\n", lazy->data.string_value.data);
+            break;
+        default:
+            printf("Unsupported type\n");
+            break;
+    }
+}
