@@ -53,8 +53,8 @@ typedef struct {
 // =================================================================
 // create and erase
 // =================================================================
-int regex_create(cregex *preg, const char *pattern);
-int regex_match(cregex *preg, const char *text);
+int tscl_regex_create(cregex *preg, const char *pattern);
+int tscl_regex_match(cregex *preg, const char *text);
 
 // =================================================================
 // avaliable functions

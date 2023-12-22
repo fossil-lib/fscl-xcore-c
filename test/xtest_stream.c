@@ -24,7 +24,7 @@ XTEST_CASE(stream_let_open_and_close_file) {
     
     TEST_ASSERT_EQUAL_INT(0, tscl_stream_open(&io.stream, "testfile.txt", "w"));
     TEST_ASSERT_NOT_NULL_PTR(io.stream.file);
-    stream_close(&io.stream);
+    tscl_stream_close(&io.stream);
     TEST_ASSERT_NULL_PTR(io.stream.file);
 }
 
