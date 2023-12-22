@@ -4,107 +4,53 @@
    gmail:   <michaelbrockus@gmail.com>
    website: <https://trilobite.home.blog>
 */
-#include "trilobite/xcore/lambda.h" // lib source code
+#include "trilobite/xcore/lazy.h" // lib source code
 
 #include <trilobite/xtest.h>   // basic test tools
-#include <trilobite/xmock.h>   // handy mock utilites
 #include <trilobite/xassert.h> // extra asserts
-
-//
-// XMOCK STUBS
-//
-XMOCK_FUNC_DEF(void, lambda_function, void* data) {
-    int* value = (int*)data;
-    (*value)++;
-} // end of stub
-
-// Mock lambda function for the additional test cases
-XMOCK_FUNC_DEF(void, different_lambda_function, void* data) {
-    int* intData = (int*)data;
-    // Increment the data by a different value
-    (*intData) += 5;
-}
-
 
 //
 // XUNIT TEST CASES
 //
-
-// Test case for lambda_init
-XTEST_CASE(lambda_let_lambda_init) {
-    clambda lambda;
-    
-    // Initialize the lambda with the xmock_lambda_function
-    lambda_init(&lambda, xmock_lambda_function);
-
-    // Ensure that the lambda's function pointer is set correctly
-    TEST_ASSERT_EQUAL_PTR(xmock_lambda_function, lambda.func);
+XTEST_CASE(test_lazy_int) {
+    clazy intLazy = tscl_lazy_create(CLAZY_INT);
+    TEST_ASSERT_EQUAL_INT(42, tscl_lazy_force_int(&intLazy));
+    tscl_lazy_erase(&intLazy);
 }
 
-// Test case for lambda_invoke
-XTEST_CASE(lambda_let_lambda_invoke) {
-    clambda lambda;
-    int data = 42;
-    
-    // Initialize the lambda with the xmock_lambda_function
-    lambda_init(&lambda, xmock_lambda_function);
-
-    // Invoke the lambda with the data
-    lambda_invoke(&lambda, (void*)&data);
-
-    // Ensure that the lambda function has modified the data
-    TEST_ASSERT_EQUAL_INT(43, data);
+XTEST_CASE(test_lazy_bool) {
+    clazy boolLazy = tscl_lazy_create(CLAZY_BOOL);
+    TEST_ASSERT_FALSE(tscl_lazy_force_bool(&boolLazy));  // Default is false
+    tscl_lazy_erase(&boolLazy);
 }
 
-// Additional Test case for lambda_init
-XTEST_CASE(lambda_let_lambda_init_additional) {
-    clambda lambda;
-    
-    // Initialize the lambda with a different function
-    lambda_init(&lambda, xmock_different_lambda_function);
-
-    // Ensure that the lambda's function pointer is set correctly
-    TEST_ASSERT_EQUAL_PTR(xmock_different_lambda_function, lambda.func);
+XTEST_CASE(test_lazy_char) {
+    clazy charLazy = tscl_lazy_create(CLAZY_CHAR);
+    TEST_ASSERT_EQUAL_CHAR('\0', tscl_lazy_force_char(&charLazy));
+    tscl_lazy_erase(&charLazy);
 }
 
-// Additional Test case for lambda_invoke
-XTEST_CASE(lambda_let_lambda_invoke_additional) {
-    clambda lambda;
-    int data = 100;
-    
-    // Initialize the lambda with a different function
-    lambda_init(&lambda, xmock_different_lambda_function);
-
-    // Invoke the lambda with the data
-    lambda_invoke(&lambda, (void*)&data);
-
-    // Ensure that the lambda function has modified the data in a different way
-    TEST_ASSERT_EQUAL_INT(105, data);
+XTEST_CASE(test_lazy_string) {
+    clazy stringLazy = tscl_lazy_create(CLAZY_STRING);
+    TEST_ASSERT_NULL_PTR(tscl_lazy_force_string(&stringLazy));  // Default is NULL
+    tscl_lazy_erase(&stringLazy);
 }
 
-// Test case for lambda_invoke with a lambda having a NULL function pointer
-XTEST_CASE(lambda_let_lambda_invoke_null_function) {
-    clambda lambda;
-    int data = 77;
-    
-    // Initialize the lambda with a NULL function pointer
-    lambda_init(&lambda, NULL);
-
-    // Invoke the lambda with the data
-    lambda_invoke(&lambda, (void*)&data);
-
-    // Ensure that the lambda function has not modified the data
-    TEST_ASSERT_EQUAL_INT(77, data);
+XTEST_CASE(test_lazy_sequence) {
+    clazy sequenceLazy = tscl_lazy_sequence();
+    for (int i = 0; i < 5; ++i) {
+        TEST_ASSERT_EQUAL_INT(i, tscl_lazy_sequence_force(&sequenceLazy, i));
+    }
+    tscl_lazy_erase(&sequenceLazy);
 }
-
 
 //
 // XUNIT-TEST RUNNER
 //
-XTEST_GROUP_DEFINE(test_lambda_group) {
-    XTEST_RUN_UNIT(lambda_let_lambda_init,   runner);
-    XTEST_RUN_UNIT(lambda_let_lambda_invoke, runner);
-    XTEST_RUN_UNIT(lambda_let_lambda_init_additional,      runner);
-    XTEST_RUN_UNIT(lambda_let_lambda_invoke_additional,    runner);
-    XTEST_RUN_UNIT(lambda_let_lambda_invoke_null_function, runner);
+XTEST_GROUP_DEFINE(test_lazy_group) {
+    XTEST_RUN_UNIT(test_lazy_int, runner);
+    XTEST_RUN_UNIT(test_lazy_bool, runner);
+    XTEST_RUN_UNIT(test_lazy_char, runner);
+    XTEST_RUN_UNIT(test_lazy_string, runner);
+    XTEST_RUN_UNIT(test_lazy_sequence, runner);
 } // end of function main

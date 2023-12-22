@@ -95,7 +95,7 @@ const char* tscl_lazy_force_string(clazy *lazy) {
 }
 
 // Function to destroy the resources associated with a string value
-void tscl_lazy_destroy(clazy *lazy) {
+void tscl_lazy_erase(clazy *lazy) {
     if (lazy->is_evaluated) {
         switch (lazy->type) {
             case CLAZY_STRING:

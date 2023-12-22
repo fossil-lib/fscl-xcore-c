@@ -82,7 +82,7 @@ typedef struct {
 // create and erase
 // =================================================================
 clazy tscl_lazy_create(clazy_type type);
-void tscl_lazy_destroy(clazy *lazy);
+void tscl_lazy_erase(clazy *lazy);
 
 // =================================================================
 // Jedi Dreamer force functions

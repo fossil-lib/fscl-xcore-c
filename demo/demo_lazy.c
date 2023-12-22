@@ -36,30 +36,30 @@ int main() {
     // Create lazy types for different data types
     clazy intLazy = tscl_lazy_create(CLAZY_INT);
     printf("Result (int): %d\n", tscl_lazy_force_int(&intLazy));
-    tscl_lazy_destroy(&intLazy);
+    tscl_lazy_erase(&intLazy);
 
     clazy boolLazy = tscl_lazy_create(CLAZY_BOOL);
     printf("Result (bool): %s\n", tscl_lazy_force_bool(&boolLazy) ? "true" : "false");
-    tscl_lazy_destroy(&boolLazy);
+    tscl_lazy_erase(&boolLazy);
 
     clazy charLazy = tscl_lazy_create(CLAZY_CHAR);
     printf("Result (char): %c\n", tscl_lazy_force_char(&charLazy));
-    tscl_lazy_destroy(&charLazy);
+    tscl_lazy_erase(&charLazy);
 
     clazy stringLazy = tscl_lazy_create(CLAZY_STRING);
     printf("Result (string): %s\n", tscl_lazy_force_string(&stringLazy));
-    tscl_lazy_destroy(&stringLazy);
+    tscl_lazy_erase(&stringLazy);
 
     clazy nullLazy = tscl_lazy_create(CLAZY_NULL);
     // No evaluation needed for null type
-    tscl_lazy_destroy(&nullLazy);
+    tscl_lazy_erase(&nullLazy);
 
     // Create and force a lazy sequence
     clazy sequenceLazy = tscl_lazy_sequence();
     for (int i = 0; i < 5; ++i) {
         printf("Sequence Element: %d\n", tscl_lazy_sequence_force(&sequenceLazy, i));
     }
-    tscl_lazy_destroy(&sequenceLazy);
+    tscl_lazy_erase(&sequenceLazy);
 
     return 0;
 } // end of func

@@ -36,7 +36,7 @@
 //
 XTEST_GROUP_EXTERN(test_datetiime_group);
 XTEST_GROUP_EXTERN(test_fossil_group);
-XTEST_GROUP_EXTERN(test_lambda_group);
+XTEST_GROUP_EXTERN(test_lazy_group);
 XTEST_GROUP_EXTERN(test_thread_group);
 XTEST_GROUP_EXTERN(test_stream_group);
 XTEST_GROUP_EXTERN(test_regex_group );
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 
     XTEST_GROUP_REGISTER(test_datetiime_group, runner);
     XTEST_GROUP_REGISTER(test_fossil_group, runner);
-    XTEST_GROUP_REGISTER(test_lambda_group, runner);
+    XTEST_GROUP_REGISTER(test_lazy_group, runner);
     XTEST_GROUP_REGISTER(test_thread_group, runner);
     XTEST_GROUP_REGISTER(test_stream_group, runner);
     XTEST_GROUP_REGISTER(test_regex_group,  runner);
