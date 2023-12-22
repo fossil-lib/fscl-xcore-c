@@ -116,10 +116,11 @@ void tscl_console_out_color(const char *color_name, const char *format, ...) {
 // Clear Screen Function
 void tscl_console_clear() {
 #ifdef _WIN32
-    (void)system("cls");
+    int dummy = system("cls");
 #else
-    (void)system("clear");
+    int dummy = system("clear");
 #endif
+    (void)dummy;  // Avoid unused variable warning
 }
 
 // Flush Output Function
