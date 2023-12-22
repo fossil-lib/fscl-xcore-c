@@ -139,7 +139,7 @@ void tscl_console_progress(int iterations, int delay) {
 #ifdef _WIN32
         Sleep(delay);  // Sleep in milliseconds on Windows
 #else
-        usleep(delay * 1000);  // Sleep in microseconds on POSIX
+        sleep(delay * 1000);  // Sleep in microseconds on POSIX
 #endif
     }
 
@@ -263,7 +263,7 @@ bool tscl_console_in_read_time(const char* prompt, int* hour, int* minute, int* 
 void disable_echo() {
 #ifdef _WIN32
     // For Windows
-    system("cls");  // Clear the screen to hide the password
+    (void)system("cls");  // Clear the screen to hide the password
 #else
     // For POSIX
     struct termios term;
@@ -277,7 +277,7 @@ void disable_echo() {
 void enable_echo() {
 #ifdef _WIN32
     // For Windows
-    system("cls");  // Clear the screen to show the next output cleanly
+    (void)system("cls");  // Clear the screen to show the next output cleanly
 #else
     // For POSIX
     struct termios term;
