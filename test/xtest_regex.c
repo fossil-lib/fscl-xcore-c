@@ -29,7 +29,7 @@ XTEST_CASE(test_regex_match_and_extract_normal) {
     TEST_ASSERT_EQUAL_STRING("A123b", matched_substring);
 
     // Reset regex for reuse
-    regex_reset(&my_regex);
+    tscl_regex_reset(&my_regex);
 
     // Match again with a different text
     const char *new_text = "xyab";
