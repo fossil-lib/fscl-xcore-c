@@ -14,7 +14,7 @@
 //
 
 // Test case for  tscl_ini_parser_parse
-XTEST_CASE(test_ tscl_ini_parser_parse) {
+XTEST_CASE(test_tscl_ini_parser_parse) {
     FILE* file = fopen("test_config.ini", "r");
     TEST_ASSERT_NOT_NULL_PTR(file);
 
@@ -34,5 +34,5 @@ XTEST_CASE(test_ tscl_ini_parser_parse) {
 // XUNIT-TEST RUNNER
 //
 XTEST_GROUP_DEFINE(test_ini_group) {
-    XTEST_RUN_UNIT(test_ tscl_ini_parser_parse,  runner);
+    XTEST_RUN_UNIT(test_tscl_ini_parser_parse,  runner);
 } // end of function main

@@ -12,7 +12,7 @@
 //
 // XUNIT-CASES: list of test cases testing project features
 //
-XTEST_CASE(test_ tscl_json_parser_basic) {
+XTEST_CASE(test_tscl_json_parser_basic) {
     FILE* jsonFile = fopen("basic.json", "r");
     TEST_ASSERT_NOT_NULL_PTR(jsonFile);
 
@@ -25,7 +25,7 @@ XTEST_CASE(test_ tscl_json_parser_basic) {
      tscl_json_parser_erase(&jsonData);
 }
 
-XTEST_CASE(test_ tscl_json_parser_invalid_file) {
+XTEST_CASE(test_tscl_json_parser_invalid_file) {
     FILE* jsonFile = fopen("nonexistent.json", "r");
     TEST_ASSERT_NULL_PTR(jsonFile);
 
@@ -38,7 +38,7 @@ XTEST_CASE(test_ tscl_json_parser_invalid_file) {
      tscl_json_parser_erase(&jsonData);
 }
 
-XTEST_CASE(test_ tscl_json_parser_invalid_json) {
+XTEST_CASE(test_tscl_json_parser_invalid_json) {
     FILE* jsonFile = fopen("invalid.json", "r");
     TEST_ASSERT_NOT_NULL_PTR(jsonFile);
 
@@ -51,7 +51,7 @@ XTEST_CASE(test_ tscl_json_parser_invalid_json) {
      tscl_json_parser_erase(&jsonData);
 }
 
-XTEST_CASE(test_ tscl_json_parser_getter_setter) {
+XTEST_CASE(test_tscl_json_parser_getter_setter) {
     cjson* jsonData =  tscl_json_parser_create();
     TEST_ASSERT_NOT_NULL_PTR(jsonData);
 
@@ -67,8 +67,8 @@ XTEST_CASE(test_ tscl_json_parser_getter_setter) {
 // XUNIT-TEST RUNNER
 //
 XTEST_GROUP_DEFINE(test_json_group) {
-    XTEST_RUN_UNIT(test_ tscl_json_parser_basic,         runner);
-    XTEST_RUN_UNIT(test_ tscl_json_parser_invalid_file,  runner);
-    XTEST_RUN_UNIT(test_ tscl_json_parser_invalid_json,  runner);
-    XTEST_RUN_UNIT(test_ tscl_json_parser_getter_setter, runner);
+    XTEST_RUN_UNIT(test_tscl_json_parser_basic,         runner);
+    XTEST_RUN_UNIT(test_tscl_json_parser_invalid_file,  runner);
+    XTEST_RUN_UNIT(test_tscl_json_parser_invalid_json,  runner);
+    XTEST_RUN_UNIT(test_tscl_json_parser_getter_setter, runner);
 } // end of function main
