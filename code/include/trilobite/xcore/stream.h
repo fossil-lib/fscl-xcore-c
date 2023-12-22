@@ -48,11 +48,16 @@ extern "C"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdint.h>
 
 enum {
     MAX_FILENAME_LENGTH = 256,
     MAX_BUFFER_SIZE     = 1024
 };
+
+typedef struct stream_lock {
+    uint32_t state[16];
+} stream_lock;
 
 typedef struct cstream {
     FILE *file;
@@ -78,6 +83,16 @@ int tscl_stream_backup(const char *filename, const char *backup_suffix);
 int tscl_stream_file_exists(const char *filename);
 long tscl_stream_get_size(cstream *stream);
 int tscl_stream_delete(const char *filename);
+
+// =================================================================
+// chacha20 functions
+// =================================================================
+stream_lock* tscl_stream_lock_create(const uint8_t *key, const uint8_t *nonce);
+void tscl_stream_lock_erase(stream_lock *lock);
+void tscl_stream_lock_generate_key(uint8_t *key);
+void tscl_stream_encrypt(stream_lock *lock, const uint8_t *input, uint8_t *output, size_t length);
+void tscl_stream_decrypt(stream_lock *lock, const uint8_t *input, uint8_t *output, size_t length);
+
 
 #ifdef __cplusplus
 }

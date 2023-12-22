@@ -31,6 +31,25 @@
 */
 #include "trilobite/xcore/stream.h"
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define CHACHA20_BLOCK_SIZE 64
+
+#define ROTL(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
+#define QR(a, b, c, d) \
+    a += b; \
+    d ^= a; \
+    d = ROTL(d, 16); \
+    c += d; \
+    b ^= c; \
+    b = ROTL(b, 12); \
+    a += b; \
+    d ^= a; \
+    d = ROTL(d, 8); \
+    c += d; \
+    b ^= c; \
+    b = ROTL(b, 7);
 
 // Function to open a file
 int tscl_stream_open(cstream *stream, const char *filename, const char *mode) {
@@ -191,3 +210,107 @@ int tscl_stream_delete(const char *filename) {
     }
     return -1;  // Error
 } // end of func
+
+void chacha20_block(struct stream_lock *lock, uint8_t *output) {
+    int i;
+    uint32_t x[16];
+
+    for (i = 0; i < 16; ++i) {
+        x[i] = lock->state[i];
+    }
+
+    for (i = 0; i < 10; ++i) {
+        QR(x[0], x[4], x[8], x[12]);
+        QR(x[1], x[5], x[9], x[13]);
+        QR(x[2], x[6], x[10], x[14]);
+        QR(x[3], x[7], x[11], x[15]);
+        QR(x[0], x[5], x[10], x[15]);
+        QR(x[1], x[6], x[11], x[12]);
+        QR(x[2], x[7], x[8], x[13]);
+        QR(x[3], x[4], x[9], x[14]);
+    }
+
+    for (i = 0; i < 16; ++i) {
+        x[i] += lock->state[i];
+    }
+
+    for (i = 0; i < 16; ++i) {
+        output[i * 4 + 0] = x[i] & 0xFF;
+        output[i * 4 + 1] = (x[i] >> 8) & 0xFF;
+        output[i * 4 + 2] = (x[i] >> 16) & 0xFF;
+        output[i * 4 + 3] = (x[i] >> 24) & 0xFF;
+    }
+
+    lock->state[12]++;
+    if (lock->state[12] == 0) {
+        lock->state[13]++;
+    }
+}
+
+void chacha20_init(struct stream_lock *lock, const uint8_t *key, const uint8_t *nonce) {
+    lock->state[0] = 0x61707865;
+    lock->state[1] = 0x3320646e;
+    lock->state[2] = 0x79622d32;
+    lock->state[3] = 0x6b206574;
+
+    for (int i = 0; i < 8; ++i) {
+        lock->state[4 + i] = ((uint32_t *)key)[i];
+    }
+
+    lock->state[12] = 0;
+    lock->state[13] = 0;
+    lock->state[14] = ((uint32_t *)nonce)[0];
+    lock->state[15] = ((uint32_t *)nonce)[1];
+}
+
+stream_lock* tscl_stream_lock_create(const uint8_t *key, const uint8_t *nonce) {
+    stream_lock *lock = (stream_lock *)malloc(sizeof(stream_lock));
+    if (lock == NULL) {
+        // Handle memory allocation failure
+        return NULL;
+    }
+
+    chacha20_init(lock, key, nonce);
+
+    return lock;
+}
+
+void tscl_stream_lock_erase(stream_lock *lock) {
+    free(lock);
+}
+
+void tscl_stream_encrypt(stream_lock *lock, const uint8_t *input, uint8_t *output, size_t length) {
+    size_t blocks = length / CHACHA20_BLOCK_SIZE;
+
+    for (size_t i = 0; i < blocks; ++i) {
+        chacha20_block(lock, output + i * CHACHA20_BLOCK_SIZE);
+        for (size_t j = 0; j < CHACHA20_BLOCK_SIZE; ++j) {
+            output[i * CHACHA20_BLOCK_SIZE + j] ^= input[i * CHACHA20_BLOCK_SIZE + j];
+        }
+    }
+
+    size_t remaining = length % CHACHA20_BLOCK_SIZE;
+    if (remaining > 0) {
+        uint8_t block[CHACHA20_BLOCK_SIZE];
+        chacha20_block(lock, block);
+        for (size_t i = 0; i < remaining; ++i) {
+            output[blocks * CHACHA20_BLOCK_SIZE + i] ^= input[blocks * CHACHA20_BLOCK_SIZE + i] ^ block[i];
+        }
+    }
+}
+
+void tscl_stream_decrypt(stream_lock *lock, const uint8_t *input, uint8_t *output, size_t length) {
+    // For ChaCha20, decryption is the same as encryption
+    tscl_stream_encrypt(lock, input, output, length);
+}
+
+// Function to generate a random key for a stream lock
+void tscl_stream_lock_generate_key(uint8_t *key) {
+    // Seed the random number generator with the current time
+    srand((unsigned int)time(NULL));
+
+    // Generate a random key
+    for (size_t i = 0; i < 32; ++i) {
+        key[i] = rand() % 256;
+    }
+}

@@ -29,70 +29,158 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include "trilobite/xcore/stream.h" // lib source code
+#include <trilobite/xcore/stream.h>
+#include <trilobite/xcore/console.h>
 #include <stdio.h>
 #include <string.h>
 
-// Function to log a movement
-void log_movement(cstream *stream, const char *direction, double distance) {
-    char log_entry[100];
-    sprintf(log_entry, "Move %s: %.2f meters\n", direction, distance);
-    tscl_stream_write(stream, log_entry, 1, strlen(log_entry));
+// Function to print the hexadecimal representation of data
+void print_hex(const char *label, const uint8_t *data, size_t length) {
+    tscl_console_out("%s: ", label);
+    for (size_t i = 0; i < length; ++i) {
+        tscl_console_out("%02X", data[i]);
+    }
+    tscl_console_out("\n");
 }
 
-// Function to log an event
-void log_event(cstream *stream, const char *event_description) {
-    char log_entry[100];
-    sprintf(log_entry, "Event: %s\n", event_description);
-    tscl_stream_write(stream, log_entry, 1, strlen(log_entry));
-}
+// Robot log structure
+typedef struct {
+    char timestamp[20];
+    char message[256];
+} RobotLog;
 
 int main() {
-    // Example log filename
-    const char *log_filename = "robot_log.txt";
+    // Example usage of robot log with file management and ChaCha20 encryption and decryption
 
-    // Open the log file for writing
-    cstream log_stream;
-    if (tscl_stream_open(&log_stream, log_filename, "w") == -1) {
-        fprintf(stderr, "Error opening log file for writing\n");
-        return -1;
+    // File paths
+    const char *logFilename = "robot_log.bin";
+    const char *encryptedLogFilename = "encrypted_robot_log.bin";
+    const char *decryptedLogFilename = "decrypted_robot_log.txt";
+
+    const uint8_t nonce[8] = {0};
+
+    // Create a random key for the stream lock
+    uint8_t key[32];
+    tscl_stream_lock_generate_key(key);
+
+    // Create a stream lock with the random key
+    stream_lock *lock = tscl_stream_lock_create(key, nonce);
+
+    // Create a stream lock
+    stream_lock *lock = tscl_stream_lock_create(key, nonce);
+    if (lock == NULL) {
+        tscl_console_err("Failed to create stream lock.\n");
+        return 1;
     }
 
-    // Log some movements
-    log_movement(&log_stream, "Forward", 2.5);
-    log_movement(&log_stream, "Right", 1.0);
-    log_movement(&log_stream, "Backward", 3.2);
-
-    // Log an event
-    log_event(&log_stream, "Emergency Stop");
-
-    // Close the log file
-    tscl_stream_close(&log_stream);
-
-    // Open the log file for reading and display its content
-    if (tscl_stream_open(&log_stream, log_filename, "r") == -1) {
-        fprintf(stderr, "Error opening log file for reading\n");
-        return -1;
+    // Open the robot log file
+    cstream logFile;
+    if (tscl_stream_open(&logFile, logFilename, "rb") != 0) {
+        tscl_console_err("Failed to open robot log file.\n");
+        tscl_stream_lock_erase(lock);
+        return 1;
     }
 
-    const size_t buffer_size = 256;
-    char read_buffer[buffer_size];
-    size_t elements_read = tscl_stream_read(&log_stream, read_buffer, 1, buffer_size - 1);
-
-    if (elements_read == 0) {
-        fprintf(stderr, "Error reading data from the log file\n");
-        tscl_stream_close(&log_stream);
-        return -1;
+    // Get the size of the robot log file
+    long logFileSize = tscl_stream_get_size(&logFile);
+    if (logFileSize <= 0) {
+        tscl_console_err("Invalid robot log file size.\n");
+        tscl_stream_close(&logFile);
+        tscl_stream_lock_erase(lock);
+        return 1;
     }
 
-    // Null-terminate the read data
-    read_buffer[elements_read] = '\0';
+    // Allocate memory for robot log data
+    RobotLog *robotLogData = (RobotLog *)malloc(logFileSize);
+    if (robotLogData == NULL) {
+        tscl_console_err("Failed to allocate memory.\n");
+        tscl_stream_close(&logFile);
+        tscl_stream_lock_erase(lock);
+        return 1;
+    }
 
-    // Close the log file
-    tscl_stream_close(&log_stream);
+    // Read data from the robot log file
+    if (tscl_stream_read(&logFile, robotLogData, sizeof(RobotLog), logFileSize / sizeof(RobotLog)) != logFileSize / sizeof(RobotLog)) {
+        tscl_console_err("Failed to read robot log file.\n");
+        free(robotLogData);
+        tscl_stream_close(&logFile);
+        tscl_stream_lock_erase(lock);
+        return 1;
+    }
 
-    // Display the log content
-    printf("Robot Log:\n%s", read_buffer);
+    // Close the robot log file
+    tscl_stream_close(&logFile);
+
+    // Encrypt the robot log data
+    RobotLog *encryptedRobotLogData = (RobotLog *)malloc(logFileSize);
+    if (encryptedRobotLogData == NULL) {
+        tscl_console_err("Failed to allocate memory.\n");
+        free(robotLogData);
+        tscl_stream_lock_erase(lock);
+        return 1;
+    }
+    tscl_stream_encrypt(lock, (const uint8_t *)robotLogData, (uint8_t *)encryptedRobotLogData, logFileSize);
+
+    // Write encrypted robot log data to a file
+    cstream encryptedLogFile;
+    if (tscl_stream_open(&encryptedLogFile, encryptedLogFilename, "wb") != 0) {
+        tscl_console_err("Failed to open encrypted robot log file.\n");
+        free(robotLogData);
+        free(encryptedRobotLogData);
+        tscl_stream_lock_erase(lock);
+        return 1;
+    }
+
+    if (tscl_stream_write(&encryptedLogFile, encryptedRobotLogData, sizeof(RobotLog), logFileSize / sizeof(RobotLog)) != logFileSize / sizeof(RobotLog)) {
+        tscl_console_err("Failed to write encrypted robot log file.\n");
+        free(robotLogData);
+        free(encryptedRobotLogData);
+        tscl_stream_close(&encryptedLogFile);
+        tscl_stream_lock_erase(lock);
+        return 1;
+    }
+
+    tscl_stream_close(&encryptedLogFile);
+
+    // Decrypt the robot log data
+    RobotLog *decryptedRobotLogData = (RobotLog *)malloc(logFileSize);
+    if (decryptedRobotLogData == NULL) {
+        tscl_console_err("Failed to allocate memory.\n");
+        free(robotLogData);
+        free(encryptedRobotLogData);
+        tscl_stream_lock_erase(lock);
+        return 1;
+    }
+    tscl_stream_decrypt(lock, (const uint8_t *)encryptedRobotLogData, (uint8_t *)decryptedRobotLogData, logFileSize);
+
+    // Write decrypted robot log data to a file
+    cstream decryptedLogFile;
+    if (tscl_stream_open(&decryptedLogFile, decryptedLogFilename, "w") != 0) {
+        tscl_console_err("Failed to open decrypted robot log file.\n");
+        free(robotLogData);
+        free(encryptedRobotLogData);
+        free(decryptedRobotLogData);
+        tscl_stream_lock_erase(lock);
+        return 1;
+    }
+
+    // Print decrypted robot log data to console
+    tscl_console_out("Decrypted Robot Log:\n");
+    for (size_t i = 0; i < logFileSize / sizeof(RobotLog); ++i) {
+        tscl_console_out("[%s] %s\n", decryptedRobotLogData[i].timestamp, decryptedRobotLogData[i].message);
+        // You can also write to the decryptedLogFile if needed
+        tscl_stream_write(&decryptedLogFile, &decryptedRobotLogData[i], sizeof(RobotLog), 1);
+    }
+
+    tscl_stream_close(&decryptedLogFile);
+
+    // Clean up memory
+    free(robotLogData);
+    free(encryptedRobotLogData);
+    free(decryptedRobotLogData);
+
+    // Destroy the stream lock
+    tscl_stream_lock_erase(lock);
 
     return 0;
 } // end of func
