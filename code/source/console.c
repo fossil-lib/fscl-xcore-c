@@ -260,31 +260,21 @@ bool tscl_console_in_read_time(const char* prompt, int* hour, int* minute, int* 
     }
 } // end of func
 
-// Function to disable echoing for password input
 void disable_echo() {
 #ifdef _WIN32
-    // For Windows
-    (void)system("cls");  // Clear the screen to hide the password
+    system("cls");  // Clear the screen to hide the password
 #else
-    // For POSIX
-    struct termios term;
-    tcgetattr(fileno(stdin), &term);
-    term.c_lflag &= ~ECHO;
-    tcsetattr(fileno(stdin), TCSANOW, &term);
+    printf("\033[2J\033[1;1H");  // ANSI escape code to clear the terminal
+    fflush(stdout);
 #endif
 }
 
-// Function to enable echoing after password input
 void enable_echo() {
 #ifdef _WIN32
-    // For Windows
-    (void)system("cls");  // Clear the screen to show the next output cleanly
+    system("cls");  // Clear the screen to show the next output cleanly
 #else
-    // For POSIX
-    struct termios term;
-    tcgetattr(fileno(stdin), &term);
-    term.c_lflag |= ECHO;
-    tcsetattr(fileno(stdin), TCSANOW, &term);
+    printf("\033[2J\033[1;1H");  // ANSI escape code to clear the terminal
+    fflush(stdout);
 #endif
 }
 
