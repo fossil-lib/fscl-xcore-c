@@ -37,45 +37,67 @@
 
    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
 */
-#ifndef TSCL_LAMBDA_H
-#define TSCL_LAMBDA_H
+#ifndef TSCL_LAZY_H
+#define TSCL_LAZY_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-typedef void (*CLambdaFunc)(void*);
+// Define a simple string type
+typedef struct {
+    char *data;
+} clazy_string;
+
+// Enum to represent different data types
+typedef enum {
+    CLAZY_INT,
+    CLAZY_BOOL,
+    CLAZY_CHAR,
+    CLAZY_STRING,
+    CLAZY_NULL
+} clazy_type;
 
 typedef struct {
-    CLambdaFunc func;
-} clambda;
+    int is_evaluated;
+    clazy_type type;
+    union {
+        int int_value;
+        bool bool_value;
+        char char_value;
+        clazy_string string_value;
+    } data;
 
-/**
- * @brief Initializes a clambda structure with the provided lambda function.
- *
- * This function sets up a clambda structure to encapsulate a lambda function
- * for later invocation.
- *
- * @param lambda Pointer to a clambda structure to be initialized.
- * @param func   A function pointer representing the lambda function to be encapsulated.
- *               The lambda function must accept a void pointer as its parameter.
- */
-void lambda_init(clambda* lambda, CLambdaFunc func);
+    // Memoization cache
+    union {
+        int memoized_int;
+        bool memoized_bool;
+        char memoized_char;
+        clazy_string memoized_string;
+    } cache;
+} clazy;
 
-/**
- * @brief Invokes the lambda function encapsulated within a clambda structure.
- *
- * This function invokes the lambda function encapsulated within the clambda
- * structure, passing it the provided data.
- *
- * @param lambda Pointer to a clambda structure containing the lambda function
- *               to be invoked.
- * @param data   A void pointer to data that will be passed as a parameter to the
- *               encapsulated lambda function. The data type must be known and
- *               cast appropriately within the lambda function.
- */
-void lambda_invoke(clambda* lambda, void* data);
+// =================================================================
+// create and erase
+// =================================================================
+clazy tscl_lazy_create(clazy_type type);
+void tscl_lazy_destroy(clazy *lazy);
+
+// =================================================================
+// Jedi Dreamer force functions
+// =================================================================
+void tscl_lazy_force(clazy *lazy);
+int tscl_lazy_force_int(clazy *lazy);
+bool tscl_lazy_force_bool(clazy *lazy);
+char tscl_lazy_force_char(clazy *lazy);
+const char* tscl_lazy_force_string(clazy *lazy);
+
+// =================================================================
+// addintal functions
+// =================================================================
+clazy tscl_lazy_sequence();
+int tscl_lazy_sequence_force(clazy *lazy, int n);
 
 #ifdef __cplusplus
 }

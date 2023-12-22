@@ -1,5 +1,5 @@
 /*  ----------------------------------------------------------------------------
-    File: demo_lambda.c
+    File: demo_lazy.c
 
     Description:
     This demo file serves as a showcase of the Trilobite Stdlib in action. It provides
@@ -29,23 +29,37 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include "trilobite/xcore/lambda.h" // lib source code
-
-// Lambda function that prints an integer
-void print_integer_lambda(void* data) {
-    int* value = (int*)data;
-    printf("Lambda invoked with value: %d\n", *value);
-} // end of func
+#include "trilobite/xcore/lazy.h" // lib source code
+#include <stdio.h>
 
 int main() {
-    clambda lambda;
-    int data = 42;
+    // Create lazy types for different data types
+    clazy intLazy = tscl_lazy_create(CLAZY_INT);
+    printf("Result (int): %d\n", tscl_lazy_force_int(&intLazy));
+    tscl_lazy_destroy(&intLazy);
 
-    // Initialize the lambda with the print_integer_lambda function
-    lambda_init(&lambda, print_integer_lambda);
+    clazy boolLazy = tscl_lazy_create(CLAZY_BOOL);
+    printf("Result (bool): %s\n", tscl_lazy_force_bool(&boolLazy) ? "true" : "false");
+    tscl_lazy_destroy(&boolLazy);
 
-    // Invoke the lambda with an integer data
-    lambda_invoke(&lambda, (void*)&data);
+    clazy charLazy = tscl_lazy_create(CLAZY_CHAR);
+    printf("Result (char): %c\n", tscl_lazy_force_char(&charLazy));
+    tscl_lazy_destroy(&charLazy);
+
+    clazy stringLazy = tscl_lazy_create(CLAZY_STRING);
+    printf("Result (string): %s\n", tscl_lazy_force_string(&stringLazy));
+    tscl_lazy_destroy(&stringLazy);
+
+    clazy nullLazy = tscl_lazy_create(CLAZY_NULL);
+    // No evaluation needed for null type
+    tscl_lazy_destroy(&nullLazy);
+
+    // Create and force a lazy sequence
+    clazy sequenceLazy = tscl_lazy_sequence();
+    for (int i = 0; i < 5; ++i) {
+        printf("Sequence Element: %d\n", tscl_lazy_sequence_force(&sequenceLazy, i));
+    }
+    tscl_lazy_destroy(&sequenceLazy);
 
     return 0;
 } // end of func

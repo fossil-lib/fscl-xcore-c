@@ -1,6 +1,6 @@
 if get_option('with_demo').enabled()
     demo_apps = [
-        'json', 'csv', 'ini', 'lambda', 'fossil', 'datetime',
+        'json', 'csv', 'ini', 'lazy', 'fossil', 'datetime',
         'reader', 'regex', 'stream', 'thread']
 
     foreach iter : demo_apps
