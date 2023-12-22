@@ -34,14 +34,14 @@
 #include <string.h>
 
 // Function to create a new cini structure
-void ini_parser_create(cini** data) {
+void  tscl_ini_parser_create(cini** data) {
     *data = (cini*)malloc(sizeof(cini));
     (*data)->entries = NULL;
     (*data)->size = 0;
 }
 
 // Function to erase a cini structure
-void ini_parser_erase(cini** data) {
+void  tscl_ini_parser_erase(cini** data) {
     if (*data != NULL) {
         free((*data)->entries);
         free(*data);
@@ -50,8 +50,8 @@ void ini_parser_erase(cini** data) {
 }
 
 // Function to parse an INI file and populate cini structure
-void ini_parser_parse(FILE* file, cini** data) {
-    ini_parser_erase(data); // Clear existing data
+void  tscl_ini_parser_parse(FILE* file, cini** data) {
+     tscl_ini_parser_erase(data); // Clear existing data
 
     *data = (cini*)malloc(sizeof(cini));
 
@@ -82,7 +82,7 @@ void ini_parser_parse(FILE* file, cini** data) {
 }
 
 // Function to update or add an entry in cini structure
-void ini_parser_setter(cini** data, const char* update) {
+void  tscl_ini_parser_setter(cini** data, const char* update) {
     char key[TRILO_INI_FILE_LENGTH];
     char value[TRILO_INI_FILE_LENGTH];
 
@@ -107,6 +107,6 @@ void ini_parser_setter(cini** data, const char* update) {
 }
 
 // Function to get the cini structure
-cini* ini_parser_getter(cini** data) {
+cini*  tscl_ini_parser_getter(cini** data) {
     return *data;
 } // end of func // end of func

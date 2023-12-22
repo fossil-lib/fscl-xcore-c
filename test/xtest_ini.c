@@ -13,26 +13,26 @@
 // XUNIT TEST CASES
 //
 
-// Test case for ini_parser_parse
-XTEST_CASE(test_ini_parser_parse) {
+// Test case for  tscl_ini_parser_parse
+XTEST_CASE(test_ tscl_ini_parser_parse) {
     FILE* file = fopen("test_config.ini", "r");
     TEST_ASSERT_NOT_NULL_PTR(file);
 
     cini* iniData;
-    ini_parser_create(&iniData);
+     tscl_ini_parser_create(&iniData);
     TEST_ASSERT_NOT_NULL_PTR(iniData);
 
     // Test parsing of a sample INI file
-    ini_parser_parse(file, &iniData);
+     tscl_ini_parser_parse(file, &iniData);
 
     // Clean up
     fclose(file);
-    ini_parser_erase(&iniData);
+     tscl_ini_parser_erase(&iniData);
 }
 
 //
 // XUNIT-TEST RUNNER
 //
 XTEST_GROUP_DEFINE(test_ini_group) {
-    XTEST_RUN_UNIT(test_ini_parser_parse,  runner);
+    XTEST_RUN_UNIT(test_ tscl_ini_parser_parse,  runner);
 } // end of function main

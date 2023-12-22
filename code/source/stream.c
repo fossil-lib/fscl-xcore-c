@@ -33,7 +33,7 @@
 #include <string.h>
 
 // Function to open a file
-int stream_open(cstream *stream, const char *filename, const char *mode) {
+int tscl_stream_open(cstream *stream, const char *filename, const char *mode) {
     if (strlen(filename) >= MAX_FILENAME_LENGTH) {
         fprintf(stderr, "Filename too long.\n");
         return -1;
@@ -50,7 +50,7 @@ int stream_open(cstream *stream, const char *filename, const char *mode) {
 } // end of func
 
 // Function to close a file
-void stream_close(cstream *stream) {
+void tscl_stream_close(cstream *stream) {
     if (stream->file != NULL) {
         fclose(stream->file);
         stream->file = NULL;
@@ -58,7 +58,7 @@ void stream_close(cstream *stream) {
 } // end of func
 
 // Function to read from a file
-size_t stream_read(cstream *stream, void *buffer, size_t size, size_t count) {
+size_t tscl_stream_read(cstream *stream, void *buffer, size_t size, size_t count) {
     if (stream->file == NULL) {
         fprintf(stderr, "File not open.\n");
         return 0;
@@ -67,7 +67,7 @@ size_t stream_read(cstream *stream, void *buffer, size_t size, size_t count) {
 } // end of func
 
 // Function to write to a file
-size_t stream_write(cstream *stream, const void *buffer, size_t size, size_t count) {
+size_t tscl_stream_write(cstream *stream, const void *buffer, size_t size, size_t count) {
     if (stream->file == NULL) {
         fprintf(stderr, "File not open.\n");
         return 0;
@@ -77,7 +77,7 @@ size_t stream_write(cstream *stream, const void *buffer, size_t size, size_t cou
 } // end of func
 
 // Function to append to a file
-int stream_append(cstream *stream, const void *buffer, size_t size, size_t count) {
+int tscl_stream_append(cstream *stream, const void *buffer, size_t size, size_t count) {
     if (stream->file == NULL) {
         fprintf(stderr, "File not open.\n");
         return -1;
@@ -88,7 +88,7 @@ int stream_append(cstream *stream, const void *buffer, size_t size, size_t count
 } // end of func
 
 // Function to seek within a file
-int stream_seek(cstream *stream, long offset, int origin) {
+int tscl_stream_seek(cstream *stream, long offset, int origin) {
     if (stream->file == NULL) {
         fprintf(stderr, "File not open.\n");
         return -1;
@@ -98,7 +98,7 @@ int stream_seek(cstream *stream, long offset, int origin) {
 } // end of func
 
 // Function to save the file with a new name
-int stream_save(cstream *stream, const char *new_filename) {
+int tscl_stream_save(cstream *stream, const char *new_filename) {
     if (strlen(new_filename) >= MAX_FILENAME_LENGTH) {
         fprintf(stderr, "New filename too long.\n");
         return -1;
@@ -120,7 +120,7 @@ int stream_save(cstream *stream, const char *new_filename) {
 } // end of func
 
 // Function to copy a file to a new location
-int stream_copy(const char *source_filename, const char *destination_filename) {
+int tscl_stream_copy(const char *source_filename, const char *destination_filename) {
     FILE *source_file = fopen(source_filename, "rb");
     if (source_file == NULL) {
         fprintf(stderr, "Failed to open source file: %s\n", source_filename);
@@ -154,7 +154,7 @@ int stream_copy(const char *source_filename, const char *destination_filename) {
 } // end of func
 
 // Function to create a backup of a file
-int stream_backup(const char *filename, const char *backup_suffix) {
+int tscl_stream_backup(const char *filename, const char *backup_suffix) {
     char backup_filename[MAX_FILENAME_LENGTH + 10];  // Length of backup_suffix + maximum integer length
     snprintf(backup_filename, MAX_FILENAME_LENGTH + 10, "%s%s", filename, backup_suffix);
 
@@ -166,7 +166,7 @@ int stream_backup(const char *filename, const char *backup_suffix) {
     return 0;
 } // end of func
 
-int stream_file_exists(const char *filename) {
+int tscl_stream_file_exists(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file) {
         fclose(file);
@@ -175,7 +175,7 @@ int stream_file_exists(const char *filename) {
     return 0;  // File does not exist
 } // end of func
 
-long stream_get_size(cstream *stream) {
+long tscl_stream_get_size(cstream *stream) {
     if (stream && stream->file) {
         fseek(stream->file, 0, SEEK_END);
         long size = ftell(stream->file);
@@ -185,7 +185,7 @@ long stream_get_size(cstream *stream) {
     return -1;  // Error
 } // end of func
 
-int stream_delete(const char *filename) {
+int tscl_stream_delete(const char *filename) {
     if (remove(filename) == 0) {
         return 0;  // File deleted successfully
     }

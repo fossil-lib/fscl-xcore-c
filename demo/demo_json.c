@@ -33,9 +33,9 @@
 #include <stdio.h>
 
 void present_question(cjson_object* question) {
-    printf("%s\n", json_parser_getter(&question->pairs[0].value));  // Print the question
+    printf("%s\n",  tscl_json_parser_getter(&question->pairs[0].value));  // Print the question
 
-    cjson_array* options = json_parser_get_array(&question->pairs[1].value);
+    cjson_array* options =  tscl_json_parser_get_array(&question->pairs[1].value);
     for (size_t i = 0; i < options->numItems; ++i) {
         printf("%zu. %s\n", i + 1, options->items[i]);  // Print options
     }
@@ -51,23 +51,23 @@ int main() {
         return 1;
     }
 
-    cjson* quizData = json_parser_create();
-    if (!json_parser_parse(quizFile, &quizData)) {
+    cjson* quizData =  tscl_json_parser_create();
+    if (! tscl_json_parser_parse(quizFile, &quizData)) {
         perror("Error parsing quiz file");
         fclose(quizFile);
-        json_parser_erase(&quizData);
+         tscl_json_parser_erase(&quizData);
         return 1;
     }
 
     fclose(quizFile);
 
     // Extract quiz array
-    cjson_object* quizObject = json_parser_get_object(&quizData);
-    cjson_array* quizArray = json_parser_get_array(&quizObject->pairs[0].value);
+    cjson_object* quizObject =  tscl_json_parser_get_object(&quizData);
+    cjson_array* quizArray =  tscl_json_parser_get_array(&quizObject->pairs[0].value);
 
     // Loop through each question in the quiz
     for (size_t i = 0; i < quizArray->numItems; ++i) {
-        cjson_object* question = json_parser_get_object(&quizArray->items[i]);
+        cjson_object* question =  tscl_json_parser_get_object(&quizArray->items[i]);
 
         present_question(question);
 
@@ -75,7 +75,7 @@ int main() {
         scanf("%d", &userAnswer);
 
         // Check the user's answer
-        const char* correctAnswer = json_parser_getter(&question->pairs[2].value);
+        const char* correctAnswer =  tscl_json_parser_getter(&question->pairs[2].value);
         if (userAnswer >= 1 && userAnswer <= (int)options->numItems) {
             if (strcmp(options->items[userAnswer - 1], correctAnswer) == 0) {
                 printf("Correct!\n");
@@ -90,7 +90,7 @@ int main() {
     }
 
     // Clean up
-    json_parser_erase(&quizData);
+     tscl_json_parser_erase(&quizData);
 
     return 0;
 } // end of func

@@ -34,7 +34,7 @@
 #include <string.h>
 
 // Function to create a ccsv structure
-ccsv* csv_parser_create() {
+ccsv*  tscl_csv_parser_create() {
     ccsv* csv = (ccsv*)malloc(sizeof(ccsv));
     if (csv == NULL) {
         perror("Memory allocation error");
@@ -49,7 +49,7 @@ ccsv* csv_parser_create() {
 } // end of func
 
 // Function to erase a ccsv structure
-void csv_parser_erase(ccsv** data) {
+void  tscl_csv_parser_erase(ccsv** data) {
     if (data != NULL && *data != NULL) {
         // Free memory for each row
         for (size_t i = 0; i < (*data)->num_rows; ++i) {
@@ -71,7 +71,7 @@ void csv_parser_erase(ccsv** data) {
 } // end of func
 
 // Function to parse CSV file and populate ccsv structure
-void csv_parser_parse(FILE* file, ccsv** data) {
+void  tscl_csv_parser_parse(FILE* file, ccsv** data) {
     char buffer[1024];  // Adjust buffer size as needed
 
     // Count the number of rows and columns in the CSV file
@@ -99,7 +99,7 @@ void csv_parser_parse(FILE* file, ccsv** data) {
     fseek(file, 0, SEEK_SET);
 
     // Allocate memory for ccsv structure
-    *data = csv_parser_create();
+    *data =  tscl_csv_parser_create();
 
     // Allocate memory for rows array
     (*data)->rows = (char***)malloc(num_rows * sizeof(char**));
@@ -157,7 +157,7 @@ void csv_parser_parse(FILE* file, ccsv** data) {
 } // end of func
 
 // Function to update a specific cell in the ccsv structure
-void csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update) {
+void  tscl_csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update) {
     // Check if the provided indices are valid
     if (row < (*data)->num_rows && col < (*data)->num_columns) {
         // Free the existing content of the cell
@@ -179,7 +179,7 @@ void csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update) 
 } // end of func
 
 // Function to retrieve the content of a specific cell in the ccsv structure
-const char* csv_parser_getter(const ccsv* data, size_t row, size_t col) {
+const char*  tscl_csv_parser_getter(const ccsv* data, size_t row, size_t col) {
     // Check if the provided indices are valid
     if (row < data->num_rows && col < data->num_columns) {
         return data->rows[row][col];

@@ -54,28 +54,28 @@ int main() {
 
     // Demo of reading a line with a custom prompt
     const char* custom_prompt = "Enter another line: ";
-    line = reader_read_line(custom_prompt);
+    line = tscl_reader_read_line(custom_prompt);
     printf("You entered: %s\n", line);
     free(line);
 
     // Demo of validating input using a custom validator function
     const char* prompt_for_number = "Enter a positive integer: ";
-    bool is_valid_number = reader_valid_input(prompt_for_number, is_positive_integer);
+    bool is_valid_number = tscl_reader_valid_input(prompt_for_number, is_positive_integer);
     printf("Input is %svalid.\n", is_valid_number ? "" : "in");
 
     // Demo of yes/no confirmation
     const char* exit_question = "Do you want to exit?";
-    bool wants_to_exit = reader_confirm_yes_no(exit_question);
+    bool wants_to_exit = tscl_reader_confirm_yes_no(exit_question);
     printf("User %s to exit.\n", wants_to_exit ? "wants" : "doesn't want");
 
     // Demo of a menu
     const char* menu[] = {"Option A", "Option B", "Option C"};
-    int selected_option = reader_confirm_menu("Choose an option:", menu, 3);
+    int selected_option = tscl_reader_confirm_menu("Choose an option:", menu, 3);
     printf("Selected option: %s\n", menu[selected_option]);
 
     // Demo of a multi-menu
     bool selections[3] = {false};
-    reader_confirm_multi_menu("Choose multiple options:", menu, selections, 3);
+    tscl_reader_confirm_multi_menu("Choose multiple options:", menu, selections, 3);
     printf("Selected options: ");
     for (int i = 0; i < 3; i++) {
         if (selections[i]) {
@@ -85,7 +85,7 @@ int main() {
     printf("\n");
 
     // Demo of confirming exit
-    bool confirm_exit = reader_confirm_exit();
+    bool confirm_exit = tscl_reader_confirm_exit();
     printf("User %s to exit.\n", confirm_exit ? "confirms" : "cancels");
 
     return 0;

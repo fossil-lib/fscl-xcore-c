@@ -42,29 +42,29 @@ void clean_weather_data(const char *weather_data) {
     const char *humidity_pattern = "Humidity: ([0-9]+)%";
     const char *date_pattern = "Date: ([0-9]{4}-[0-9]{2}-[0-9]{2})";
 
-    regex_create(&temp_regex, temp_pattern);
-    regex_create(&humidity_regex, humidity_pattern);
-    regex_create(&date_regex, date_pattern);
+    tscl_regex_create(&temp_regex, temp_pattern);
+    tscl_regex_create(&humidity_regex, humidity_pattern);
+    tscl_regex_create(&date_regex, date_pattern);
 
     // Process weather data
     const char *current_line = weather_data;
     while (*current_line != '\0') {
         // Extract temperature
-        const char *temp_value = regex_match_and_extract(&temp_regex, current_line);
+        const char *temp_value = tscl_regex_match_and_extract(&temp_regex, current_line);
         if (temp_value != NULL) {
             double temperature = atof(temp_value);
             printf("Temperature: %.2f C\n", temperature);
         }
 
         // Extract humidity
-        const char *humidity_value = regex_match_and_extract(&humidity_regex, current_line);
+        const char *humidity_value = tscl_regex_match_and_extract(&humidity_regex, current_line);
         if (humidity_value != NULL) {
             int humidity = atoi(humidity_value);
             printf("Humidity: %d%%\n", humidity);
         }
 
         // Extract date
-        const char *date_value = regex_match_and_extract(&date_regex, current_line);
+        const char *date_value = tscl_regex_match_and_extract(&date_regex, current_line);
         if (date_value != NULL) {
             printf("Date: %s\n", date_value);
         }
@@ -77,9 +77,9 @@ void clean_weather_data(const char *weather_data) {
     }
 
     // Cleanup
-    regex_reset(&temp_regex);
-    regex_reset(&humidity_regex);
-    regex_reset(&date_regex);
+    tscl_regex_reset(&temp_regex);
+    tscl_regex_reset(&humidity_regex);
+    tscl_regex_reset(&date_regex);
 }
 
 int main() {

@@ -60,7 +60,7 @@ DWORD WINAPI cthreadStartRoutine(LPVOID lpParameter) {
 } // end of func
 
 // Function to create a new thread
-HANDLE thread_create(CThreadFunc func, void* arg) {
+HANDLE tscl_thread_create(CThreadFunc func, void* arg) {
     if (!func) return NULL;  // Add error checking for function pointer
 
     // Allocate memory for the thread data
@@ -75,32 +75,32 @@ HANDLE thread_create(CThreadFunc func, void* arg) {
     return CreateThread(NULL, 0, cthreadStartRoutine, data, 0, NULL);
 } // end of func
 
-void thread_join(cthread handle) {
+void tscl_thread_join(cthread handle) {
     if (handle) {
         WaitForSingleObject(handle, INFINITE);
     }
 } // end of func
 
-void thread_erase(cthread handle) {
+void tscl_thread_erase(cthread handle) {
     if (handle) {
         CloseHandle(handle);
     }
 } // end of func
 
-void thread_sleep(unsigned int milliseconds) {
+void tscl_thread_sleep(unsigned int milliseconds) {
     Sleep(milliseconds);
 } // end of func
 
-void thread_yield() {
+void tscl_thread_yield() {
     SwitchToThread();
 } // end of func
 
-void thread_detach(cthread handle) {
+void tscl_thread_detach(cthread handle) {
     // Detaching not applicable on Windows
     // You may need to manage thread detachment differently based on your requirements
 } // end of func
 
-unsigned long thread_get_id() {
+unsigned long tscl_thread_get_id() {
     return GetCurrentThreadId();
 } // end of func
 
@@ -109,7 +109,7 @@ unsigned long thread_get_id() {
 #include <pthread.h>
 #include <unistd.h>
 
-cthread thread_create(CThreadFunc func, void* arg) {
+cthread tscl_thread_create(CThreadFunc func, void* arg) {
     if (!func) {
         return (cthread)NULL;
     }
@@ -120,75 +120,75 @@ cthread thread_create(CThreadFunc func, void* arg) {
     return thread;
 } // end of func
 
-void thread_join(cthread handle) {
+void tscl_thread_join(cthread handle) {
     if (handle) {
         pthread_join((cthread)handle, NULL);
     }
 } // end of func
 
-void thread_erase(cthread handle) {
+void tscl_thread_erase(cthread handle) {
     // No specific cleanup needed for POSIX threads
 } // end of func
 
-void thread_sleep(unsigned int milliseconds) {
+void tscl_thread_sleep(unsigned int milliseconds) {
     sleep(milliseconds * 1000);  // usleep takes microseconds
 } // end of func
 
-void thread_yield() {
+void tscl_thread_yield() {
     sched_yield();
 } // end of func
 
-void thread_detach(cthread handle) {
+void tscl_thread_detach(cthread handle) {
     if (handle) {
         pthread_detach((cthread)handle);
     }
 } // end of func
 
-unsigned long thread_get_id() {
+unsigned long tscl_thread_get_id() {
     return (unsigned long)pthread_self();
 } // end of func
 
 #endif  // _WIN32
 
 // Create a thread pool with the specified number of threads.
-cthread_pool thread_pool_create(int num_threads) {
+cthread_pool tscl_thread_pool_create(int num_threads) {
     cthread_pool pool;
     pool.threads = (cthread*)malloc(num_threads * sizeof(cthread));
     pool.num_threads = num_threads;
 
     for (int i = 0; i < num_threads; ++i) {
-        pool.threads[i] = thread_create(NULL, NULL);
+        pool.threads[i] = tscl_thread_create(NULL, NULL);
     }
 
     return pool;
 } // end of func
 
 // Execute a task asynchronously using a thread from the pool.
-void thread_pool_execute(cthread_pool pool, CThreadFunc func, void* arg) {
+void tscl_thread_pool_execute(cthread_pool pool, CThreadFunc func, void* arg) {
     int thread_index = rand() % pool.num_threads; // Choose a random thread for simplicity
 
-    thread_erase(pool.threads[thread_index]); // Ensure the thread is in a clean state
+    tscl_thread_erase(pool.threads[thread_index]); // Ensure the thread is in a clean state
 
-    pool.threads[thread_index] = thread_create(func, arg);
+    pool.threads[thread_index] = tscl_thread_create(func, arg);
 } // end of func
 
 // Wait for all tasks in the thread pool to complete.
-void thread_pool_wait(cthread_pool pool) {
+void tscl_thread_pool_wait(cthread_pool pool) {
     for (int i = 0; i < pool.num_threads; ++i) {
         thread_join(pool.threads[i]);
     }
 } // end of func
 
 // Destroy the thread pool.
-void thread_pool_erase(cthread_pool pool) {
+void tscl_thread_pool_erase(cthread_pool pool) {
     for (int i = 0; i < pool.num_threads; ++i) {
-        thread_erase(pool.threads[i]);
+        tscl_thread_erase(pool.threads[i]);
     }
 
     free(pool.threads);
 } // end of func
 
-void mutex_create(cmutex* mutex) {
+void tscl_mutex_create(cmutex* mutex) {
     #ifdef _WIN32
     mutex->mutex = CreateMutex(NULL, FALSE, NULL);
     #else
@@ -196,7 +196,7 @@ void mutex_create(cmutex* mutex) {
     #endif
 } // end of func
 
-void mutex_lock(cmutex* mutex) {
+void tscl_mutex_lock(cmutex* mutex) {
     #ifdef _WIN32
     WaitForSingleObject(mutex->mutex, INFINITE);
     #else
@@ -204,7 +204,7 @@ void mutex_lock(cmutex* mutex) {
     #endif
 } // end of func
 
-void mutex_unlock(cmutex* mutex) {
+void tscl_mutex_unlock(cmutex* mutex) {
     #ifdef _WIN32
     ReleaseMutex(mutex->mutex);
     #else
@@ -212,7 +212,7 @@ void mutex_unlock(cmutex* mutex) {
     #endif
 } // end of func
 
-void mutex_erase(cmutex* mutex) {
+void tscl_mutex_erase(cmutex* mutex) {
     #ifdef _WIN32
     CloseHandle(mutex->mutex);
     #else

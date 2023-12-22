@@ -33,13 +33,13 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-int regex_create(cregex *preg, const char *pattern) {
+int tscl_regex_create(cregex *preg, const char *pattern) {
     preg->pattern = pattern;
     preg->matched_substring = NULL;
     return 0;  // Success
 } // end of func
 
-int regex_match(cregex *preg, const char *text) {
+int tscl_regex_match(cregex *preg, const char *text) {
     while (*text != '\0') {
         if (tolower(*preg->pattern) == tolower(*text) || *preg->pattern == '.') {
             preg->pattern++;
@@ -60,19 +60,19 @@ int regex_match(cregex *preg, const char *text) {
     return (*preg->pattern == '\0');
 } // end of func
 
-void regex_reset(cregex *preg) {
+void tscl_regex_reset(cregex *preg) {
     preg->pattern = NULL;
     preg->matched_substring = NULL;
 } // end of func
 
-const char *regex_get_matched_substring(cregex *preg) {
+const char *tscl_regex_get_matched_substring(cregex *preg) {
     return preg->matched_substring;
 } // end of func
 
-const char *regex_match_and_extract(cregex *preg, const char *text) {
-    if (regex_match(preg, text)) {
+const char *tscl_regex_match_and_extract(cregex *preg, const char *text) {
+    if (tscl_regex_match(preg, text)) {
         // Call the function to extract the matched substring
-        return regex_get_matched_substring(preg);
+        return tscl_regex_get_matched_substring(preg);
     } else {
         return NULL;
     }

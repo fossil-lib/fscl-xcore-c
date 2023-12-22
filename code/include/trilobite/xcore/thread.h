@@ -88,114 +88,32 @@ typedef struct {
 
 #define cthread_task(name, arg) CTHREAD_TASK_RETURN_TYPE name(CTHREAD_TASK_ARG_TYPE arg)
 
-/**
- * @brief Create a new cthread.
- *
- * @param func   The thread function to execute.
- * @param arg    The argument to pass to the thread function.
- *
- * @return       The handle to the created thread.
- */
-cthread thread_create(CThreadFunc func, void* arg);
+// =================================================================
+//  Classic Thread Management
+// =================================================================
+cthread tscl_thread_create(CThreadFunc func, void* arg);
+void tscl_thread_join(cthread handle);
+void tscl_thread_erase(cthread handle);
+void tscl_thread_sleep(unsigned int milliseconds);
+void tscl_thread_yield();
+void tscl_thread_detach(cthread handle);
+unsigned long tscl_thread_get_id();
 
-/**
- * @brief Wait for a cthread to finish.
- *
- * @param handle The handle of the thread to wait for.
- */
-void thread_join(cthread handle);
+// =================================================================
+//  Thread Pool Management
+// =================================================================
+cthread_pool tscl_thread_pool_create(int num_threads);
+void tscl_thread_pool_execute(cthread_pool pool, CThreadFunc func, void* arg);
+void tscl_thread_pool_wait(cthread_pool pool);
+void tscl_thread_pool_erase(cthread_pool pool);
 
-/**
- * @brief Destroy a cthread handle.
- *
- * @param handle The handle of the thread to destroy.
- */
-void thread_erase(cthread handle);
-
-/**
- * @brief Make the current thread sleep for a specified duration.
- *
- * @param milliseconds The duration in milliseconds to sleep.
- */
-void thread_sleep(unsigned int milliseconds);
-
-/**
- * @brief Yield the processor voluntarily to another thread.
- */
-void thread_yield();
-
-/**
- * @brief Detach a thread, allowing it to continue running independently.
- *
- * @param handle The handle of the thread to detach.
- */
-void thread_detach(cthread handle);
-
-/**
- * @brief Get the ID of the current thread.
- *
- * @return The ID of the current thread.
- */
-unsigned long thread_get_id();
-
-/**
- * @brief Create a thread pool with the specified number of threads.
- *
- * @param num_threads The number of threads in the pool.
- * @return The thread pool structure.
- */
-cthread_pool thread_pool_create(int num_threads);
-
-/**
- * @brief Execute a task asynchronously using a thread from the pool.
- *
- * @param pool The thread pool.
- * @param func The task function.
- * @param arg  The argument to pass to the task function.
- */
-void thread_pool_execute(cthread_pool pool, CThreadFunc func, void* arg);
-
-/**
- * @brief Wait for all tasks in the thread pool to complete.
- *
- * @param pool The thread pool.
- */
-void thread_pool_wait(cthread_pool pool);
-
-/**
- * @brief Destroy the thread pool.
- *
- * @param pool The thread pool to destroy.
- */
-void thread_pool_erase(cthread_pool pool);
-
-/**
- * @brief Initialize a mutex.
- *
- * @param mutex The mutex to initialize.
- */
-void mutex_create(cmutex* mutex);
-
-/**
- * @brief Lock a mutex.
- *
- * @param mutex The mutex to lock.
- */
-void mutex_lock(cmutex* mutex);
-
-/**
- * @brief Unlock a mutex.
- *
- * @param mutex The mutex to unlock.
- */
-void mutex_unlock(cmutex* mutex);
-
-/**
- * @brief Destroy a mutex.
- *
- * @param mutex The mutex to destroy.
- */
-void mutex_erase(cmutex* mutex);
+// =================================================================
+// Mutex thread managment
+// =================================================================
+void tscl_mutex_create(cmutex* mutex);
+void tscl_mutex_lock(cmutex* mutex);
+void tscl_mutex_unlock(cmutex* mutex);
+void tscl_mutex_erase(cmutex* mutex);
 
 #ifdef __cplusplus
 }

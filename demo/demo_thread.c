@@ -38,16 +38,16 @@ cthread_task(robot_movement, arg) {
 
     // Log robot movements
     log_to_file(log_stream, "Robot starts moving forward.\n");
-    thread_sleep(1000);
+    tscl_thread_sleep(1000);
     
     log_to_file(log_stream, "Robot turns right.\n");
-    thread_sleep(500);
+    tscl_thread_sleep(500);
     
     log_to_file(log_stream, "Robot continues moving forward.\n");
-    thread_sleep(1500);
+    tscl_thread_sleep(1500);
     
     log_to_file(log_stream, "Robot moves backward.\n");
-    thread_sleep(1000);
+    tscl_thread_sleep(1000);
     
     log_to_file(log_stream, "Robot stops.\n");
 
@@ -57,19 +57,19 @@ cthread_task(robot_movement, arg) {
 int main() {
     // Create a log file
     cstream log_stream;
-    stream_create(&log_stream, "robot_log.txt");
+    tscl_stream_create(&log_stream, "robot_log.txt");
 
     // Create a thread for robot movement
-    cthread robot_thread = thread_create(robot_movement, (void *)&log_stream);
+    cthread robot_thread = tscl_thread_create(robot_movement, (void *)&log_stream);
 
     // Wait for the robot thread to finish
-    thread_join(robot_thread);
+    tscl_thread_join(robot_thread);
 
     // Destroy the robot thread handle
-    thread_erase(robot_thread);
+    tscl_thread_erase(robot_thread);
 
     // Close the log file
-    stream_close(&log_stream);
+    tscl_stream_close(&log_stream);
 
     printf("Robotics demo completed. Check 'robot_log.txt' for the log.\n");
 

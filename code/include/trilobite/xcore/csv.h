@@ -60,14 +60,14 @@ typedef struct {
  *
  * @return A pointer to the newly created ccsv structure.
  */
-ccsv* csv_parser_create();
+ccsv*  tscl_csv_parser_create();
 
 /**
  * @brief Erases a ccsv structure.
  *
  * @param data A double pointer to the ccsv structure to be erased.
  */
-void csv_parser_erase(ccsv** data);
+void  tscl_csv_parser_erase(ccsv** data);
 
 /**
  * @brief Parses a CSV file and populates a ccsv structure.
@@ -75,7 +75,7 @@ void csv_parser_erase(ccsv** data);
  * @param file A pointer to the FILE structure representing the CSV file.
  * @param data A double pointer to the ccsv structure to be populated.
  */
-void csv_parser_parse(FILE* file, ccsv** data);
+void  tscl_csv_parser_parse(FILE* file, ccsv** data);
 
 /**
  * @brief Updates a specific cell in the ccsv structure.
@@ -85,7 +85,7 @@ void csv_parser_parse(FILE* file, ccsv** data);
  * @param col The column index of the cell to be updated.
  * @param update The new content to be set in the specified cell.
  */
-void csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update);
+void  tscl_csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update);
 
 /**
  * @brief Retrieves the content of a specific cell in the ccsv structure.
@@ -95,7 +95,7 @@ void csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update);
  * @param col The column index of the cell to be retrieved.
  * @return The content of the specified cell.
  */
-const char* csv_parser_getter(const ccsv* data, size_t row, size_t col);
+const char*  tscl_csv_parser_getter(const ccsv* data, size_t row, size_t col);
 
 #ifdef __cplusplus
 }

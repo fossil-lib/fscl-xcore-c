@@ -37,14 +37,14 @@
 void log_movement(cstream *stream, const char *direction, double distance) {
     char log_entry[100];
     sprintf(log_entry, "Move %s: %.2f meters\n", direction, distance);
-    stream_write(stream, log_entry, 1, strlen(log_entry));
+    tscl_stream_write(stream, log_entry, 1, strlen(log_entry));
 }
 
 // Function to log an event
 void log_event(cstream *stream, const char *event_description) {
     char log_entry[100];
     sprintf(log_entry, "Event: %s\n", event_description);
-    stream_write(stream, log_entry, 1, strlen(log_entry));
+    tscl_stream_write(stream, log_entry, 1, strlen(log_entry));
 }
 
 int main() {
@@ -53,7 +53,7 @@ int main() {
 
     // Open the log file for writing
     cstream log_stream;
-    if (stream_open(&log_stream, log_filename, "w") == -1) {
+    if (tscl_stream_open(&log_stream, log_filename, "w") == -1) {
         fprintf(stderr, "Error opening log file for writing\n");
         return -1;
     }
@@ -67,21 +67,21 @@ int main() {
     log_event(&log_stream, "Emergency Stop");
 
     // Close the log file
-    stream_close(&log_stream);
+    tscl_stream_close(&log_stream);
 
     // Open the log file for reading and display its content
-    if (stream_open(&log_stream, log_filename, "r") == -1) {
+    if (tscl_stream_open(&log_stream, log_filename, "r") == -1) {
         fprintf(stderr, "Error opening log file for reading\n");
         return -1;
     }
 
     const size_t buffer_size = 256;
     char read_buffer[buffer_size];
-    size_t elements_read = stream_read(&log_stream, read_buffer, 1, buffer_size - 1);
+    size_t elements_read = tscl_stream_read(&log_stream, read_buffer, 1, buffer_size - 1);
 
     if (elements_read == 0) {
         fprintf(stderr, "Error reading data from the log file\n");
-        stream_close(&log_stream);
+        tscl_stream_close(&log_stream);
         return -1;
     }
 
@@ -89,7 +89,7 @@ int main() {
     read_buffer[elements_read] = '\0';
 
     // Close the log file
-    stream_close(&log_stream);
+    tscl_stream_close(&log_stream);
 
     // Display the log content
     printf("Robot Log:\n%s", read_buffer);

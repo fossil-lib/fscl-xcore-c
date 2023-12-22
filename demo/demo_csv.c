@@ -36,7 +36,7 @@
 void print_eco_products(const ccsv* data) {
     // Print header
     for (size_t j = 0; j < data->num_columns; ++j) {
-        printf("%s", csv_parser_getter(data, 0, j));
+        printf("%s",  tscl_csv_parser_getter(data, 0, j));
 
         if (j < data->num_columns - 1) {
             printf(",");
@@ -47,7 +47,7 @@ void print_eco_products(const ccsv* data) {
     // Print product details
     for (size_t i = 1; i < data->num_rows; ++i) {
         for (size_t j = 0; j < data->num_columns; ++j) {
-            printf("%s", csv_parser_getter(data, i, j));
+            printf("%s",  tscl_csv_parser_getter(data, i, j));
 
             if (j < data->num_columns - 1) {
                 printf(",");
@@ -66,21 +66,21 @@ int main() {
 
     ccsv* eco_products_data = NULL;
 
-    csv_parser_parse(csv_file, &eco_products_data);
+     tscl_csv_parser_parse(csv_file, &eco_products_data);
 
     // Display the initial list of eco-friendly products
     printf("Initial list of eco-friendly products:\n");
     print_eco_products(eco_products_data);
 
     // Example: Update the stock of the "Reusable Water Bottle"
-    csv_parser_setter(&eco_products_data, 1, 3, "90");
+     tscl_csv_parser_setter(&eco_products_data, 1, 3, "90");
 
     // Display the updated list of eco-friendly products
     printf("\nUpdated list of eco-friendly products:\n");
     print_eco_products(eco_products_data);
 
     // Cleanup
-    csv_parser_erase(&eco_products_data);
+     tscl_csv_parser_erase(&eco_products_data);
     fclose(csv_file);
 
     return EXIT_SUCCESS;

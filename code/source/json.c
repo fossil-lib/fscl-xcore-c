@@ -255,18 +255,18 @@ static int parse_json(const char* json, cjson** data) {
         // JSON Object
         cjson_object object = {NULL, 0};
         if (parse_object(&ptr, &object)) {
-            json_parser_setter(data, "");
-            json_parser_get_object(data)->numPairs = object.numPairs;
-            json_parser_get_object(data)->pairs = object.pairs;
+             tscl_json_parser_setter(data, "");
+             tscl_json_parser_get_object(data)->numPairs = object.numPairs;
+             tscl_json_parser_get_object(data)->pairs = object.pairs;
             return 1; // Success
         }
     } else if (*ptr == '[') {
         // JSON Array
         cjson_array array = {NULL, 0};
         if (parse_array(&ptr, &array)) {
-            json_parser_setter(data, "");
-            json_parser_get_array(data)->numItems = array.numItems;
-            json_parser_get_array(data)->items = array.items;
+             tscl_json_parser_setter(data, "");
+             tscl_json_parser_get_array(data)->numItems = array.numItems;
+             tscl_json_parser_get_array(data)->items = array.items;
             return 1; // Success
         }
     }
@@ -274,7 +274,7 @@ static int parse_json(const char* json, cjson** data) {
     return 0; // Parsing failure
 }
 
-cjson* json_parser_create() {
+cjson*  tscl_json_parser_create() {
     cjson* data = (cjson*)malloc(sizeof(cjson));
     if (data == NULL) {
         perror("Error creating cjson");
@@ -285,15 +285,15 @@ cjson* json_parser_create() {
     return data;
 }
 
-void json_parser_erase(cjson** data) {
+void  tscl_json_parser_erase(cjson** data) {
     if (data != NULL && *data != NULL) {
-        json_parser_erase_meta(data);
+         tscl_json_parser_erase_meta(data);
         free(*data);
         *data = NULL;
     }
 }
 
-int json_parser_parse(FILE* file, cjson** data) {
+int  tscl_json_parser_parse(FILE* file, cjson** data) {
     if (file == NULL || data == NULL) {
         perror("Invalid arguments");
         return 0;
@@ -322,7 +322,7 @@ int json_parser_parse(FILE* file, cjson** data) {
     return parse_json((*data)->json_data, data);
 }
 
-void json_parser_setter(cjson** data, const char* update) {
+void  tscl_json_parser_setter(cjson** data, const char* update) {
     if (data != NULL && *data != NULL && update != NULL) {
         free((*data)->json_data);
 
@@ -338,28 +338,28 @@ void json_parser_setter(cjson** data, const char* update) {
     }
 }
 
-const char* json_parser_getter(cjson** data) {
+const char*  tscl_json_parser_getter(cjson** data) {
     if (data != NULL && *data != NULL) {
         return (*data)->json_data;
     }
     return NULL;
 }
 
-void json_parser_erase_meta(cjson** data) {
+void  tscl_json_parser_erase_meta(cjson** data) {
     if (data != NULL && *data != NULL) {
         free((*data)->json_data);
         (*data)->json_data = NULL;
     }
 }
 
-cjson_object* json_parser_get_object(cjson** data) {
+cjson_object*  tscl_json_parser_get_object(cjson** data) {
     if (data != NULL && *data != NULL) {
         return (cjson_object*)((*data)->json_data);
     }
     return NULL;
 }
 
-cjson_array* json_parser_get_array(cjson** data) {
+cjson_array*  tscl_json_parser_get_array(cjson** data) {
     if (data != NULL && *data != NULL) {
         return (cjson_array*)((*data)->json_data);
     }

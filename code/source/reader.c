@@ -42,7 +42,7 @@
 #endif
 
 // Function to get a line of text from the user.
-char* reader_get_line() {
+char* tscl_reader_get_line() {
     static char buffer[MAX_INPUT_LENGTH];
     if (fgets(buffer, sizeof(buffer), stdin)) {
         buffer[strcspn(buffer, "\n")] = '\0';  // Remove the trailing newline
@@ -52,15 +52,15 @@ char* reader_get_line() {
 } // end of func
 
 // Function to read a line of text from the user.
-char* reader_read_line(const char* prompt) {
+char* tscl_reader_read_line(const char* prompt) {
     printf("%s: ", prompt);
-    return reader_get_line();
+    return tscl_reader_get_line();
 } // end of func
 
 // Function to validate user input with a specific condition.
-bool reader_valid_input(const char* prompt, bool (*validator)(const char*)) {
+bool tscl_reader_valid_input(const char* prompt, bool (*validator)(const char*)) {
     while (true) {
-        char* input = reader_read_line(prompt);
+        char* input = tscl_reader_read_line(prompt);
         if (input && validator(input)) {
             return true;
         }
@@ -69,9 +69,9 @@ bool reader_valid_input(const char* prompt, bool (*validator)(const char*)) {
 } // end of func
 
 // Function to confirm a yes/no question.
-bool reader_confirm_yes_no(const char* question) {
+bool tscl_reader_confirm_yes_no(const char* question) {
     while (true) {
-        char* response = reader_read_line(question);
+        char* response = tscl_reader_read_line(question);
         if (response) {
             if (strncmp(response, "yes", strlen("yes")) == 0 || strncmp(response, "y", strlen("y")) == 0) {
                 return true;
@@ -84,7 +84,7 @@ bool reader_confirm_yes_no(const char* question) {
 } // end of func
 
 // Function to confirm a selection from a menu.
-int reader_confirm_menu(const char* question, const char** menu, int num_options) {
+int tscl_reader_confirm_menu(const char* question, const char** menu, int num_options) {
     printf("%s:\n", question);
     for (int i = 0; i < num_options; i++) {
         printf("%d. %s\n", i + 1, menu[i]);
@@ -92,7 +92,7 @@ int reader_confirm_menu(const char* question, const char** menu, int num_options
 
     int choice;
     while (true) {
-        char* response = reader_read_line("Enter your choice");
+        char* response = tscl_reader_read_line("Enter your choice");
         if (response && sscanf(response, "%d", &choice) == 1 && choice >= 1 && choice <= num_options) {
             return choice - 1;
         }
@@ -101,13 +101,13 @@ int reader_confirm_menu(const char* question, const char** menu, int num_options
 } // end of func
 
 // Function to confirm multiple selections from a menu.
-void reader_confirm_multi_menu(const char* question, const char** menu, bool* selections, int num_options) {
+void tscl_reader_confirm_multi_menu(const char* question, const char** menu, bool* selections, int num_options) {
     printf("%s (Choose options by entering their numbers, separated by spaces):\n", question);
     for (int i = 0; i < num_options; i++) {
         printf("%d. %s\n", i + 1, menu[i]);
     }
 
-    char* response = reader_read_line("Enter your choices (e.g., '1 3 5')");
+    char* response = tscl_reader_read_line("Enter your choices (e.g., '1 3 5')");
 
     if (response) {
         int choice;
@@ -122,11 +122,11 @@ void reader_confirm_multi_menu(const char* question, const char** menu, bool* se
 } // end of func
 
 // Function to confirm an exit action.
-bool reader_confirm_exit() {
-    return reader_confirm_yes_no("Do you want to exit?");
+bool tscl_reader_confirm_exit() {
+    return tscl_reader_confirm_yes_no("Do you want to exit?");
 } // end of func
 
-bool reader_read_date(const char* prompt, int* year, int* month, int* day) {
+bool tscl_reader_read_date(const char* prompt, int* year, int* month, int* day) {
     printf("%s", prompt);
     if (scanf("%d-%d-%d", year, month, day) == 3) {
         return true;
@@ -137,7 +137,7 @@ bool reader_read_date(const char* prompt, int* year, int* month, int* day) {
     }
 } // end of func
 
-bool reader_read_time(const char* prompt, int* hour, int* minute, int* second) {
+bool tscl_reader_read_time(const char* prompt, int* hour, int* minute, int* second) {
     printf("%s", prompt);
     if (scanf("%d:%d:%d", hour, minute, second) == 3) {
         return true;
@@ -151,13 +151,13 @@ bool reader_read_time(const char* prompt, int* hour, int* minute, int* second) {
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
 
-void reader_clear_screen(void) {
+void tscl_reader_clear_screen(void) {
     system("cls");
 }
 #else
 #include <stdio.h>
 
-void reader_clear_screen(void) {
+void tscl_reader_clear_screen(void) {
     printf("\033[2J\033[H");
 }
 #endif

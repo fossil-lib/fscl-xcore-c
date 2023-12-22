@@ -29,7 +29,7 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include <trilobite/xcore/format.h>
+#include <trilobite/xcore/datetime.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>

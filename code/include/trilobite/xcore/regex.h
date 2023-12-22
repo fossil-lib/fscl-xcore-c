@@ -50,47 +50,18 @@ typedef struct {
     const char *matched_substring;  // Added field to store the matched substring
 } cregex;
 
-/**
- * @brief Initializes a cregex structure with the given pattern.
- *
- * @param preg Pointer to a cregex structure to be initialized.
- * @param pattern The regular expression pattern.
- * @return 0 on success, non-zero on failure.
- */
+// =================================================================
+// create and erase
+// =================================================================
 int regex_create(cregex *preg, const char *pattern);
-
-/**
- * @brief Matches a string against the regular expression pattern.
- *
- * @param preg Pointer to a cregex structure containing the pattern.
- * @param text The text to be matched against the pattern.
- * @return 1 if the pattern matches, 0 if no match is found, -1 on error.
- */
 int regex_match(cregex *preg, const char *text);
 
-/**
- * @brief Resets the internal state of a cregex structure for reusing it.
- *
- * @param preg Pointer to a cregex structure.
- */
-void regex_reset(cregex *preg);
-
-/**
- * @brief Matches a string against the regular expression pattern and extracts a matched substring.
- *
- * @param preg Pointer to a cregex structure.
- * @param text The text to be matched against the pattern.
- * @return A pointer to the matched substring, or NULL if no match.
- */
-const char *regex_match_and_extract(cregex *preg, const char *text);
-
-/**
- * @brief Retrieves the matched substring based on the last successful match.
- *
- * @param preg Pointer to a cregex structure.
- * @return A pointer to the matched substring, or NULL if no match.
- */
-const char *regex_get_matched_substring(cregex *preg);
+// =================================================================
+// avaliable functions
+// =================================================================
+void tscl_regex_reset(cregex *preg);
+const char *tscl_regex_match_and_extract(cregex *preg, const char *text);
+const char *tscl_regex_get_matched_substring(cregex *preg);
 
 #ifdef __cplusplus
 }

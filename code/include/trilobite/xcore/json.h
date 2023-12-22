@@ -68,71 +68,21 @@ typedef struct {
     size_t numItems;
 } cjson_array;
 
-/**
- * @brief Creates a new cjson object.
- *
- * @return A pointer to the newly created cjson object, or NULL on failure.
- */
-cjson* json_parser_create();
+// =================================================================
+// create and erase
+// =================================================================
+cjson*  tscl_json_parser_create();
+void  tscl_json_parser_erase(cjson** data);
 
-/**
- * @brief Erases a cjson object and deallocates its memory.
- *
- * @param data A pointer to a pointer to the cjson object to be erased.
- */
-void json_parser_erase(cjson** data);
-
-/**
- * @brief Parses JSON data from a file and populates a cjson object.
- *
- * @param file A pointer to the FILE structure representing the JSON file.
- * @param data A pointer to a pointer to the cjson object to be populated.
- *
- * @return 1 if parsing is successful, 0 otherwise.
- */
-int json_parser_parse(FILE* file, cjson** data);
-
-/**
- * @brief Updates the JSON data in a cjson object.
- *
- * @param data A pointer to a pointer to the cjson object to be updated.
- * @param update The new JSON data string to set in the cjson object.
- */
-void json_parser_setter(cjson** data, const char* update);
-
-/**
- * @brief Retrieves the JSON data from a cjson object.
- *
- * @param data A pointer to a pointer to the cjson object.
- *
- * @return A pointer to the JSON data string, or NULL if the cjson object is not valid.
- */
-const char* json_parser_getter(cjson** data);
-
-/**
- * @brief Frees the JSON data within a cjson object.
- *
- * @param data A pointer to a pointer to the cjson object.
- */
-void json_parser_erase_meta(cjson** data);
-
-/**
- * @brief Retrieves the cjson_object structure from a cjson object.
- *
- * @param data A pointer to a pointer to the cjson object.
- *
- * @return A pointer to the cjson_object structure, or NULL if the cjson object is not valid.
- */
-cjson_object* json_parser_get_object(cjson** data);
-
-/**
- * @brief Retrieves the cjson_array structure from a cjson object.
- *
- * @param data A pointer to a pointer to the cjson object.
- *
- * @return A pointer to the cjson_array structure, or NULL if the cjson object is not valid.
- */
-cjson_array* json_parser_get_array(cjson** data);
+// =================================================================
+// avaliable functions
+// =================================================================
+int  tscl_json_parser_parse(FILE* file, cjson** data);
+void  tscl_json_parser_setter(cjson** data, const char* update);
+const char*  tscl_json_parser_getter(cjson** data);
+void  tscl_json_parser_erase_meta(cjson** data);
+cjson_object*  tscl_json_parser_get_object(cjson** data);
+cjson_array*  tscl_json_parser_get_array(cjson** data);
 
 #ifdef __cplusplus
 }

@@ -12,63 +12,63 @@
 //
 // XUNIT-CASES: list of test cases testing project features
 //
-XTEST_CASE(test_json_parser_basic) {
+XTEST_CASE(test_ tscl_json_parser_basic) {
     FILE* jsonFile = fopen("basic.json", "r");
     TEST_ASSERT_NOT_NULL_PTR(jsonFile);
 
-    cjson* jsonData = json_parser_create();
+    cjson* jsonData =  tscl_json_parser_create();
     TEST_ASSERT_NOT_NULL_PTR(jsonData);
 
-    TEST_ASSERT_TRUE(json_parser_parse(jsonFile, &jsonData));
+    TEST_ASSERT_TRUE( tscl_json_parser_parse(jsonFile, &jsonData));
 
     fclose(jsonFile);
-    json_parser_erase(&jsonData);
+     tscl_json_parser_erase(&jsonData);
 }
 
-XTEST_CASE(test_json_parser_invalid_file) {
+XTEST_CASE(test_ tscl_json_parser_invalid_file) {
     FILE* jsonFile = fopen("nonexistent.json", "r");
     TEST_ASSERT_NULL_PTR(jsonFile);
 
-    cjson* jsonData = json_parser_create();
+    cjson* jsonData =  tscl_json_parser_create();
     TEST_ASSERT_NOT_NULL_PTR(jsonData);
 
-    TEST_ASSERT_FALSE(json_parser_parse(jsonFile, &jsonData));
+    TEST_ASSERT_FALSE( tscl_json_parser_parse(jsonFile, &jsonData));
 
     fclose(jsonFile);
-    json_parser_erase(&jsonData);
+     tscl_json_parser_erase(&jsonData);
 }
 
-XTEST_CASE(test_json_parser_invalid_json) {
+XTEST_CASE(test_ tscl_json_parser_invalid_json) {
     FILE* jsonFile = fopen("invalid.json", "r");
     TEST_ASSERT_NOT_NULL_PTR(jsonFile);
 
-    cjson* jsonData = json_parser_create();
+    cjson* jsonData =  tscl_json_parser_create();
     TEST_ASSERT_NOT_NULL_PTR(jsonData);
 
-    TEST_ASSERT_FALSE(json_parser_parse(jsonFile, &jsonData));
+    TEST_ASSERT_FALSE( tscl_json_parser_parse(jsonFile, &jsonData));
 
     fclose(jsonFile);
-    json_parser_erase(&jsonData);
+     tscl_json_parser_erase(&jsonData);
 }
 
-XTEST_CASE(test_json_parser_getter_setter) {
-    cjson* jsonData = json_parser_create();
+XTEST_CASE(test_ tscl_json_parser_getter_setter) {
+    cjson* jsonData =  tscl_json_parser_create();
     TEST_ASSERT_NOT_NULL_PTR(jsonData);
 
     const char* testString = "{\"key\":\"value\"}";
 
-    json_parser_setter(&jsonData, testString);
-    TEST_ASSERT_EQUAL_STRING(testString, json_parser_getter(&jsonData));
+     tscl_json_parser_setter(&jsonData, testString);
+    TEST_ASSERT_EQUAL_STRING(testString,  tscl_json_parser_getter(&jsonData));
 
-    json_parser_erase(&jsonData);
+     tscl_json_parser_erase(&jsonData);
 }
 
 //
 // XUNIT-TEST RUNNER
 //
 XTEST_GROUP_DEFINE(test_json_group) {
-    XTEST_RUN_UNIT(test_json_parser_basic,         runner);
-    XTEST_RUN_UNIT(test_json_parser_invalid_file,  runner);
-    XTEST_RUN_UNIT(test_json_parser_invalid_json,  runner);
-    XTEST_RUN_UNIT(test_json_parser_getter_setter, runner);
+    XTEST_RUN_UNIT(test_ tscl_json_parser_basic,         runner);
+    XTEST_RUN_UNIT(test_ tscl_json_parser_invalid_file,  runner);
+    XTEST_RUN_UNIT(test_ tscl_json_parser_invalid_json,  runner);
+    XTEST_RUN_UNIT(test_ tscl_json_parser_getter_setter, runner);
 } // end of function main

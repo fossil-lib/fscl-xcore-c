@@ -61,43 +61,18 @@ typedef struct {
     size_t size;
 } cini;
 
-/**
- * @brief Creates a new cini structure.
- *
- * @param data Pointer to the cini structure pointer.
- */
-void ini_parser_create(cini** data);
+// =================================================================
+// create and erase
+// =================================================================
+void  tscl_ini_parser_create(cini** data);
+void  tscl_ini_parser_erase(cini** data);
 
-/**
- * @brief Erases a cini structure, freeing allocated memory.
- *
- * @param data Pointer to the cini structure pointer.
- */
-void ini_parser_erase(cini** data);
-
-/**
- * @brief Parses an INI file and populates a cini structure.
- *
- * @param file File pointer to the opened INI file.
- * @param data Pointer to the cini structure pointer.
- */
-void ini_parser_parse(FILE* file, cini** data);
-
-/**
- * @brief Updates or adds an entry in a cini structure.
- *
- * @param data Pointer to the cini structure pointer.
- * @param update String containing the update in the format "key=value".
- */
-void ini_parser_setter(cini** data, const char* update);
-
-/**
- * @brief Gets the cini structure.
- *
- * @param data Pointer to the cini structure pointer.
- * @return Pointer to the cini structure.
- */
-cini* ini_parser_getter(cini** data);
+// =================================================================
+// avaliable functions
+// =================================================================
+void  tscl_ini_parser_parse(FILE* file, cini** data);
+void  tscl_ini_parser_setter(cini** data, const char* update);
+cini*  tscl_ini_parser_getter(cini** data);
 
 #ifdef __cplusplus
 }
