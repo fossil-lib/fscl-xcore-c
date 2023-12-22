@@ -48,7 +48,7 @@ extern "C"
 #include "xcore/datetime.h"
 #include "xcore/thread.h"
 #include "xcore/stream.h"
-#include "xcore/lambda.h"
+#include "xcore/lazy.h"
 #include "xcore/fossil.h"
 #include "xcore/reader.h"
 #include "xcore/regex.h"
@@ -58,6 +58,12 @@ extern "C"
 
 inline const char* tscl_codename() {
     return "Ptychopariida";
+}
+
+// here as a test for teaching users how to include this
+// library in the step by step page
+inline const char* tscl_hello() {
+    return "Hello, World!";
 }
 
 #ifdef __cplusplus
