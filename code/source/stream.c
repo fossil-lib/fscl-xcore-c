@@ -116,7 +116,7 @@ int tscl_stream_save(cstream *stream, const char *new_filename) {
         return -1;
     }
 
-    return stream_open(stream, new_filename, "r");
+    return tscl_stream_open(stream, new_filename, "r");
 } // end of func
 
 // Function to copy a file to a new location
@@ -158,7 +158,7 @@ int tscl_stream_backup(const char *filename, const char *backup_suffix) {
     char backup_filename[MAX_FILENAME_LENGTH + 10];  // Length of backup_suffix + maximum integer length
     snprintf(backup_filename, MAX_FILENAME_LENGTH + 10, "%s%s", filename, backup_suffix);
 
-    if (stream_copy(filename, backup_filename) != 0) {
+    if (tscl_stream_copy(filename, backup_filename) != 0) {
         fprintf(stderr, "Failed to create backup for %s.\n", filename);
         return -1;
     }

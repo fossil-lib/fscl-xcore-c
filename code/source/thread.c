@@ -175,7 +175,7 @@ void tscl_thread_pool_execute(cthread_pool pool, CThreadFunc func, void* arg) {
 // Wait for all tasks in the thread pool to complete.
 void tscl_thread_pool_wait(cthread_pool pool) {
     for (int i = 0; i < pool.num_threads; ++i) {
-        thread_join(pool.threads[i]);
+        tscl_thread_join(pool.threads[i]);
     }
 } // end of func
 
