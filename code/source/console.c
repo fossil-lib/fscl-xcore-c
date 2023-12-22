@@ -29,6 +29,7 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
+#define _GNU_SOURCE // for getline function
 #include "trilobite/xcore/console.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -260,21 +261,29 @@ bool tscl_console_in_read_time(const char* prompt, int* hour, int* minute, int* 
     }
 } // end of func
 
+// Function to disable echoing for password input
 void disable_echo() {
 #ifdef _WIN32
     system("cls");  // Clear the screen to hide the password
 #else
-    printf("\033[2J\033[1;1H");  // ANSI escape code to clear the terminal
-    fflush(stdout);
+    // POSIX-specific code to disable echoing
+    struct termios term;
+    tcgetattr(fileno(stdin), &term);
+    term.c_lflag &= ~ECHO;
+    tcsetattr(fileno(stdin), TCSANOW, &term);
 #endif
 }
 
+// Function to enable echoing after password input
 void enable_echo() {
 #ifdef _WIN32
     system("cls");  // Clear the screen to show the next output cleanly
 #else
-    printf("\033[2J\033[1;1H");  // ANSI escape code to clear the terminal
-    fflush(stdout);
+    // POSIX-specific code to enable echoing
+    struct termios term;
+    tcgetattr(fileno(stdin), &term);
+    term.c_lflag |= ECHO;
+    tcsetattr(fileno(stdin), TCSANOW, &term);
 #endif
 }
 
@@ -295,6 +304,7 @@ char* tscl_console_in_read_password(const char* prompt) {
     // Check if getline was successful
     if (bytesRead == -1) {
         perror("getline");
+        free(password);
         exit(EXIT_FAILURE);
     }
 
