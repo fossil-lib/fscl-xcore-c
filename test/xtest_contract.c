@@ -8,6 +8,32 @@
 
 #include <trilobite/xtest.h>   // basic test tools
 #include <trilobite/xassert.h> // extra asserts
+#include <trilobite/xmock.h> // mocking functions
+
+// Function with contracts
+XMOCK_FUNC_DEF(void, example_function, int *array, size_t array_length, const char *str, void *ptr) {
+    // Create contracts
+    ccontract *pre_condition_contract = tscl_contract_create(example_pre_condition, NULL);
+    ccontract *post_condition_contract = tscl_contract_create(NULL, example_post_condition);
+
+    // Pre-condition checks
+    tscl_contract_require_not_null(array, "array");
+    tscl_contract_require_array_length(array, array_length, sizeof(int), "array");
+    tscl_contract_require_not_null(str, "str");
+    tscl_contract_require_string_length(str, 1, 10, "str");
+    tscl_contract_require_not_null(ptr, "ptr");
+
+    // Post-condition checks
+    tscl_contract_check_pre(pre_condition_contract);
+
+    // Your function logic here
+
+    tscl_contract_check_post(post_condition_contract);
+
+    // Clean up
+    free(pre_condition_contract);
+    free(post_condition_contract);
+}
 
 //
 // XUNIT TEST CASES
@@ -18,7 +44,7 @@ XTEST_CASE(test_valid_basic_call) {
     void *ptr = malloc(sizeof(int));
 
     // Call the function with valid parameters
-    example_function(array, 5, str, ptr);
+    xmock_example_function(array, 5, str, ptr);
 
     // Clean up
     free(ptr);
