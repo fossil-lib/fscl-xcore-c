@@ -37,42 +37,43 @@
 
    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
 */
-#ifndef TSCL_INI_H
-#define TSCL_INI_H
+#ifndef TSCL_CONTRACT_H
+#define TSCL_CONTRACT_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdbool.h>
 
-enum {TRILO_INI_FILE_LENGTH = 1555};
-
-// Structure to store INI data
+// Define the contract type
 typedef struct {
-    char key[TRILO_INI_FILE_LENGTH];
-    char value[TRILO_INI_FILE_LENGTH];
-} cini_entry;
-
-typedef struct {
-    cini_entry* entries;
-    size_t size;
-} cini;
+    bool (*pre_condition)();
+    void (*post_condition)();
+} ccontract;
 
 // =================================================================
 // create and erase
 // =================================================================
-void  tscl_ini_parser_create(cini** data);
-void  tscl_ini_parser_erase(cini** data);
+ccontract *tscl_contract_create(bool (*pre_condition)(), void (*post_condition)());
 
 // =================================================================
-// avaliable functions
+// addintal functions
 // =================================================================
-void  tscl_ini_parser_parse(FILE* file, cini** data);
-void  tscl_ini_parser_setter(cini** data, const char* update);
-cini*  tscl_ini_parser_getter(cini** data);
+bool tscl_contract_check_pre(ccontract *contract);
+bool tscl_contract_check_post(ccontract *contract);
+bool tscl_contract_assert(bool condition, const char *message);
+bool tscl_contract_require_not_null(const void *ptr, const char *param_name);
+bool tscl_contract_require_positive(int value, const char *param_name);
+bool tscl_contract_require_non_negative(int value, const char *param_name);
+bool tscl_contract_require_within_range(int value, int min, int max, const char *param_name);
+bool tscl_contract_require_within_double_range(double value, double min, double max, const char *param_name);
+bool tscl_contract_require_string_length(const char *str, size_t min_length, size_t max_length, const char *param_name);
+bool tscl_contract_require_pointer_equality(const void *ptr1, const void *ptr2, const char *param_name);
+bool tscl_contract_require_string_equality(const char *str1, const char *str2, const char *param_name);
+bool tscl_contract_require_array_length(const void *array, size_t expected_length, size_t element_size, const char *param_name);
+bool tscl_contract_require_custom_condition(bool (*custom_condition)(), const char *param_name);
 
 #ifdef __cplusplus
 }

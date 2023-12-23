@@ -37,52 +37,45 @@
 
    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
 */
-#ifndef TSCL_JSON_H
-#define TSCL_JSON_H
+#ifndef TSCL_OBSREVER_H
+#define TSCL_OBSREVER_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+// Structure representing an observer
 typedef struct {
-    char* json_data;
-} cjson;
+    void (*update)(void* data); // Function pointer for the update method
+} cobserver;
 
+// Structure representing the subject to be observed
 typedef struct {
-    char key[256];
-    char value[256];
-} cjson_pair;
-
-typedef struct {
-    cjson_pair* pairs;
-    size_t numPairs;
-} cjson_object;
-
-typedef struct {
-    char** items;
-    size_t numItems;
-} cjson_array;
+    cobserver** observers; // Array of observers
+    int numObservers;      // Number of observers
+} csubject;
 
 // =================================================================
 // create and erase
 // =================================================================
-cjson*  tscl_json_parser_create();
-void  tscl_json_parser_erase(cjson** data);
+void tscl_observe_create(csubject* subject);
+void tscl_observe_erase(csubject* subject);
+void tscl_observe_update_all(csubject* subject, void* data);
 
 // =================================================================
-// avaliable functions
+// addintal functions
 // =================================================================
-int  tscl_json_parser_parse(FILE* file, cjson** data);
-void  tscl_json_parser_setter(cjson** data, const char* update);
-const char*  tscl_json_parser_getter(cjson** data);
-void  tscl_json_parser_erase_meta(cjson** data);
-cjson_object*  tscl_json_parser_get_object(cjson** data);
-cjson_array*  tscl_json_parser_get_array(cjson** data);
+void tscl_observe_add_observer(csubject* subject, cobserver* observer);
+void tscl_observe_remove_observer(csubject* subject, cobserver* observer);
+void tscl_observe_notify(csubject* subject, void* data);
+void tscl_observe_erase_all(csubject* subject);
+int tscl_observe_has_observers(csubject* subject);
+
+
 
 #ifdef __cplusplus
 }

@@ -29,7 +29,7 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include <trilobite/xcore/json.h>
+#include <trilobite/xcore/parser.h>
 #include <stdio.h>
 
 void present_question(cjson_object* question) {

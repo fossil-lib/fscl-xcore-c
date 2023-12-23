@@ -13,7 +13,7 @@ if get_option('with_test').enabled()
 
     test_src = ['xunit_runner.c']
     test_cubes = [
-        'json', 'csv', 'ini', 'lazy', 'fossil', 'datetime',
+        'observer', 'parser', 'contract', 'lazy', 'fossil', 'datetime',
         'console', 'regex', 'stream', 'thread']
 
     foreach cube : test_cubes

@@ -37,8 +37,8 @@
 
    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
 */
-#ifndef TSCL_CSV_H
-#define TSCL_CSV_H
+#ifndef TSCL_FILE_PARSER_H
+#define TSCL_FILE_PARSER_H
 
 #ifdef __cplusplus
 extern "C"
@@ -48,6 +48,38 @@ extern "C"
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef struct {
+    char* json_data;
+} cjson;
+
+typedef struct {
+    char key[256];
+    char value[256];
+} cjson_pair;
+
+typedef struct {
+    cjson_pair* pairs;
+    size_t numPairs;
+} cjson_object;
+
+typedef struct {
+    char** items;
+    size_t numItems;
+} cjson_array;
+
+enum {TRILO_INI_FILE_LENGTH = 1555};
+
+// Structure to store INI data
+typedef struct {
+    char key[TRILO_INI_FILE_LENGTH];
+    char value[TRILO_INI_FILE_LENGTH];
+} cini_entry;
+
+typedef struct {
+    cini_entry* entries;
+    size_t size;
+} cini;
+
 // Structure to hold CSV data
 typedef struct {
     char*** rows;
@@ -55,47 +87,48 @@ typedef struct {
     size_t num_columns;
 } ccsv;
 
-/**
- * @brief Creates a ccsv structure.
- *
- * @return A pointer to the newly created ccsv structure.
- */
-ccsv*  tscl_csv_parser_create();
+// =================================================================
+// create and erase
+// =================================================================
+cjson*  tscl_json_parser_create();
+void  tscl_json_parser_erase(cjson** data);
 
-/**
- * @brief Erases a ccsv structure.
- *
- * @param data A double pointer to the ccsv structure to be erased.
- */
+// =================================================================
+// avaliable functions
+// =================================================================
+int  tscl_json_parser_parse(FILE* file, cjson** data);
+void  tscl_json_parser_setter(cjson** data, const char* update);
+const char*  tscl_json_parser_getter(cjson** data);
+void  tscl_json_parser_erase_meta(cjson** data);
+cjson_object*  tscl_json_parser_get_object(cjson** data);
+cjson_array*  tscl_json_parser_get_array(cjson** data);
+
+// =================================================================
+// create and erase
+// =================================================================
+void  tscl_ini_parser_create(cini** data);
+void  tscl_ini_parser_erase(cini** data);
+
+// =================================================================
+// avaliable functions
+// =================================================================
+void  tscl_ini_parser_parse(FILE* file, cini** data);
+void  tscl_ini_parser_setter(cini** data, const char* update);
+cini*  tscl_ini_parser_getter(cini** data);
+
+// =================================================================
+// create and erase
+// =================================================================
+ccsv*  tscl_csv_parser_create();
 void  tscl_csv_parser_erase(ccsv** data);
 
-/**
- * @brief Parses a CSV file and populates a ccsv structure.
- *
- * @param file A pointer to the FILE structure representing the CSV file.
- * @param data A double pointer to the ccsv structure to be populated.
- */
+// =================================================================
+// avaliable functions
+// =================================================================
 void  tscl_csv_parser_parse(FILE* file, ccsv** data);
-
-/**
- * @brief Updates a specific cell in the ccsv structure.
- *
- * @param data A double pointer to the ccsv structure.
- * @param row The row index of the cell to be updated.
- * @param col The column index of the cell to be updated.
- * @param update The new content to be set in the specified cell.
- */
 void  tscl_csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update);
-
-/**
- * @brief Retrieves the content of a specific cell in the ccsv structure.
- *
- * @param data A pointer to the ccsv structure.
- * @param row The row index of the cell to be retrieved.
- * @param col The column index of the cell to be retrieved.
- * @return The content of the specified cell.
- */
 const char*  tscl_csv_parser_getter(const ccsv* data, size_t row, size_t col);
+
 
 #ifdef __cplusplus
 }

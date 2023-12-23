@@ -1,5 +1,5 @@
 code = files(
-    'json.c', 'csv.c', 'ini.c', 'lazy.c',
+    'observer.c', 'contract.c', 'parser.c', 'lazy.c',
     'fossil.c', 'datetime.c', 'console.c',
     'regex.c', 'stream.c', 'thread.c',
 )

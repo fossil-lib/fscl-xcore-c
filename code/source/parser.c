@@ -29,7 +29,7 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include "trilobite/xcore/json.h"
+#include "trilobite/xcore/parser.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
@@ -364,4 +364,238 @@ cjson_array*  tscl_json_parser_get_array(cjson** data) {
         return (cjson_array*)((*data)->json_data);
     }
     return NULL;
+} // end of func
+
+// Function to create a new cini structure
+void  tscl_ini_parser_create(cini** data) {
+    *data = (cini*)malloc(sizeof(cini));
+    (*data)->entries = NULL;
+    (*data)->size = 0;
+}
+
+// Function to erase a cini structure
+void  tscl_ini_parser_erase(cini** data) {
+    if (*data != NULL) {
+        free((*data)->entries);
+        free(*data);
+        *data = NULL;
+    }
+}
+
+// Function to parse an INI file and populate cini structure
+void  tscl_ini_parser_parse(FILE* file, cini** data) {
+     tscl_ini_parser_erase(data); // Clear existing data
+
+    *data = (cini*)malloc(sizeof(cini));
+
+    // Initialize entries array
+    (*data)->entries = NULL;
+    (*data)->size = 0;
+
+    char line[TRILO_INI_FILE_LENGTH];
+    while (fgets(line, sizeof(line), file) != NULL) {
+        // Skip comments and empty lines
+        if (line[0] == ';' || line[0] == '#' || line[0] == '\n' || line[0] == '\r') {
+            continue;
+        }
+
+        // Parse key-value pairs
+        cini_entry entry;
+        if (sscanf(line, "%[^=]=%[^\n]", entry.key, entry.value) == 2) {
+            (*data)->entries = (cini_entry*)realloc((*data)->entries,
+                ((*data)->size + 1) * sizeof(cini_entry));
+
+            // Copy the entry to the array
+            strcpy((*data)->entries[(*data)->size].key, entry.key);
+            strcpy((*data)->entries[(*data)->size].value, entry.value);
+
+            (*data)->size++;
+        }
+    }
+}
+
+// Function to update or add an entry in cini structure
+void  tscl_ini_parser_setter(cini** data, const char* update) {
+    char key[TRILO_INI_FILE_LENGTH];
+    char value[TRILO_INI_FILE_LENGTH];
+
+    if (sscanf(update, "%[^=]=%[^\n]", key, value) == 2) {
+        // Search for existing key and update its value
+        for (size_t i = 0; i < (*data)->size; ++i) {
+            if (strcmp((*data)->entries[i].key, key) == 0) {
+                strcpy((*data)->entries[i].value, value);
+                return;
+            }
+        }
+
+        // Key not found, add a new entry
+        (*data)->entries = (cini_entry*)realloc((*data)->entries,
+            ((*data)->size + 1) * sizeof(cini_entry));
+
+        strcpy((*data)->entries[(*data)->size].key, key);
+        strcpy((*data)->entries[(*data)->size].value, value);
+
+        (*data)->size++;
+    }
+}
+
+// Function to get the cini structure
+cini*  tscl_ini_parser_getter(cini** data) {
+    return *data;
+} // end of func // end of func
+
+// Function to create a ccsv structure
+ccsv*  tscl_csv_parser_create() {
+    ccsv* csv = (ccsv*)malloc(sizeof(ccsv));
+    if (csv == NULL) {
+        perror("Memory allocation error");
+        exit(EXIT_FAILURE);
+    }
+
+    csv->rows = NULL;
+    csv->num_rows = 0;
+    csv->num_columns = 0;
+
+    return csv;
+} // end of func
+
+// Function to erase a ccsv structure
+void  tscl_csv_parser_erase(ccsv** data) {
+    if (data != NULL && *data != NULL) {
+        // Free memory for each row
+        for (size_t i = 0; i < (*data)->num_rows; ++i) {
+            for (size_t j = 0; j < (*data)->num_columns; ++j) {
+                free((*data)->rows[i][j]);
+            }
+            free((*data)->rows[i]);
+        }
+
+        // Free memory for rows array
+        free((*data)->rows);
+
+        // Free memory for ccsv structure
+        free(*data);
+
+        // Set data pointer to NULL
+        *data = NULL;
+    }
+} // end of func
+
+// Function to parse CSV file and populate ccsv structure
+void  tscl_csv_parser_parse(FILE* file, ccsv** data) {
+    char buffer[1024];  // Adjust buffer size as needed
+
+    // Count the number of rows and columns in the CSV file
+    size_t num_rows = 0;
+    size_t num_columns = 0;
+
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        char* token = strtok(buffer, ",");
+        size_t current_columns = 0;
+
+        while (token != NULL) {
+            token = strtok(NULL, ",");
+            current_columns++;
+        }
+
+        // Update the number of columns if it is greater than the current count
+        if (current_columns > num_columns) {
+            num_columns = current_columns;
+        }
+
+        num_rows++;
+    }
+
+    // Reset file position to the beginning
+    fseek(file, 0, SEEK_SET);
+
+    // Allocate memory for ccsv structure
+    *data =  tscl_csv_parser_create();
+
+    // Allocate memory for rows array
+    (*data)->rows = (char***)malloc(num_rows * sizeof(char**));
+    if ((*data)->rows == NULL) {
+        perror("Memory allocation error");
+        exit(EXIT_FAILURE);
+    }
+
+    for (size_t i = 0; i < num_rows; ++i) {
+        (*data)->rows[i] = (char**)malloc(num_columns * sizeof(char*));
+        if ((*data)->rows[i] == NULL) {
+            perror("Memory allocation error");
+            exit(EXIT_FAILURE);
+        }
+
+        // Initialize each element to NULL
+        for (size_t j = 0; j < num_columns; ++j) {
+            (*data)->rows[i][j] = NULL;
+        }
+    }
+
+    // Populate the ccsv structure with data from the CSV file
+    size_t row_index = 0;
+
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        char* token = strtok(buffer, ",");
+        size_t col_index = 0;
+
+        while (token != NULL) {
+            size_t len = strlen(token);
+            // Remove newline character if present
+            if (len > 0 && token[len - 1] == '\n') {
+                token[len - 1] = '\0';
+            }
+
+            // Allocate memory for the token
+            (*data)->rows[row_index][col_index] = (char*)malloc((len + 1) * sizeof(char));
+            if ((*data)->rows[row_index][col_index] == NULL) {
+                perror("Memory allocation error");
+                exit(EXIT_FAILURE);
+            }
+
+            // Copy the token to the ccsv structure
+            strcpy((*data)->rows[row_index][col_index], token);
+
+            token = strtok(NULL, ",");
+            col_index++;
+        }
+
+        row_index++;
+    }
+
+    (*data)->num_rows = num_rows;
+    (*data)->num_columns = num_columns;
+} // end of func
+
+// Function to update a specific cell in the ccsv structure
+void  tscl_csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update) {
+    // Check if the provided indices are valid
+    if (row < (*data)->num_rows && col < (*data)->num_columns) {
+        // Free the existing content of the cell
+        free((*data)->rows[row][col]);
+
+        // Allocate memory for the updated content
+        size_t len = strlen(update);
+        (*data)->rows[row][col] = (char*)malloc((len + 1) * sizeof(char));
+        if ((*data)->rows[row][col] == NULL) {
+            perror("Memory allocation error");
+            exit(EXIT_FAILURE);
+        }
+
+        // Copy the updated content to the cell
+        strcpy((*data)->rows[row][col], update);
+    } else {
+        fprintf(stderr, "Invalid row or column index\n");
+    }
+} // end of func
+
+// Function to retrieve the content of a specific cell in the ccsv structure
+const char*  tscl_csv_parser_getter(const ccsv* data, size_t row, size_t col) {
+    // Check if the provided indices are valid
+    if (row < data->num_rows && col < data->num_columns) {
+        return data->rows[row][col];
+    } else {
+        fprintf(stderr, "Invalid row or column index\n");
+        return NULL;
+    }
 } // end of func

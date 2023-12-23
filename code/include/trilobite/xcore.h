@@ -50,11 +50,11 @@ extern "C"
 #include "xcore/stream.h"
 #include "xcore/lazy.h"
 #include "xcore/fossil.h"
-#include "xcore/reader.h"
+#include "xcore/console.h"
 #include "xcore/regex.h"
-#include "xcore/json.h"
-#include "xcore/ini.h"
-#include "xcore/csv.h"
+#include "xcore/parser.h"
+#include "xcore/contract.h"
+#include "xcore/observer.h"
 
 inline const char* tscl_codename() {
     return "Ptychopariida";
