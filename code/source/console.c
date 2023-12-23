@@ -138,7 +138,7 @@ void tscl_console_progress(int iterations, int delay) {
         fflush(stdout);
 
 #ifdef _WIN32
-        _sleep(delay);  // Sleep in milliseconds on Windows
+        Sleep(delay);  // Sleep in milliseconds on Windows
 #else
         sleep(delay * 1000);  // Sleep in microseconds on POSIX
 #endif
