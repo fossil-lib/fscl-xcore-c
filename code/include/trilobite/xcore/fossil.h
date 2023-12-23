@@ -88,118 +88,30 @@ typedef struct {
     int debug_enabled; // Added flag to enable/disable debugging
 } FossilDSL;
 
-/**
- * @brief Initialize the DSL with a tape file.
- *
- * @param dsl A pointer to the FossilDSL structure to be initialized.
- * @param tape_filename The filename of the tape to be generated.
- */
-void fossil_dsl_create(FossilDSL *dsl, const char *tape_filename);
+// =================================================================
+// Create and erase
+// =================================================================
+void  tscl_fossil_dsl_create(FossilDSL *dsl, const char *tape_filename);
+void  tscl_fossil_dsl_erase(FossilDSL *dsl);
 
-/**
- * @brief Helper function to add indentation based on the current level.
- *
- * @param dsl A pointer to the FossilDSL structure.
- */
-void fossil_dsl_indent(FossilDSL *dsl);
+// =================================================================
+// DSL functions
+// =================================================================
+void  tscl_fossil_dsl_indent(FossilDSL *dsl);
+void  tscl_fossil_dsl_call_function(FossilDSL *dsl, const char *func_name, FossilDSLValue *arguments, int num_arguments);
+void  tscl_fossil_dsl_add_function(FossilDSL *dsl, const char *func_name);
+void  tscl_fossil_dsl_print_value(FILE *tape_file, FossilDSLValue value);
+void  tscl_fossil_dsl_add_binary_operation(FossilDSL *dsl, const char *operation, const char *type, FossilDSLValue operand1, FossilDSLValue operand2);
+void  tscl_fossil_dsl_add_bitwise_operation(FossilDSL *dsl, const char *operation, FossilDSLValue operand1, FossilDSLValue operand2);
+void  tscl_fossil_dsl_add_loop(FossilDSL *dsl, const char *loop_variable, int start_value, int end_value);
+void  tscl_fossil_dsl_add_condition(FossilDSL *dsl, FossilDSLValue condition, const char *true_branch, const char *false_branch);
+void  tscl_fossil_dsl_close_block(FossilDSL *dsl);
 
-/**
- * @brief Add a debugging statement to the tape.
- *
- * @param dsl A pointer to the FossilDSL structure.
- * @param message The debugging message to be added.
- */
-void fossil_dsl_debug(FossilDSL *dsl, const char *message);
-
-/**
- * @brief Enable debugging in the DSL.
- *
- * @param dsl A pointer to the FossilDSL structure.
- */
-void fossil_dsl_enable_debug(FossilDSL *dsl);
-
-/**
- * @brief Call a function within the DSL script.
- *
- * @param dsl A pointer to the FossilDSL structure.
- * @param func_name The name of the function to be called.
- * @param arguments An array of arguments to be passed to the function.
- * @param num_arguments The number of arguments in the 'arguments' array.
- *
- * @return void
- */
-void fossil_dsl_call_function(FossilDSL *dsl, const char *func_name, FossilDSLValue *arguments, int num_arguments);
-
-/**
- * @brief Add a function definition to the tape.
- *
- * @param dsl A pointer to the FossilDSL structure.
- * @param func_name The name of the function to be added.
- */
-void fossil_dsl_add_function(FossilDSL *dsl, const char *func_name);
-
-/**
- * @brief Helper function to print a value based on its type.
- *
- * @param tape_file The file pointer to the tape file.
- * @param value The value to be printed.
- */
-void fossil_dsl_print_value(FILE *tape_file, FossilDSLValue value);
-
-/**
- * @brief Helper function to add a binary operation to the tape.
- *
- * @param dsl A pointer to the FossilDSL structure.
- * @param operation The binary operation to be added.
- * @param type The type of the operation.
- * @param operand1 The first operand.
- * @param operand2 The second operand.
- */
-void fossil_dsl_add_binary_operation(FossilDSL *dsl, const char *operation, const char *type, FossilDSLValue operand1, FossilDSLValue operand2);
-
-/**
- * @brief Add a bitwise operation to the tape.
- *
- * @param dsl A pointer to the FossilDSL structure.
- * @param operation The bitwise operation to be added.
- * @param operand1 The first operand.
- * @param operand2 The second operand.
- */
-void fossil_dsl_add_bitwise_operation(FossilDSL *dsl, const char *operation, FossilDSLValue operand1, FossilDSLValue operand2);
-
-/**
- * @brief Add a loop to the tape.
- *
- * @param dsl A pointer to the FossilDSL structure.
- * @param loop_variable The loop variable.
- * @param start_value The starting value of the loop.
- * @param end_value The ending value of the loop.
- */
-void fossil_dsl_add_loop(FossilDSL *dsl, const char *loop_variable, int start_value, int end_value);
-
-/**
- * @brief Add a conditional statement to the tape.
- *
- * @param dsl A pointer to the FossilDSL structure.
- * @param condition The condition for the conditional statement.
- * @param true_branch The label for the true branch.
- * @param false_branch The label for the false branch.
- */
-void fossil_dsl_add_condition(FossilDSL *dsl, FossilDSLValue condition, const char *true_branch, const char *false_branch);
-
-/**
- * @brief Helper function to close the current block in the tape.
- *
- * @param dsl A pointer to the FossilDSL structure.
- */
-void fossil_dsl_close_block(FossilDSL *dsl);
-
-/**
- * @brief Finalize and close the tape file.
- *
- * @param dsl A pointer to the FossilDSL structure.
- */
-void fossil_dsl_erase(FossilDSL *dsl);
+// =================================================================
+// DSL utilites
+// =================================================================
+void  tscl_fossil_dsl_debug(FossilDSL *dsl, const char *message);
+void  tscl_fossil_dsl_enable_debug(FossilDSL *dsl);
 
 #ifdef __cplusplus
 }

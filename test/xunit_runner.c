@@ -36,14 +36,14 @@
 //
 XTEST_GROUP_EXTERN(test_datetiime_group);
 XTEST_GROUP_EXTERN(test_fossil_group);
-XTEST_GROUP_EXTERN(test_lambda_group);
+XTEST_GROUP_EXTERN(test_lazy_group);
 XTEST_GROUP_EXTERN(test_thread_group);
 XTEST_GROUP_EXTERN(test_stream_group);
 XTEST_GROUP_EXTERN(test_regex_group );
 XTEST_GROUP_EXTERN(test_reader_group);
-XTEST_GROUP_EXTERN(test_json_group  );
-XTEST_GROUP_EXTERN(test_ini_group   );
-XTEST_GROUP_EXTERN(test_csv_group   );
+XTEST_GROUP_EXTERN(test_parser_group  );
+XTEST_GROUP_EXTERN(test_contract_group);
+XTEST_GROUP_EXTERN(test_observe_group   );
 
 //
 // XUNIT-TEST RUNNER
@@ -53,14 +53,14 @@ int main(int argc, char **argv) {
 
     XTEST_GROUP_REGISTER(test_datetiime_group, runner);
     XTEST_GROUP_REGISTER(test_fossil_group, runner);
-    XTEST_GROUP_REGISTER(test_lambda_group, runner);
+    XTEST_GROUP_REGISTER(test_lazy_group, runner);
     XTEST_GROUP_REGISTER(test_thread_group, runner);
     XTEST_GROUP_REGISTER(test_stream_group, runner);
-    XTEST_GROUP_REGISTER(test_regex_group,  runner);
+    XTEST_GROUP_REGISTER(test_regex_group, runner);
     XTEST_GROUP_REGISTER(test_reader_group, runner);
-    XTEST_GROUP_REGISTER(test_json_group,   runner);
-    XTEST_GROUP_REGISTER(test_csv_group,    runner);
-    XTEST_GROUP_REGISTER(test_ini_group,    runner);
+    XTEST_GROUP_REGISTER(test_contract_group, runner);
+    XTEST_GROUP_REGISTER(test_parser_group, runner);
+    XTEST_GROUP_REGISTER(test_observe_group, runner);
 
     return XTEST_RUNNER_END(runner);
 } // end of func

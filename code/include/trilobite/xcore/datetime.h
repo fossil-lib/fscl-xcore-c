@@ -66,101 +66,27 @@ typedef struct {
     int day;
 } ccalendar;
 
-/**
- * @brief Parses a DateTime string in 24-hour format (military time).
- *
- * This function parses a DateTime string in the format "YYYY-MM-DD HH:MM:SS +/-HHMM"
- * and populates a cdatetime structure with the parsed values.
- *
- * @param str The DateTime string to parse.
- * @param datetime Pointer to a cdatetime structure to store the parsed DateTime.
- * @return true if the parsing is successful, false otherwise.
- */
-bool datetime_get_current_parse_military(const char *str, cdatetime *datetime);
+// =================================================================
+// Timestamp functions
+// =================================================================
+bool tscl_datetime_get_current_parse_military(const char *str, cdatetime *datetime);
+bool tscl_datetime_get_current_parse_12_hour(const char *str, cdatetime *datetime);
+bool tscl_datetime_get_current_parse_human_readable(const char *str, cdatetime *datetime);
+void tscl_datetime_get_current_custom(const cdatetime *datetime, char *str, size_t max_size);
 
-/**
- * @brief Parses a DateTime string in 12-hour format with AM/PM.
- *
- * This function parses a DateTime string in the format "YYYY-MM-DD HH:MM:SS AM/PM +/-HHMM"
- * and populates a cdatetime structure with the parsed values.
- *
- * @param str The DateTime string to parse.
- * @param datetime Pointer to a cdatetime structure to store the parsed DateTime.
- * @return true if the parsing is successful, false otherwise.
- */
-bool datetime_get_current_parse_12_hour(const char *str, cdatetime *datetime);
+// =================================================================
+// Calander functions
+// =================================================================
+void tscl_datetime_get_current_calendar_yyyy_mm_dd(const ccalendar *calendar, char *str, size_t max_size);
+void tscl_datetime_get_current_calendar_dd_mm_yyyy(const ccalendar *calendar, char *str, size_t max_size);
+void tscl_datetime_get_current_calendar_month_dd_yyyy(const ccalendar *calendar, char *str, size_t max_size);
+bool tscl_datetime_get_current_is_leap_year(int year);
 
-/**
- * @brief Parses a DateTime string in human-readable format.
- *
- * This function parses a DateTime string in a human-readable format and populates a
- * cdatetime structure with the parsed values. The format may vary depending on
- * locale and custom representations.
- *
- * @param str The DateTime string to parse.
- * @param datetime Pointer to a cdatetime structure to store the parsed DateTime.
- * @return true if the parsing is successful, false otherwise.
- */
-bool datetime_get_current_parse_human_readable(const char *str, cdatetime *datetime);
-
-/**
- * @brief Formats a cdatetime object into a custom string.
- *
- * This function formats a cdatetime object into a custom string format
- * and stores the result in the provided character array 'str'.
- *
- * @param datetime Pointer to a cdatetime structure to be formatted.
- * @param str Pointer to the character array where the formatted string will be stored.
- * @param max_size The maximum size of the character array 'str'.
- */
-void datetime_get_current_custom(const cdatetime *datetime, char *str, size_t max_size);
-
-/**
- * @brief Retrieves the current date and time and stores it in the provided cdatetime structure.
- *
- * This function obtains the current system date and time and populates a cdatetime structure
- * with the corresponding year, month, day, hour, minute, and second. The 'ampm' field is set
- * to -1 as it is not applicable in the 24-hour format. The 'timezone' field may need to be
- * set explicitly or left empty depending on your application's requirements.
- *
- * @param datetime Pointer to a cdatetime structure where the current date and time will be stored.
- */
-void datetime_get_current_get_current(cdatetime *datetime);
-
-/**
- * @brief Formats a ccalendar object into a string with the format "YYYY-MM-DD".
- *
- * @param calendar Pointer to a ccalendar structure to be formatted.
- * @param str Pointer to the character array where the formatted string will be stored.
- * @param max_size The maximum size of the character array 'str'.
- */
-void datetime_get_current_calendar_yyyy_mm_dd(const ccalendar *calendar, char *str, size_t max_size);
-
-/**
- * @brief Formats a ccalendar object into a string with the format "DD/MM/YYYY".
- *
- * @param calendar Pointer to a ccalendar structure to be formatted.
- * @param str Pointer to the character array where the formatted string will be stored.
- * @param max_size The maximum size of the character array 'str'.
- */
-void datetime_get_current_calendar_dd_mm_yyyy(const ccalendar *calendar, char *str, size_t max_size);
-
-/**
- * @brief Formats a ccalendar object into a string with the format "Month DD, YYYY".
- *
- * @param calendar Pointer to a ccalendar structure to be formatted.
- * @param str Pointer to the character array where the formatted string will be stored.
- * @param max_size The maximum size of the character array 'str'.
- */
-void datetime_get_current_calendar_month_dd_yyyy(const ccalendar *calendar, char *str, size_t max_size);
-
-/**
- * @brief Checks if a given year is a leap year.
- *
- * @param year The year to check.
- * @return true if the year is a leap year, false otherwise.
- */
-bool datetime_get_current_is_leap_year(int year);
+// =================================================================
+// DateTime utilities
+// =================================================================
+void tscl_datetime_sleep(unsigned int seconds);
+void tscl_datetime_get_current(cdatetime *datetime);
 
 #ifdef __cplusplus
 }

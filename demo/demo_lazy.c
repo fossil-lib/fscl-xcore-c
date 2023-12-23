@@ -1,5 +1,5 @@
 /*  ----------------------------------------------------------------------------
-    File: demo_thread.c
+    File: demo_lazy.c
 
     Description:
     This demo file serves as a showcase of the Trilobite Stdlib in action. It provides
@@ -29,49 +29,37 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include <trilobite/xcore/thread.h>
-#include <trilobite/xcore/stream.h>
-
-// Function to simulate robot movements
-cthread_task(robot_movement, arg) {
-    cstream *log_stream = (cstream *)arg;
-
-    // Log robot movements
-    log_to_file(log_stream, "Robot starts moving forward.\n");
-    tscl_thread_sleep(1000);
-    
-    log_to_file(log_stream, "Robot turns right.\n");
-    tscl_thread_sleep(500);
-    
-    log_to_file(log_stream, "Robot continues moving forward.\n");
-    tscl_thread_sleep(1500);
-    
-    log_to_file(log_stream, "Robot moves backward.\n");
-    tscl_thread_sleep(1000);
-    
-    log_to_file(log_stream, "Robot stops.\n");
-
-    return CTHREAD_CNULLPTR;
-} // end of func
+#include "trilobite/xcore/lazy.h" // lib source code
+#include <stdio.h>
 
 int main() {
-    // Create a log file
-    cstream log_stream;
-    tscl_stream_create(&log_stream, "robot_log.txt");
+    // Create lazy types for different data types
+    clazy intLazy = tscl_lazy_create(CLAZY_INT);
+    printf("Result (int): %d\n", tscl_lazy_force_int(&intLazy));
+    tscl_lazy_erase(&intLazy);
 
-    // Create a thread for robot movement
-    cthread robot_thread = tscl_thread_create(robot_movement, (void *)&log_stream);
+    clazy boolLazy = tscl_lazy_create(CLAZY_BOOL);
+    printf("Result (bool): %s\n", tscl_lazy_force_bool(&boolLazy) ? "true" : "false");
+    tscl_lazy_erase(&boolLazy);
 
-    // Wait for the robot thread to finish
-    tscl_thread_join(robot_thread);
+    clazy charLazy = tscl_lazy_create(CLAZY_CHAR);
+    printf("Result (char): %c\n", tscl_lazy_force_char(&charLazy));
+    tscl_lazy_erase(&charLazy);
 
-    // Destroy the robot thread handle
-    tscl_thread_erase(robot_thread);
+    clazy stringLazy = tscl_lazy_create(CLAZY_STRING);
+    printf("Result (string): %s\n", tscl_lazy_force_string(&stringLazy));
+    tscl_lazy_erase(&stringLazy);
 
-    // Close the log file
-    tscl_stream_close(&log_stream);
+    clazy nullLazy = tscl_lazy_create(CLAZY_NULL);
+    // No evaluation needed for null type
+    tscl_lazy_erase(&nullLazy);
 
-    printf("Robotics demo completed. Check 'robot_log.txt' for the log.\n");
+    // Create and force a lazy sequence
+    clazy sequenceLazy = tscl_lazy_sequence();
+    for (int i = 0; i < 5; ++i) {
+        printf("Sequence Element: %d\n", tscl_lazy_sequence_force(&sequenceLazy, i));
+    }
+    tscl_lazy_erase(&sequenceLazy);
 
     return 0;
 } // end of func

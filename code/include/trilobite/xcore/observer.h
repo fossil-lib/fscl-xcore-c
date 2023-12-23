@@ -37,8 +37,8 @@
 
    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
 */
-#ifndef TSCL_INI_H
-#define TSCL_INI_H
+#ifndef TSCL_OBSREVER_H
+#define TSCL_OBSREVER_H
 
 #ifdef __cplusplus
 extern "C"
@@ -48,56 +48,34 @@ extern "C"
 #include <stdio.h>
 #include <stdlib.h>
 
-enum {TRILO_INI_FILE_LENGTH = 1555};
-
-// Structure to store INI data
+// Structure representing an observer
 typedef struct {
-    char key[TRILO_INI_FILE_LENGTH];
-    char value[TRILO_INI_FILE_LENGTH];
-} cini_entry;
+    void (*update)(void* data); // Function pointer for the update method
+} cobserver;
 
+// Structure representing the subject to be observed
 typedef struct {
-    cini_entry* entries;
-    size_t size;
-} cini;
+    cobserver** observers; // Array of observers
+    int numObservers;      // Number of observers
+} csubject;
 
-/**
- * @brief Creates a new cini structure.
- *
- * @param data Pointer to the cini structure pointer.
- */
-void ini_parser_create(cini** data);
+// =================================================================
+// create and erase
+// =================================================================
+void tscl_observe_create(csubject* subject);
+void tscl_observe_erase(csubject* subject);
+void tscl_observe_update_all(csubject* subject, void* data);
 
-/**
- * @brief Erases a cini structure, freeing allocated memory.
- *
- * @param data Pointer to the cini structure pointer.
- */
-void ini_parser_erase(cini** data);
+// =================================================================
+// addintal functions
+// =================================================================
+void tscl_observe_add_observer(csubject* subject, cobserver* observer);
+void tscl_observe_remove_observer(csubject* subject, cobserver* observer);
+void tscl_observe_notify(csubject* subject, void* data);
+void tscl_observe_erase_all(csubject* subject);
+int tscl_observe_has_observers(csubject* subject);
 
-/**
- * @brief Parses an INI file and populates a cini structure.
- *
- * @param file File pointer to the opened INI file.
- * @param data Pointer to the cini structure pointer.
- */
-void ini_parser_parse(FILE* file, cini** data);
 
-/**
- * @brief Updates or adds an entry in a cini structure.
- *
- * @param data Pointer to the cini structure pointer.
- * @param update String containing the update in the format "key=value".
- */
-void ini_parser_setter(cini** data, const char* update);
-
-/**
- * @brief Gets the cini structure.
- *
- * @param data Pointer to the cini structure pointer.
- * @return Pointer to the cini structure.
- */
-cini* ini_parser_getter(cini** data);
 
 #ifdef __cplusplus
 }

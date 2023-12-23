@@ -34,7 +34,7 @@
 #include <string.h>
 
 // Initialize the DSL with a tape file
-void fossil_dsl_create(FossilDSL *dsl, const char *tape_filename) {
+void  tscl_fossil_dsl_create(FossilDSL *dsl, const char *tape_filename) {
     dsl->tape_file = fopen(tape_filename, "w");
     if (!dsl->tape_file) {
         dsl->error_code = EXIT_FAILURE;
@@ -48,28 +48,28 @@ void fossil_dsl_create(FossilDSL *dsl, const char *tape_filename) {
 }
 
 // Helper function to add indentation based on the current level
-void fossil_dsl_indent(FossilDSL *dsl) {
+void  tscl_fossil_dsl_indent(FossilDSL *dsl) {
     for (int i = 0; i < dsl->indentation_level; ++i) {
         fprintf(dsl->tape_file, "    ");
     }
 }
 
 // Add a debugging statement to the tape
-void fossil_dsl_debug(FossilDSL *dsl, const char *message) {
+void  tscl_fossil_dsl_debug(FossilDSL *dsl, const char *message) {
     if (dsl->debug_enabled) {
-        fossil_dsl_indent(dsl);
+         tscl_fossil_dsl_indent(dsl);
         fprintf(dsl->tape_file, "DEBUG \"%s\"\n", message);
     }
 }
 
 // Enable debugging in the DSL
-void fossil_dsl_enable_debug(FossilDSL *dsl) {
+void  tscl_fossil_dsl_enable_debug(FossilDSL *dsl) {
     dsl->debug_enabled = 1;
 }
 
 // Add a condition header to the tape
-void fossil_dsl_add_condition_header(FossilDSL *dsl, FossilDSLValue condition, const char *true_branch, const char *false_branch) {
-    fossil_dsl_indent(dsl);
+void  tscl_fossil_dsl_add_condition_header(FossilDSL *dsl, FossilDSLValue condition, const char *true_branch, const char *false_branch) {
+     tscl_fossil_dsl_indent(dsl);
     fprintf(dsl->tape_file, "CONDITION ");
 
     switch (condition.type) {
@@ -114,12 +114,12 @@ void fossil_dsl_add_condition_header(FossilDSL *dsl, FossilDSLValue condition, c
 }
 
 // Add a condition statement to the tape
-void fossil_dsl_add_condition(FossilDSL *dsl, FossilDSLValue condition, const char *true_branch, const char *false_branch) {
-    fossil_dsl_add_condition_header(dsl, condition, true_branch, false_branch);
+void  tscl_fossil_dsl_add_condition(FossilDSL *dsl, FossilDSLValue condition, const char *true_branch, const char *false_branch) {
+     tscl_fossil_dsl_add_condition_header(dsl, condition, true_branch, false_branch);
 }
 
 // Call a function in the tape
-void fossil_dsl_call_function(FossilDSL *dsl, const char *func_name, FossilDSLValue *arguments, int num_arguments) {
+void  tscl_fossil_dsl_call_function(FossilDSL *dsl, const char *func_name, FossilDSLValue *arguments, int num_arguments) {
     // Check for valid arguments and handle the function call
     if (dsl == NULL || func_name == NULL) {
         fprintf(stderr, "Error: Invalid arguments for function call\n");
@@ -131,7 +131,7 @@ void fossil_dsl_call_function(FossilDSL *dsl, const char *func_name, FossilDSLVa
 
     // Print function arguments
     for (int i = 0; i < num_arguments; ++i) {
-        fossil_dsl_print_value(dsl->tape_file, arguments[i]);
+         tscl_fossil_dsl_print_value(dsl->tape_file, arguments[i]);
 
         // Add a comma for multiple arguments
         if (i < num_arguments - 1) {
@@ -143,19 +143,19 @@ void fossil_dsl_call_function(FossilDSL *dsl, const char *func_name, FossilDSLVa
     fprintf(dsl->tape_file, "):\n");
 
     // Add indentation for the function block
-    fossil_dsl_indent(dsl);
+     tscl_fossil_dsl_indent(dsl);
 }
 
 // Add a function definition to the tape
-void fossil_dsl_add_function(FossilDSL *dsl, const char *func_name) {
-    fossil_dsl_debug(dsl, "Entering function");
-    fossil_dsl_indent(dsl);
+void  tscl_fossil_dsl_add_function(FossilDSL *dsl, const char *func_name) {
+     tscl_fossil_dsl_debug(dsl, "Entering function");
+     tscl_fossil_dsl_indent(dsl);
     fprintf(dsl->tape_file, "FUNCTION %s()\n", func_name);
     dsl->indentation_level++;
 }
 
 // Helper function to print a value based on its type
-void fossil_dsl_print_value(FILE *tape_file, FossilDSLValue value) {
+void  tscl_fossil_dsl_print_value(FILE *tape_file, FossilDSLValue value) {
     switch (value.type) {
         case INTEGER:
             fprintf(tape_file, "INT %d", value.int_value);
@@ -195,42 +195,42 @@ void fossil_dsl_print_value(FILE *tape_file, FossilDSLValue value) {
 }
 
 // Helper function to add a binary operation to the tape
-void fossil_dsl_add_binary_operation(FossilDSL *dsl, const char *operation, const char *type, FossilDSLValue operand1, FossilDSLValue operand2) {
-    fossil_dsl_indent(dsl);
+void  tscl_fossil_dsl_add_binary_operation(FossilDSL *dsl, const char *operation, const char *type, FossilDSLValue operand1, FossilDSLValue operand2) {
+     tscl_fossil_dsl_indent(dsl);
     fprintf(dsl->tape_file, "%s_%s(", operation, type);
-    fossil_dsl_print_value(dsl->tape_file, operand1);
+     tscl_fossil_dsl_print_value(dsl->tape_file, operand1);
     fprintf(dsl->tape_file, ", ");
-    fossil_dsl_print_value(dsl->tape_file, operand2);
+     tscl_fossil_dsl_print_value(dsl->tape_file, operand2);
     fprintf(dsl->tape_file, ")\n");
 }
 
 // Add a bitwise operation to the tape
-void fossil_dsl_add_bitwise_operation(FossilDSL *dsl, const char *operation, FossilDSLValue operand1, FossilDSLValue operand2) {
-    fossil_dsl_add_binary_operation(dsl, "BITWISE", operation, operand1, operand2);
+void  tscl_fossil_dsl_add_bitwise_operation(FossilDSL *dsl, const char *operation, FossilDSLValue operand1, FossilDSLValue operand2) {
+     tscl_fossil_dsl_add_binary_operation(dsl, "BITWISE", operation, operand1, operand2);
 }
 
 // Add a loop header to the tape
-void fossil_dsl_add_loop_header(FossilDSL *dsl, const char *loop_variable, int start_value, int end_value) {
-    fossil_dsl_indent(dsl);
+void  tscl_fossil_dsl_add_loop_header(FossilDSL *dsl, const char *loop_variable, int start_value, int end_value) {
+     tscl_fossil_dsl_indent(dsl);
     fprintf(dsl->tape_file, "LOOP %s FROM %d TO %d START\n", loop_variable, start_value, end_value);
     dsl->indentation_level++;
 }
 
 // Add a loop to the tape
-void fossil_dsl_add_loop(FossilDSL *dsl, const char *loop_variable, int start_value, int end_value) {
-    fossil_dsl_add_loop_header(dsl, loop_variable, start_value, end_value);
+void  tscl_fossil_dsl_add_loop(FossilDSL *dsl, const char *loop_variable, int start_value, int end_value) {
+     tscl_fossil_dsl_add_loop_header(dsl, loop_variable, start_value, end_value);
 }
 
 // Helper function to close the current block in the tape
-void fossil_dsl_close_block(FossilDSL *dsl) {
+void  tscl_fossil_dsl_close_block(FossilDSL *dsl) {
     dsl->indentation_level--;
-    fossil_dsl_indent(dsl);
+     tscl_fossil_dsl_indent(dsl);
     fprintf(dsl->tape_file, "END\n");
 }
 
 // Finalize and close the tape file
-void fossil_dsl_erase(FossilDSL *dsl) {
-    fossil_dsl_debug(dsl, "End of program");
+void  tscl_fossil_dsl_erase(FossilDSL *dsl) {
+     tscl_fossil_dsl_debug(dsl, "End of program");
     if (dsl->tape_file) {
         fclose(dsl->tape_file);
     }

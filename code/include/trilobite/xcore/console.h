@@ -37,83 +37,63 @@
 
    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
 */
-#ifndef TSCL_THREAD_H
-#define TSCL_THREAD_H
+#ifndef TSCL_CONSOLE_H
+#define TSCL_CONSOLE_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#ifdef _WIN32 // Windows-specific
+#include <stdbool.h>
 
-#include <windows.h>
-
-typedef DWORD(WINAPI *CThreadFunc)(LPVOID); // Define your function pointer type
-typedef HANDLE cthread; // Define the thread type
-#else // POSIX-specific
-
-#include <pthread.h>
-
-typedef void *(*CThreadFunc)(void *); // Define your function pointer type
-typedef pthread_t cthread; // Define the thread type
-#endif
-
-#ifdef _WIN32
-#define CTHREAD_TASK_RETURN_TYPE DWORD WINAPI
-#define CTHREAD_TASK_ARG_TYPE LPVOID
-#else
-#define CTHREAD_TASK_RETURN_TYPE void*
-#define CTHREAD_TASK_ARG_TYPE void*
-#endif
-
-#ifdef _WIN32
-#define CTHREAD_CNULLPTR 0
-#else
-#define CTHREAD_CNULLPTR NULL
-#endif
-
-typedef struct {
-    cthread* threads;
-    int num_threads;
-} cthread_pool;
-
-typedef struct {
-    #ifdef _WIN32
-    HANDLE mutex;
-    #else
-    pthread_mutex_t mutex;
-    #endif
-} cmutex;
-
-#define cthread_task(name, arg) CTHREAD_TASK_RETURN_TYPE name(CTHREAD_TASK_ARG_TYPE arg)
+// Color Output Function
+//
+// This function enables colored console output by applying ANSI escape codes for text color.
+// It supports various colors including dark, light, and standard versions of common colors.
+//
+// Usage:
+// tscl_console_out_color("color_name", "formatted_text", ...);
+//
+// Supported Colors:
+// - "reset": Resets the text color to the default.
+// - "black", "dark_gray", "light_gray", "white": Various shades of gray and white.
+// - "dark_red", "light_red": Dark and light shades of red.
+// - "dark_green", "light_green": Dark and light shades of green.
+// - "dark_yellow", "light_yellow": Dark and light shades of yellow.
+// - "dark_blue", "light_blue": Dark and light shades of blue.
+// - "dark_magenta", "light_magenta": Dark and light shades of magenta.
+// - "dark_cyan", "light_cyan": Dark and light shades of cyan.
+//
+// Example:
+//
+// tscl_console_out_color("light_blue", "This is a %s message.\n", "light blue");
+//
 
 // =================================================================
-//  Classic Thread Management
+// output functions
 // =================================================================
-cthread tscl_thread_create(CThreadFunc func, void* arg);
-void tscl_thread_join(cthread handle);
-void tscl_thread_erase(cthread handle);
-void tscl_thread_sleep(unsigned int milliseconds);
-void tscl_thread_yield();
-void tscl_thread_detach(cthread handle);
-unsigned long tscl_thread_get_id();
+void tscl_console_out(const char *format, ...);
+void tscl_console_err(const char *format, ...);
+void tscl_console_out_color(const char *color_name, const char *format, ...);
+void tscl_console_clear(void);
+void tscl_console_flush(void);
+void tscl_console_progress(int iterations, int delay);
+void tscl_console_pause(void);
 
 // =================================================================
-//  Thread Pool Management
+// input functions
 // =================================================================
-cthread_pool tscl_thread_pool_create(int num_threads);
-void tscl_thread_pool_execute(cthread_pool pool, CThreadFunc func, void* arg);
-void tscl_thread_pool_wait(cthread_pool pool);
-void tscl_thread_pool_erase(cthread_pool pool);
-
-// =================================================================
-// Mutex thread managment
-// =================================================================
-void tscl_mutex_create(cmutex* mutex);
-void tscl_mutex_lock(cmutex* mutex);
-void tscl_mutex_unlock(cmutex* mutex);
-void tscl_mutex_erase(cmutex* mutex);
+char* tscl_console_in_get_line(void);
+char* tscl_console_in_read_line(const char* prompt);
+char* tscl_console_in_read_password(const char* prompt);
+bool tscl_console_in_valid_input(const char* prompt, bool (*validator)(const char*));
+bool tscl_console_in_confirm_yes_no(const char* question);
+int  tscl_console_in_confirm_menu(const char* question, const char** menu, int num_options);
+void tscl_console_in_confirm_multi_menu(const char* question, const char** menu, bool* selections, int num_options);
+bool tscl_console_in_confirm_exit(void);
+bool tscl_console_in_read_date(const char* prompt, int* year, int* month, int* day);
+bool tscl_console_in_read_time(const char* prompt, int* hour, int* minute, int* second);
 
 #ifdef __cplusplus
 }

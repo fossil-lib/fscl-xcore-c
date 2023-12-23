@@ -1,5 +1,5 @@
 /*  ----------------------------------------------------------------------------
-    File: demo_lambda.c
+    File: demo_reader.c
 
     Description:
     This demo file serves as a showcase of the Trilobite Stdlib in action. It provides
@@ -29,23 +29,41 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include "trilobite/xcore/lambda.h" // lib source code
+#include <trilobite/xcore/observer.h>
+#include <stdio.h>
+#include <stdbool.h>
 
-// Lambda function that prints an integer
-void print_integer_lambda(void* data) {
-    int* value = (int*)data;
-    printf("Lambda invoked with value: %d\n", *value);
-} // end of func
+// Example usage
+void exampleObserverUpdate(void* data) {
+    printf("Observer notified with data: %s\n", (const char*)data);
+}
 
 int main() {
-    clambda lambda;
-    int data = 42;
+    // Create a subject
+    csubject subject;
+    tscl_observe_create(&subject);
 
-    // Initialize the lambda with the print_integer_lambda function
-    lambda_init(&lambda, print_integer_lambda);
+    // Create an observer
+    cobserver observer;
+    observer.update = exampleObserverUpdate;
 
-    // Invoke the lambda with an integer data
-    lambda_invoke(&lambda, (void*)&data);
+    // Add the observer to the subject
+    tscl_observe_add_observer(&subject, &observer);
+
+    // Notify observers of an event
+    const char* eventData = "Event Occurred";
+    tscl_observe_notify(&subject, (void*)eventData);
+
+    // Additional functionality
+    if (tscl_observe_has_observers(&subject)) {
+        printf("Subject has observers.\n");
+    }
+
+    // Erase all observers
+    tscl_observe_erase_all(&subject);
+
+    // Erase the subject
+    tscl_observe_erase(&subject);
 
     return 0;
 } // end of func

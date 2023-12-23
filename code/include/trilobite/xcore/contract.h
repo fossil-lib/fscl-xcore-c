@@ -37,65 +37,44 @@
 
    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
 */
-#ifndef TSCL_CSV_H
-#define TSCL_CSV_H
+#ifndef TSCL_CONTRACT_H
+#define TSCL_CONTRACT_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdbool.h>
+#include <stddef.h>
 
-// Structure to hold CSV data
+// Define the contract type
 typedef struct {
-    char*** rows;
-    size_t num_rows;
-    size_t num_columns;
-} ccsv;
+    bool (*pre_condition)();
+    void (*post_condition)();
+} ccontract;
 
-/**
- * @brief Creates a ccsv structure.
- *
- * @return A pointer to the newly created ccsv structure.
- */
-ccsv* csv_parser_create();
+// =================================================================
+// create and erase
+// =================================================================
+ccontract *tscl_contract_create(bool (*pre_condition)(), void (*post_condition)());
 
-/**
- * @brief Erases a ccsv structure.
- *
- * @param data A double pointer to the ccsv structure to be erased.
- */
-void csv_parser_erase(ccsv** data);
-
-/**
- * @brief Parses a CSV file and populates a ccsv structure.
- *
- * @param file A pointer to the FILE structure representing the CSV file.
- * @param data A double pointer to the ccsv structure to be populated.
- */
-void csv_parser_parse(FILE* file, ccsv** data);
-
-/**
- * @brief Updates a specific cell in the ccsv structure.
- *
- * @param data A double pointer to the ccsv structure.
- * @param row The row index of the cell to be updated.
- * @param col The column index of the cell to be updated.
- * @param update The new content to be set in the specified cell.
- */
-void csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update);
-
-/**
- * @brief Retrieves the content of a specific cell in the ccsv structure.
- *
- * @param data A pointer to the ccsv structure.
- * @param row The row index of the cell to be retrieved.
- * @param col The column index of the cell to be retrieved.
- * @return The content of the specified cell.
- */
-const char* csv_parser_getter(const ccsv* data, size_t row, size_t col);
+// =================================================================
+// addintal functions
+// =================================================================
+bool tscl_contract_check_pre(ccontract *contract);
+bool tscl_contract_check_post(ccontract *contract);
+bool tscl_contract_assert(bool condition, const char *message);
+bool tscl_contract_require_not_null(const void *ptr, const char *param_name);
+bool tscl_contract_require_positive(int value, const char *param_name);
+bool tscl_contract_require_non_negative(int value, const char *param_name);
+bool tscl_contract_require_within_range(int value, int min, int max, const char *param_name);
+bool tscl_contract_require_within_double_range(double value, double min, double max, const char *param_name);
+bool tscl_contract_require_string_length(const char *str, size_t min_length, size_t max_length, const char *param_name);
+bool tscl_contract_require_pointer_equality(const void *ptr1, const void *ptr2, const char *param_name);
+bool tscl_contract_require_string_equality(const char *str1, const char *str2, const char *param_name);
+bool tscl_contract_require_array_length(const void *array, size_t expected_length, size_t element_size, const char *param_name);
+bool tscl_contract_require_custom_condition(bool (*custom_condition)(), const char *param_name);
 
 #ifdef __cplusplus
 }

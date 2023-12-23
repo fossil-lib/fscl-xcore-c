@@ -24,18 +24,18 @@ cthread_task(my_thread_function, arg) {
 // Test case for thread creation and join
 XTEST_CASE(test_thread_creation_and_join) {
     int thread1_number = 1;
-    cthread thread1 = thread_create(my_thread_function, (void*)&thread1_number);
+    cthread thread1 = tscl_thread_create(my_thread_function, (void*)&thread1_number);
     TEST_ASSERT_TRUE(thread1);
 
     int thread2_number = 2;
-    cthread thread2 = thread_create(my_thread_function, (void*)&thread2_number);
+    cthread thread2 = tscl_thread_create(my_thread_function, (void*)&thread2_number);
     TEST_ASSERT_TRUE(thread2);
 
-    thread_join(thread1);
-    thread_join(thread2);
+    tscl_thread_join(thread1);
+    tscl_thread_join(thread2);
 
-    thread_erase(thread1);
-    thread_erase(thread2);
+    tscl_thread_erase(thread1);
+    tscl_thread_erase(thread2);
 }
 
 //

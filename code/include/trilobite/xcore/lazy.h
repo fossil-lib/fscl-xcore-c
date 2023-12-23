@@ -37,83 +37,80 @@
 
    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
 */
-#ifndef TSCL_THREAD_H
-#define TSCL_THREAD_H
+#ifndef TSCL_LAZY_H
+#define TSCL_LAZY_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#ifdef _WIN32 // Windows-specific
+#include <stdbool.h>
 
-#include <windows.h>
+// Define a simple string type
+typedef struct {
+    char *data;
+} clazy_string;
 
-typedef DWORD(WINAPI *CThreadFunc)(LPVOID); // Define your function pointer type
-typedef HANDLE cthread; // Define the thread type
-#else // POSIX-specific
-
-#include <pthread.h>
-
-typedef void *(*CThreadFunc)(void *); // Define your function pointer type
-typedef pthread_t cthread; // Define the thread type
-#endif
-
-#ifdef _WIN32
-#define CTHREAD_TASK_RETURN_TYPE DWORD WINAPI
-#define CTHREAD_TASK_ARG_TYPE LPVOID
-#else
-#define CTHREAD_TASK_RETURN_TYPE void*
-#define CTHREAD_TASK_ARG_TYPE void*
-#endif
-
-#ifdef _WIN32
-#define CTHREAD_CNULLPTR 0
-#else
-#define CTHREAD_CNULLPTR NULL
-#endif
+// Enum to represent different data types
+typedef enum {
+    CLAZY_INT,
+    CLAZY_BOOL,
+    CLAZY_CHAR,
+    CLAZY_STRING,
+    CLAZY_NULL
+} clazy_type;
 
 typedef struct {
-    cthread* threads;
-    int num_threads;
-} cthread_pool;
+    int is_evaluated;
+    clazy_type type;
+    union {
+        int int_value;
+        bool bool_value;
+        char char_value;
+        clazy_string string_value;
+    } data;
 
-typedef struct {
-    #ifdef _WIN32
-    HANDLE mutex;
-    #else
-    pthread_mutex_t mutex;
-    #endif
-} cmutex;
-
-#define cthread_task(name, arg) CTHREAD_TASK_RETURN_TYPE name(CTHREAD_TASK_ARG_TYPE arg)
-
-// =================================================================
-//  Classic Thread Management
-// =================================================================
-cthread tscl_thread_create(CThreadFunc func, void* arg);
-void tscl_thread_join(cthread handle);
-void tscl_thread_erase(cthread handle);
-void tscl_thread_sleep(unsigned int milliseconds);
-void tscl_thread_yield();
-void tscl_thread_detach(cthread handle);
-unsigned long tscl_thread_get_id();
+    // Memoization cache
+    union {
+        int memoized_int;
+        bool memoized_bool;
+        char memoized_char;
+        clazy_string memoized_string;
+    } cache;
+} clazy;
 
 // =================================================================
-//  Thread Pool Management
+// create and erase
 // =================================================================
-cthread_pool tscl_thread_pool_create(int num_threads);
-void tscl_thread_pool_execute(cthread_pool pool, CThreadFunc func, void* arg);
-void tscl_thread_pool_wait(cthread_pool pool);
-void tscl_thread_pool_erase(cthread_pool pool);
+clazy tscl_lazy_create(clazy_type type);
+void tscl_lazy_erase(clazy *lazy);
 
 // =================================================================
-// Mutex thread managment
+// Jedi Dreamer force functions
 // =================================================================
-void tscl_mutex_create(cmutex* mutex);
-void tscl_mutex_lock(cmutex* mutex);
-void tscl_mutex_unlock(cmutex* mutex);
-void tscl_mutex_erase(cmutex* mutex);
+void tscl_lazy_force(clazy *lazy);
+int tscl_lazy_force_int(clazy *lazy);
+bool tscl_lazy_force_bool(clazy *lazy);
+char tscl_lazy_force_char(clazy *lazy);
+const char* tscl_lazy_force_string(clazy *lazy);
+
+// =================================================================
+// addintal functions
+// =================================================================
+clazy tscl_lazy_sequence(void);
+int tscl_lazy_sequence_force(clazy *lazy, int n);
+void tscl_lazy_set_int(clazy *lazy, int value);
+void tscl_lazy_set_cstring(clazy *lazy, const char *value);
+void tscl_lazy_set_bool(clazy *lazy, bool value);
+void tscl_lazy_set_letter(clazy *lazy, char value);
+void tscl_lazy_conditional_eval(clazy *lazy, int condition);
+void tscl_lazy_map_int(clazy *lazy, int (*mapFunction)(int));
+void tscl_lazy_map_bool(clazy *lazy, bool (*mapFunction)(bool));
+void tscl_lazy_map_char(clazy *lazy, char (*mapFunction)(char));
+void tscl_lazy_map_cstring(clazy *lazy, const char* (*mapFunction)(const char*));
+void tscl_lazy_concat_cstrings(clazy *result, clazy *str1, clazy *str2);
+void tscl_lazy_print(clazy *lazy);
 
 #ifdef __cplusplus
 }

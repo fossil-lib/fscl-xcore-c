@@ -20,58 +20,58 @@ XTEST_CASE(test_regex_match_and_extract_normal) {
     const char *text = "@A123b!";
 
     // Initialize regex
-    TEST_ASSERT_EQUAL_INT(0, regex_create(&my_regex, pattern));
+    TEST_ASSERT_EQUAL_INT(0, tscl_regex_create(&my_regex, pattern));
 
     // Match and extract substring
-    const char *matched_substring = regex_match_and_extract(&my_regex, text);
+    const char *matched_substring = tscl_regex_match_and_extract(&my_regex, text);
 
     TEST_ASSERT_NOT_NULL_PTR(matched_substring);
     TEST_ASSERT_EQUAL_STRING("A123b", matched_substring);
 
     // Reset regex for reuse
-    regex_reset(&my_regex);
+    tscl_regex_reset(&my_regex);
 
     // Match again with a different text
     const char *new_text = "xyab";
-    TEST_ASSERT_TRUE(regex_match(&my_regex, new_text));
+    TEST_ASSERT_TRUE(tscl_regex_match(&my_regex, new_text));
 
     // Clean up
-    TEST_ASSERT_EQUAL_STRING("xyab", regex_get_matched_substring(&my_regex));
+    TEST_ASSERT_EQUAL_STRING("xyab", tscl_regex_get_matched_substring(&my_regex));
 }
 
 XTEST_CASE(test_regex_match_and_extract_no_match) {
     cregex my_regex;
     const char *pattern_no_match = "x.*y";
-    TEST_ASSERT_TRUE(regex_create(&my_regex, pattern_no_match) == 0);
-    TEST_ASSERT_FALSE(regex_match(&my_regex, "abc") == 1);
+    TEST_ASSERT_TRUE(tscl_regex_create(&my_regex, pattern_no_match) == 0);
+    TEST_ASSERT_FALSE(tscl_regex_match(&my_regex, "abc") == 1);
 }
 
 XTEST_CASE(test_regex_match_and_extract_empty_pattern) {
     cregex my_regex;
     const char *empty_pattern = "";
-    TEST_ASSERT_TRUE(regex_create(&my_regex, empty_pattern) == 0);
-    TEST_ASSERT_TRUE(regex_match(&my_regex, "abc") == 1);
+    TEST_ASSERT_TRUE(tscl_regex_create(&my_regex, empty_pattern) == 0);
+    TEST_ASSERT_TRUE(tscl_regex_match(&my_regex, "abc") == 1);
 }
 
 XTEST_CASE(test_regex_match_and_extract_single_char_pattern) {
     cregex my_regex;
     const char *single_char_pattern = "a";
-    TEST_ASSERT_TRUE(regex_create(&my_regex, single_char_pattern) == 0);
-    TEST_ASSERT_TRUE(regex_match(&my_regex, "abc") == 1);
+    TEST_ASSERT_TRUE(tscl_regex_create(&my_regex, single_char_pattern) == 0);
+    TEST_ASSERT_TRUE(tscl_regex_match(&my_regex, "abc") == 1);
 }
 
 XTEST_CASE(test_regex_match_and_extract_star_pattern) {
     cregex my_regex;
     const char *star_pattern = "*";
-    TEST_ASSERT_TRUE(regex_create(&my_regex, star_pattern) == 0);
-    TEST_ASSERT_TRUE(regex_match(&my_regex, "abc") == 1);
+    TEST_ASSERT_TRUE(tscl_regex_create(&my_regex, star_pattern) == 0);
+    TEST_ASSERT_TRUE(tscl_regex_match(&my_regex, "abc") == 1);
 }
 
 XTEST_CASE(test_regex_match_and_extract_dot_star_pattern) {
     cregex my_regex;
     const char *dot_star_pattern = ".*";
-    TEST_ASSERT_TRUE(regex_create(&my_regex, dot_star_pattern) == 0);
-    TEST_ASSERT_TRUE(regex_match(&my_regex, "abc") == 1);
+    TEST_ASSERT_TRUE(tscl_regex_create(&my_regex, dot_star_pattern) == 0);
+    TEST_ASSERT_TRUE(tscl_regex_match(&my_regex, "abc") == 1);
 }
 
 //

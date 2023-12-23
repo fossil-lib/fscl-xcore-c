@@ -29,7 +29,7 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#include <trilobite/xcore/ini.h>
+#include <trilobite/xcore/parser.h>
 #include <stdio.h>
 
 // Structure to store energy data
@@ -53,14 +53,14 @@ int main() {
     }
 
     cini* iniData;
-    ini_parser_create(&iniData);
-    ini_parser_parse(configFile, &iniData);
+     tscl_ini_parser_create(&iniData);
+     tscl_ini_parser_parse(configFile, &iniData);
     fclose(configFile);
 
     // Extract initial energy data
     EnergyData energy;
-    energy.consumption = atof(ini_parser_get_value(iniData, "Energy", "Consumption"));
-    energy.production = atof(ini_parser_get_value(iniData, "Energy", "Production"));
+    energy.consumption = atof( tscl_ini_parser_get_value(iniData, "Energy", "Consumption"));
+    energy.production = atof( tscl_ini_parser_get_value(iniData, "Energy", "Production"));
 
     // Display initial energy data
     printf("Initial Energy Data:\n");
@@ -72,18 +72,18 @@ int main() {
     energy.production += 5.2;    // Simulate 5.2 kWh of additional renewable energy production
 
     // Update the configuration file with the new energy data
-    ini_parser_set_value(iniData, "Energy", "Consumption", energy.consumption);
-    ini_parser_set_value(iniData, "Energy", "Production", energy.production);
+     tscl_ini_parser_set_value(iniData, "Energy", "Consumption", energy.consumption);
+     tscl_ini_parser_set_value(iniData, "Energy", "Production", energy.production);
 
     // Save the updated configuration to a new file
     FILE* updatedConfigFile = fopen("updated_energy_config.ini", "w");
     if (updatedConfigFile == NULL) {
         perror("Error opening updated configuration file");
-        ini_parser_erase(&iniData);
+         tscl_ini_parser_erase(&iniData);
         return 1;
     }
 
-    ini_parser_save(updatedConfigFile, iniData);
+     tscl_ini_parser_save(updatedConfigFile, iniData);
     fclose(updatedConfigFile);
 
     // Display updated energy data
@@ -91,7 +91,7 @@ int main() {
     printEnergyData(&energy);
 
     // Cleanup
-    ini_parser_erase(&iniData);
+     tscl_ini_parser_erase(&iniData);
 
     return 0;
 } // end of func

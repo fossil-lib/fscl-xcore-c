@@ -15,11 +15,11 @@ XTEST_DATA(DSLDummy) {
 
 XTEST_FIXTURE(dsl_fixture);
 XTEST_SETUP(dsl_fixture) {
-    fossil_dsl_create(&compiler.dsl, "test_output.tape");
+     tscl_fossil_dsl_create(&compiler.dsl, "test_output.tape");
 }
 
 XTEST_TEARDOWN(dsl_fixture) {
-    fossil_dsl_erase(&compiler.dsl);
+     tscl_fossil_dsl_erase(&compiler.dsl);
 }
 
 //
@@ -27,19 +27,19 @@ XTEST_TEARDOWN(dsl_fixture) {
 //
 
 XTEST_CASE_FIXTURE(dsl_fixture, test_add_function) {
-    fossil_dsl_add_function(&compiler.dsl, "test_function");
+     tscl_fossil_dsl_add_function(&compiler.dsl, "test_function");
     TEST_ASSERT_EQUAL_INT(0, compiler.dsl.error_code);
 }
 
 XTEST_CASE_FIXTURE(dsl_fixture, test_call_function) {
-    fossil_dsl_add_function(&compiler.dsl, "test_main");
-    fossil_dsl_call_function(&compiler.dsl, "test_function", NULL, 0);
+     tscl_fossil_dsl_add_function(&compiler.dsl, "test_main");
+     tscl_fossil_dsl_call_function(&compiler.dsl, "test_function", NULL, 0);
     TEST_ASSERT_EQUAL_INT(0, compiler.dsl.error_code);
 }
 
 XTEST_CASE_FIXTURE(dsl_fixture, test_add_condition_header) {
-    fossil_dsl_add_function(&compiler.dsl, "test_main");
-    fossil_dsl_add_condition(&compiler.dsl, (FossilDSLValue){.type = NULL_TYPE}, "true_branch", "false_branch");
+     tscl_fossil_dsl_add_function(&compiler.dsl, "test_main");
+     tscl_fossil_dsl_add_condition(&compiler.dsl, (FossilDSLValue){.type = NULL_TYPE}, "true_branch", "false_branch");
     TEST_ASSERT_EQUAL_INT(0, compiler.dsl.error_code);
 }
 

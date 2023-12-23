@@ -37,83 +37,98 @@
 
    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
 */
-#ifndef TSCL_THREAD_H
-#define TSCL_THREAD_H
+#ifndef TSCL_FILE_PARSER_H
+#define TSCL_FILE_PARSER_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#ifdef _WIN32 // Windows-specific
-
-#include <windows.h>
-
-typedef DWORD(WINAPI *CThreadFunc)(LPVOID); // Define your function pointer type
-typedef HANDLE cthread; // Define the thread type
-#else // POSIX-specific
-
-#include <pthread.h>
-
-typedef void *(*CThreadFunc)(void *); // Define your function pointer type
-typedef pthread_t cthread; // Define the thread type
-#endif
-
-#ifdef _WIN32
-#define CTHREAD_TASK_RETURN_TYPE DWORD WINAPI
-#define CTHREAD_TASK_ARG_TYPE LPVOID
-#else
-#define CTHREAD_TASK_RETURN_TYPE void*
-#define CTHREAD_TASK_ARG_TYPE void*
-#endif
-
-#ifdef _WIN32
-#define CTHREAD_CNULLPTR 0
-#else
-#define CTHREAD_CNULLPTR NULL
-#endif
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct {
-    cthread* threads;
-    int num_threads;
-} cthread_pool;
+    char* json_data;
+} cjson;
 
 typedef struct {
-    #ifdef _WIN32
-    HANDLE mutex;
-    #else
-    pthread_mutex_t mutex;
-    #endif
-} cmutex;
+    char key[256];
+    char value[256];
+} cjson_pair;
 
-#define cthread_task(name, arg) CTHREAD_TASK_RETURN_TYPE name(CTHREAD_TASK_ARG_TYPE arg)
+typedef struct {
+    cjson_pair* pairs;
+    size_t numPairs;
+} cjson_object;
+
+typedef struct {
+    char** items;
+    size_t numItems;
+} cjson_array;
+
+enum {TRILO_INI_FILE_LENGTH = 1555};
+
+// Structure to store INI data
+typedef struct {
+    char key[TRILO_INI_FILE_LENGTH];
+    char value[TRILO_INI_FILE_LENGTH];
+} cini_entry;
+
+typedef struct {
+    cini_entry* entries;
+    size_t size;
+} cini;
+
+// Structure to hold CSV data
+typedef struct {
+    char*** rows;
+    size_t num_rows;
+    size_t num_columns;
+} ccsv;
 
 // =================================================================
-//  Classic Thread Management
+// create and erase
 // =================================================================
-cthread tscl_thread_create(CThreadFunc func, void* arg);
-void tscl_thread_join(cthread handle);
-void tscl_thread_erase(cthread handle);
-void tscl_thread_sleep(unsigned int milliseconds);
-void tscl_thread_yield();
-void tscl_thread_detach(cthread handle);
-unsigned long tscl_thread_get_id();
+cjson*  tscl_json_parser_create();
+void  tscl_json_parser_erase(cjson** data);
 
 // =================================================================
-//  Thread Pool Management
+// avaliable functions
 // =================================================================
-cthread_pool tscl_thread_pool_create(int num_threads);
-void tscl_thread_pool_execute(cthread_pool pool, CThreadFunc func, void* arg);
-void tscl_thread_pool_wait(cthread_pool pool);
-void tscl_thread_pool_erase(cthread_pool pool);
+int  tscl_json_parser_parse(FILE* file, cjson** data);
+void  tscl_json_parser_setter(cjson** data, const char* update);
+const char*  tscl_json_parser_getter(cjson** data);
+void  tscl_json_parser_erase_meta(cjson** data);
+cjson_object*  tscl_json_parser_get_object(cjson** data);
+cjson_array*  tscl_json_parser_get_array(cjson** data);
 
 // =================================================================
-// Mutex thread managment
+// create and erase
 // =================================================================
-void tscl_mutex_create(cmutex* mutex);
-void tscl_mutex_lock(cmutex* mutex);
-void tscl_mutex_unlock(cmutex* mutex);
-void tscl_mutex_erase(cmutex* mutex);
+void  tscl_ini_parser_create(cini** data);
+void  tscl_ini_parser_erase(cini** data);
+
+// =================================================================
+// avaliable functions
+// =================================================================
+void  tscl_ini_parser_parse(FILE* file, cini** data);
+void  tscl_ini_parser_setter(cini** data, const char* update);
+cini*  tscl_ini_parser_getter(cini** data);
+
+// =================================================================
+// create and erase
+// =================================================================
+ccsv*  tscl_csv_parser_create();
+void  tscl_csv_parser_erase(ccsv** data);
+
+// =================================================================
+// avaliable functions
+// =================================================================
+void  tscl_csv_parser_parse(FILE* file, ccsv** data);
+void  tscl_csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update);
+const char*  tscl_csv_parser_getter(const ccsv* data, size_t row, size_t col);
+
 
 #ifdef __cplusplus
 }
