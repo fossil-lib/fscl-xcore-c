@@ -46,6 +46,7 @@ extern "C"
 #endif
 
 #include <stdbool.h>
+#include <stddef.h>
 
 // Define the contract type
 typedef struct {
