@@ -10,11 +10,22 @@
 #include <trilobite/xassert.h> // extra asserts
 #include <trilobite/xmock.h> // mocking functions
 
+// Example pre-condition function
+XMOCK_FUNC_DEF(bool ,example_pre_condition) {
+    // Add your pre-condition logic here
+    return true;  // Replace with your actual condition
+}
+
+// Example post-condition function
+XMOCK_FUNC_DEF(void, example_post_condition) {
+    // Add your post-condition logic here
+}
+
 // Function with contracts
 XMOCK_FUNC_DEF(void, example_function, int *array, size_t array_length, const char *str, void *ptr) {
     // Create contracts
-    ccontract *pre_condition_contract = tscl_contract_create(example_pre_condition, NULL);
-    ccontract *post_condition_contract = tscl_contract_create(NULL, example_post_condition);
+    ccontract *pre_condition_contract = tscl_contract_create(xmock_example_pre_condition, NULL);
+    ccontract *post_condition_contract = tscl_contract_create(NULL, xmock_example_post_condition);
 
     // Pre-condition checks
     tscl_contract_require_not_null(array, "array");
