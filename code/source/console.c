@@ -31,6 +31,7 @@
 */
 #include "trilobite/xcore/console.h"
 #ifdef _WIN32
+#include <windows.h>
 #include <conio.h>
 #else
 #define _GNU_SOURCE // for getline function
