@@ -29,19 +29,18 @@
     (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
     ----------------------------------------------------------------------------
 */
-#define _GNU_SOURCE // for getline function
 #include "trilobite/xcore/console.h"
+#ifdef _WIN32
+#include <conio.h>
+#else
+#define _GNU_SOURCE // for getline function
+#include <termios.h>
+#include <unistd.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-
-#ifdef _WIN32
-#include <conio.h>
-#else
-#include <termios.h>
-#include <unistd.h>
-#endif
 
 enum {
     MAX_INPUT_LENGTH = 1024
