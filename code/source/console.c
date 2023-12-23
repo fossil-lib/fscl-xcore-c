@@ -138,7 +138,7 @@ void tscl_console_progress(int iterations, int delay) {
         fflush(stdout);
 
 #ifdef _WIN32
-        Sleep(delay);  // Sleep in milliseconds on Windows
+        _sleep(delay);  // Sleep in milliseconds on Windows
 #else
         sleep(delay * 1000);  // Sleep in microseconds on POSIX
 #endif
@@ -292,20 +292,21 @@ char* tscl_console_in_read_password(const char* prompt) {
 
     disable_echo();
 
-    size_t bufsize = 0;
-    char* password = NULL;
-    
-    // Ensure getline is declared explicitly
-    ssize_t bytesRead = getline(&password, &bufsize, stdin);
+    size_t bufsize = 64;  // Adjust this size as needed
+    char* password = malloc(bufsize * sizeof(char));
 
-    enable_echo();
+    if (password == NULL) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
 
-    // Check if getline was successful
-    if (bytesRead == -1) {
-        perror("getline");
+    if (fgets(password, bufsize, stdin) == NULL) {
+        perror("fgets");
         free(password);
         exit(EXIT_FAILURE);
     }
+
+    enable_echo();
 
     // Remove newline character at the end of the password
     size_t len = strlen(password);
