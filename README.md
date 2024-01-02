@@ -1,8 +1,8 @@
-# TSCL Core Libraries - **C**
+# Fossil XCore - **C**
 
-The TSCL Core is a robust and versatile set of libraries designed to serve as the foundational framework for essential programming tasks, ensuring seamless development across a variety of applications. At its core, TSCL provides a comprehensive suite of tools that empower developers to create efficient and responsive software solutions.
+Fossil Standard Component Libraries (FSCL) by Fossil Logic represent the pinnacle of software development, embodying our commitment to quality, security, and practicality. These meticulously curated libraries serve as the cornerstone for crafting cutting-edge applications, offering a foundation built on excellence in code. With FSCL, Fossil Logic empowers developers to seamlessly integrate standardized components that elevate the overall performance and reliability of digital solutions, setting a new standard for software excellence.
 
-By combining these essential components, the TSCL Core ensures a solid foundation for software development, promoting code efficiency, maintainability, and scalability. Whether you're building a multi-threaded application, managing file operations, leveraging lambda functions, or handling user inputs, TSCL Core provides a comprehensive toolkit to streamline your development process and elevate the performance of your software projects.
+Fossil XCore serves as the foundational building block for your software endeavors. This versatile library provides essential core functionalities, streamlining the development process and ensuring a solid framework for your applications. With Fossil XCore, create software that is not only reliable but also flexible enough to adapt to the evolving needs of your projects.
 
 ## Who is This For?
 
@@ -27,14 +27,14 @@ Create a directory named subprojects in the root directory, next create a file n
 
    ```bash
    # ================ #
-   #  TSCL Wrap File. #
+   #  FSCL Wrap File. #
    # ================ #
    [wrap-git]
-   url = https://github.com/trilobite-stdlib/tscl-xcore-c.git
+   url = https://github.com/fossil-lib/fscl-xcore-c.git
    revision = main
    
    [provide]
-   tscl-xcore-c = tscl_xcore_c_dep
+   fscl-xcore-c = fscl_xcore_c_dep
    ```
 
 2. **Integrate Wrap File in Meson Build**:
@@ -44,7 +44,7 @@ Create a directory named subprojects in the root directory, next create a file n
        default_options : ['warning_level=3'])
 
    exe = executable('my_project', 'my_project.c',
-       dependencies : dependency('tscl-xcore-c'), # add this line
+       dependencies : dependency('fscl-xcore-c'), # add this line
        install : true)
 
    test('basic', exe)
@@ -62,24 +62,23 @@ Here is the link to the [Refrence Docs](https://trilobite.home.blog/reference-do
 
 ## Including the Demo and Running Tests
 
-To include the demo and run tests, you can use the following options when configuring the build:
+To run tests, you can use the following options when configuring the build:
 
-- **Including the Demo**: Add `-Dwith_demo=enabled` when configuring the build.
 - **Running Tests**: Add `-Dwith_test=enabled` when configuring the build.
 
 Example:
 
 ```bash
-meson setup builddir -Dwith_demo=enabled -Dwith_test=enabled
+meson setup builddir -Dwith_test=enabled
 ```
 
 ## Contributing
 
-If you're interested in contributing to this project, please consider opening pull requests or creating issues on the [GitHub repository](https://github.com/dreamer-coding-555/meson-lib-c). Be sure to read the documentation on the [project website](https://trilobite.home.blog).
+If you're interested in contributing to this project, please consider opening pull requests or creating issues on the [GitHub repository](https://github.com/fossil-lib/fscl-xcore-c). Be sure to read the documentation on the [project website](https://trilobite.home.blog).
 
 ## Feedback and Support
 
-If you encounter any issues, have questions, or would like to provide feedback, don't hesitate to open an issue on the [GitHub repository](https://github.com/dreamer-coding-555/meson-lib-c/issues).
+If you encounter any issues, have questions, or would like to provide feedback, don't hesitate to open an issue on the [GitHub repository](https://github.com/fossil-lib/fscl-xcore-c/issues).
 
 ## License
 
