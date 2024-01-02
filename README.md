@@ -56,10 +56,6 @@ Create a directory named subprojects in the root directory, next create a file n
    meson compile -C builddir
    ```
 
-4. **Visit the reference guide to learn how to this**
-
-Here is the link to the [Refrence Docs](https://trilobite.home.blog/reference-docs/)
-
 ## Including the Demo and Running Tests
 
 To run tests, you can use the following options when configuring the build:
@@ -74,7 +70,7 @@ meson setup builddir -Dwith_test=enabled
 
 ## Contributing
 
-If you're interested in contributing to this project, please consider opening pull requests or creating issues on the [GitHub repository](https://github.com/fossil-lib/fscl-xcore-c). Be sure to read the documentation on the [project website](https://trilobite.home.blog).
+If you're interested in contributing to this project, please consider opening pull requests or creating issues on the [GitHub repository](https://github.com/fossil-lib/fscl-xcore-c).
 
 ## Feedback and Support
 
