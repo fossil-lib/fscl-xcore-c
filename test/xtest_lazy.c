@@ -1,56 +1,62 @@
 /*
-   under:   trilobite stdlib
-   author:  Michael Gene Brockus (Dreamer)
-   gmail:   <michaelbrockus@gmail.com>
-   website: <https://trilobite.home.blog>
+==============================================================================
+Author: Michael Gene Brockus (Dreamer)
+Email: michaelbrockus@gmail.com
+Organization: Fossil Logic
+Description: 
+    This file is part of the Fossil Logic project, where innovation meets
+    excellence in software development. Michael Gene Brockus, also known as
+    "Dreamer," is a dedicated contributor to this project. For any inquiries,
+    feel free to contact Michael at michaelbrockus@gmail.com.
+==============================================================================
 */
-#include "trilobite/xcore/lazy.h" // lib source code
+#include "fossil/xcore/lazy.h" // lib source code
 
-#include <trilobite/xtest.h>   // basic test tools
-#include <trilobite/xassert.h> // extra asserts
+#include <fossil/xtest.h>   // basic test tools
+#include <fossil/xassert.h> // extra asserts
 
 //
 // XUNIT TEST CASES
 //
 XTEST_CASE(test_lazy_int) {
-    clazy intLazy = tscl_lazy_create(CLAZY_INT);
-    TEST_ASSERT_EQUAL_INT(42, tscl_lazy_force_int(&intLazy));
-    tscl_lazy_erase(&intLazy);
+    clazy intLazy = fscl_lazy_create(CLAZY_INT);
+    TEST_ASSERT_EQUAL_INT(42, fscl_lazy_force_int(&intLazy));
+    fscl_lazy_erase(&intLazy);
 }
 
 XTEST_CASE(test_lazy_bool) {
-    clazy boolLazy = tscl_lazy_create(CLAZY_BOOL);
-    TEST_ASSERT_FALSE(tscl_lazy_force_bool(&boolLazy));  // Default is false
-    tscl_lazy_erase(&boolLazy);
+    clazy boolLazy = fscl_lazy_create(CLAZY_BOOL);
+    TEST_ASSERT_FALSE(fscl_lazy_force_bool(&boolLazy));  // Default is false
+    fscl_lazy_erase(&boolLazy);
 }
 
 XTEST_CASE(test_lazy_char) {
-    clazy charLazy = tscl_lazy_create(CLAZY_CHAR);
-    TEST_ASSERT_EQUAL_CHAR('\0', tscl_lazy_force_char(&charLazy));
-    tscl_lazy_erase(&charLazy);
+    clazy charLazy = fscl_lazy_create(CLAZY_CHAR);
+    TEST_ASSERT_EQUAL_CHAR('\0', fscl_lazy_force_char(&charLazy));
+    fscl_lazy_erase(&charLazy);
 }
 
 XTEST_CASE(test_lazy_string) {
-    clazy stringLazy = tscl_lazy_create(CLAZY_STRING);
-    TEST_ASSERT_NULL_PTR(tscl_lazy_force_string(&stringLazy));  // Default is NULL
-    tscl_lazy_erase(&stringLazy);
+    clazy stringLazy = fscl_lazy_create(CLAZY_STRING);
+    TEST_ASSERT_CNULLPTR(fscl_lazy_force_string(&stringLazy));  // Default is NULL
+    fscl_lazy_erase(&stringLazy);
 }
 
 XTEST_CASE(test_lazy_sequence) {
-    clazy sequenceLazy = tscl_lazy_sequence();
+    clazy sequenceLazy = fscl_lazy_sequence();
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT_EQUAL_INT(i, tscl_lazy_sequence_force(&sequenceLazy, i));
+        TEST_ASSERT_EQUAL_INT(i, fscl_lazy_sequence_force(&sequenceLazy, i));
     }
-    tscl_lazy_erase(&sequenceLazy);
+    fscl_lazy_erase(&sequenceLazy);
 }
 
 //
 // XUNIT-TEST RUNNER
 //
-XTEST_GROUP_DEFINE(test_lazy_group) {
-    XTEST_RUN_UNIT(test_lazy_int, runner);
-    XTEST_RUN_UNIT(test_lazy_bool, runner);
-    XTEST_RUN_UNIT(test_lazy_char, runner);
-    XTEST_RUN_UNIT(test_lazy_string, runner);
-    XTEST_RUN_UNIT(test_lazy_sequence, runner);
+XTEST_DEFINE_POOL(test_lazy_group) {
+    XTEST_RUN_UNIT(test_lazy_int);
+    XTEST_RUN_UNIT(test_lazy_bool);
+    XTEST_RUN_UNIT(test_lazy_char);
+    XTEST_RUN_UNIT(test_lazy_string);
+    XTEST_RUN_UNIT(test_lazy_sequence);
 } // end of function main

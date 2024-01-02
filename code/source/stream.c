@@ -1,35 +1,16 @@
-/*  ----------------------------------------------------------------------------
-    File: stream.c
-
-    Description:
-    This source file contains the code entry point for the Trilobite Stdlib project.
-    It demonstrates the usage of various utilities and functions provided by the
-    Trilobite Stdlib to enhance software development.
-
-    Author: Michael Gene Brockus (Dreamer)
-    Email: michaelbrockus@gmail.com
-    Website: [Trilobite Coder Blog](https://trilobite.home.blog)
-
-    Project: Trilobite Stdlib
-
-    License: Apache License 2.0
-    SPDX Identifier: Apache-2.0
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
-
-    Unless required by applicable law or agreed to in writing, software distributed under the License
-    is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-    or implied. See the License for the specific language governing permissions and limitations
-    under the License.
-
-    Please review the full text of the Apache License 2.0 for the complete terms and conditions.
-
-    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
-    ----------------------------------------------------------------------------
+/*
+==============================================================================
+Author: Michael Gene Brockus (Dreamer)
+Email: michaelbrockus@gmail.com
+Organization: Fossil Logic
+Description: 
+    This file is part of the Fossil Logic project, where innovation meets
+    excellence in software development. Michael Gene Brockus, also known as
+    "Dreamer," is a dedicated contributor to this project. For any inquiries,
+    feel free to contact Michael at michaelbrockus@gmail.com.
+==============================================================================
 */
-#include "trilobite/xcore/stream.h"
+#include "fossil/xcore/stream.h"
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
@@ -52,7 +33,7 @@
     b = ROTL(b, 7);
 
 // Function to open a file
-int tscl_stream_open(cstream *stream, const char *filename, const char *mode) {
+int fscl_stream_open(cstream *stream, const char *filename, const char *mode) {
     if (strlen(filename) >= MAX_FILENAME_LENGTH) {
         fprintf(stderr, "Filename too long.\n");
         return -1;
@@ -69,7 +50,7 @@ int tscl_stream_open(cstream *stream, const char *filename, const char *mode) {
 } // end of func
 
 // Function to close a file
-void tscl_stream_close(cstream *stream) {
+void fscl_stream_close(cstream *stream) {
     if (stream->file != NULL) {
         fclose(stream->file);
         stream->file = NULL;
@@ -77,7 +58,7 @@ void tscl_stream_close(cstream *stream) {
 } // end of func
 
 // Function to read from a file
-size_t tscl_stream_read(cstream *stream, void *buffer, size_t size, size_t count) {
+size_t fscl_stream_read(cstream *stream, void *buffer, size_t size, size_t count) {
     if (stream->file == NULL) {
         fprintf(stderr, "File not open.\n");
         return 0;
@@ -86,7 +67,7 @@ size_t tscl_stream_read(cstream *stream, void *buffer, size_t size, size_t count
 } // end of func
 
 // Function to write to a file
-size_t tscl_stream_write(cstream *stream, const void *buffer, size_t size, size_t count) {
+size_t fscl_stream_write(cstream *stream, const void *buffer, size_t size, size_t count) {
     if (stream->file == NULL) {
         fprintf(stderr, "File not open.\n");
         return 0;
@@ -96,7 +77,7 @@ size_t tscl_stream_write(cstream *stream, const void *buffer, size_t size, size_
 } // end of func
 
 // Function to append to a file
-int tscl_stream_append(cstream *stream, const void *buffer, size_t size, size_t count) {
+int fscl_stream_append(cstream *stream, const void *buffer, size_t size, size_t count) {
     if (stream->file == NULL) {
         fprintf(stderr, "File not open.\n");
         return -1;
@@ -107,7 +88,7 @@ int tscl_stream_append(cstream *stream, const void *buffer, size_t size, size_t 
 } // end of func
 
 // Function to seek within a file
-int tscl_stream_seek(cstream *stream, long offset, int origin) {
+int fscl_stream_seek(cstream *stream, long offset, int origin) {
     if (stream->file == NULL) {
         fprintf(stderr, "File not open.\n");
         return -1;
@@ -117,7 +98,7 @@ int tscl_stream_seek(cstream *stream, long offset, int origin) {
 } // end of func
 
 // Function to save the file with a new name
-int tscl_stream_save(cstream *stream, const char *new_filename) {
+int fscl_stream_save(cstream *stream, const char *new_filename) {
     if (strlen(new_filename) >= MAX_FILENAME_LENGTH) {
         fprintf(stderr, "New filename too long.\n");
         return -1;
@@ -135,11 +116,11 @@ int tscl_stream_save(cstream *stream, const char *new_filename) {
         return -1;
     }
 
-    return tscl_stream_open(stream, new_filename, "r");
+    return fscl_stream_open(stream, new_filename, "r");
 } // end of func
 
 // Function to copy a file to a new location
-int tscl_stream_copy(const char *source_filename, const char *destination_filename) {
+int fscl_stream_copy(const char *source_filename, const char *destination_filename) {
     FILE *source_file = fopen(source_filename, "rb");
     if (source_file == NULL) {
         fprintf(stderr, "Failed to open source file: %s\n", source_filename);
@@ -173,11 +154,11 @@ int tscl_stream_copy(const char *source_filename, const char *destination_filena
 } // end of func
 
 // Function to create a backup of a file
-int tscl_stream_backup(const char *filename, const char *backup_suffix) {
+int fscl_stream_backup(const char *filename, const char *backup_suffix) {
     char backup_filename[MAX_FILENAME_LENGTH + 10];  // Length of backup_suffix + maximum integer length
     snprintf(backup_filename, MAX_FILENAME_LENGTH + 10, "%s%s", filename, backup_suffix);
 
-    if (tscl_stream_copy(filename, backup_filename) != 0) {
+    if (fscl_stream_copy(filename, backup_filename) != 0) {
         fprintf(stderr, "Failed to create backup for %s.\n", filename);
         return -1;
     }
@@ -185,7 +166,7 @@ int tscl_stream_backup(const char *filename, const char *backup_suffix) {
     return 0;
 } // end of func
 
-int tscl_stream_file_exists(const char *filename) {
+int fscl_stream_file_exists(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file) {
         fclose(file);
@@ -194,7 +175,7 @@ int tscl_stream_file_exists(const char *filename) {
     return 0;  // File does not exist
 } // end of func
 
-long tscl_stream_get_size(cstream *stream) {
+long fscl_stream_get_size(cstream *stream) {
     if (stream && stream->file) {
         fseek(stream->file, 0, SEEK_END);
         long size = ftell(stream->file);
@@ -204,7 +185,7 @@ long tscl_stream_get_size(cstream *stream) {
     return -1;  // Error
 } // end of func
 
-int tscl_stream_delete(const char *filename) {
+int fscl_stream_delete(const char *filename) {
     if (remove(filename) == 0) {
         return 0;  // File deleted successfully
     }
@@ -263,7 +244,7 @@ void chacha20_init(struct stream_lock *lock, const uint8_t *key, const uint8_t *
     lock->state[15] = ((uint32_t *)nonce)[1];
 }
 
-stream_lock* tscl_stream_lock_create(const uint8_t *key, const uint8_t *nonce) {
+stream_lock* fscl_stream_lock_create(const uint8_t *key, const uint8_t *nonce) {
     stream_lock *lock = (stream_lock *)malloc(sizeof(stream_lock));
     if (lock == NULL) {
         // Handle memory allocation failure
@@ -275,11 +256,11 @@ stream_lock* tscl_stream_lock_create(const uint8_t *key, const uint8_t *nonce) {
     return lock;
 }
 
-void tscl_stream_lock_erase(stream_lock *lock) {
+void fscl_stream_lock_erase(stream_lock *lock) {
     free(lock);
 }
 
-void tscl_stream_encrypt(stream_lock *lock, const uint8_t *input, uint8_t *output, size_t length) {
+void fscl_stream_encrypt(stream_lock *lock, const uint8_t *input, uint8_t *output, size_t length) {
     size_t blocks = length / CHACHA20_BLOCK_SIZE;
 
     for (size_t i = 0; i < blocks; ++i) {
@@ -299,13 +280,13 @@ void tscl_stream_encrypt(stream_lock *lock, const uint8_t *input, uint8_t *outpu
     }
 }
 
-void tscl_stream_decrypt(stream_lock *lock, const uint8_t *input, uint8_t *output, size_t length) {
+void fscl_stream_decrypt(stream_lock *lock, const uint8_t *input, uint8_t *output, size_t length) {
     // For ChaCha20, decryption is the same as encryption
-    tscl_stream_encrypt(lock, input, output, length);
+    fscl_stream_encrypt(lock, input, output, length);
 }
 
 // Function to generate a random key for a stream lock
-void tscl_stream_lock_generate_key(uint8_t *key) {
+void fscl_stream_lock_generate_key(uint8_t *key) {
     // Seed the random number generator with the current time
     srand((unsigned int)time(NULL));
 

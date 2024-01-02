@@ -1,35 +1,16 @@
-/*  ----------------------------------------------------------------------------
-    File: json.c
-
-    Description:
-    This source file contains the code entry point for the Trilobite Stdlib project.
-    It demonstrates the usage of various utilities and functions provided by the
-    Trilobite Stdlib to enhance software development.
-
-    Author: Michael Gene Brockus (Dreamer)
-    Email: michaelbrockus@gmail.com
-    Website: [Trilobite Coder Blog](https://trilobite.home.blog)
-
-    Project: Trilobite Stdlib
-
-    License: Apache License 2.0
-    SPDX Identifier: Apache-2.0
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
-
-    Unless required by applicable law or agreed to in writing, software distributed under the License
-    is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-    or implied. See the License for the specific language governing permissions and limitations
-    under the License.
-
-    Please review the full text of the Apache License 2.0 for the complete terms and conditions.
-
-    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
-    ----------------------------------------------------------------------------
+/*
+==============================================================================
+Author: Michael Gene Brockus (Dreamer)
+Email: michaelbrockus@gmail.com
+Organization: Fossil Logic
+Description: 
+    This file is part of the Fossil Logic project, where innovation meets
+    excellence in software development. Michael Gene Brockus, also known as
+    "Dreamer," is a dedicated contributor to this project. For any inquiries,
+    feel free to contact Michael at michaelbrockus@gmail.com.
+==============================================================================
 */
-#include "trilobite/xcore/parser.h"
+#include "fossil/xcore/parser.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
@@ -255,18 +236,18 @@ static int parse_json(const char* json, cjson** data) {
         // JSON Object
         cjson_object object = {NULL, 0};
         if (parse_object(&ptr, &object)) {
-             tscl_json_parser_setter(data, "");
-             tscl_json_parser_get_object(data)->numPairs = object.numPairs;
-             tscl_json_parser_get_object(data)->pairs = object.pairs;
+             fscl_json_parser_setter(data, "");
+             fscl_json_parser_get_object(data)->numPairs = object.numPairs;
+             fscl_json_parser_get_object(data)->pairs = object.pairs;
             return 1; // Success
         }
     } else if (*ptr == '[') {
         // JSON Array
         cjson_array array = {NULL, 0};
         if (parse_array(&ptr, &array)) {
-             tscl_json_parser_setter(data, "");
-             tscl_json_parser_get_array(data)->numItems = array.numItems;
-             tscl_json_parser_get_array(data)->items = array.items;
+             fscl_json_parser_setter(data, "");
+             fscl_json_parser_get_array(data)->numItems = array.numItems;
+             fscl_json_parser_get_array(data)->items = array.items;
             return 1; // Success
         }
     }
@@ -274,7 +255,7 @@ static int parse_json(const char* json, cjson** data) {
     return 0; // Parsing failure
 }
 
-cjson*  tscl_json_parser_create() {
+cjson*  fscl_json_parser_create() {
     cjson* data = (cjson*)malloc(sizeof(cjson));
     if (data == NULL) {
         perror("Error creating cjson");
@@ -285,15 +266,15 @@ cjson*  tscl_json_parser_create() {
     return data;
 }
 
-void  tscl_json_parser_erase(cjson** data) {
+void  fscl_json_parser_erase(cjson** data) {
     if (data != NULL && *data != NULL) {
-         tscl_json_parser_erase_meta(data);
+         fscl_json_parser_erase_meta(data);
         free(*data);
         *data = NULL;
     }
 }
 
-int  tscl_json_parser_parse(FILE* file, cjson** data) {
+int  fscl_json_parser_parse(FILE* file, cjson** data) {
     if (file == NULL || data == NULL) {
         perror("Invalid arguments");
         return 0;
@@ -322,7 +303,7 @@ int  tscl_json_parser_parse(FILE* file, cjson** data) {
     return parse_json((*data)->json_data, data);
 }
 
-void  tscl_json_parser_setter(cjson** data, const char* update) {
+void  fscl_json_parser_setter(cjson** data, const char* update) {
     if (data != NULL && *data != NULL && update != NULL) {
         free((*data)->json_data);
 
@@ -338,28 +319,28 @@ void  tscl_json_parser_setter(cjson** data, const char* update) {
     }
 }
 
-const char*  tscl_json_parser_getter(cjson** data) {
+const char*  fscl_json_parser_getter(cjson** data) {
     if (data != NULL && *data != NULL) {
         return (*data)->json_data;
     }
     return NULL;
 }
 
-void  tscl_json_parser_erase_meta(cjson** data) {
+void  fscl_json_parser_erase_meta(cjson** data) {
     if (data != NULL && *data != NULL) {
         free((*data)->json_data);
         (*data)->json_data = NULL;
     }
 }
 
-cjson_object*  tscl_json_parser_get_object(cjson** data) {
+cjson_object*  fscl_json_parser_get_object(cjson** data) {
     if (data != NULL && *data != NULL) {
         return (cjson_object*)((*data)->json_data);
     }
     return NULL;
 }
 
-cjson_array*  tscl_json_parser_get_array(cjson** data) {
+cjson_array*  fscl_json_parser_get_array(cjson** data) {
     if (data != NULL && *data != NULL) {
         return (cjson_array*)((*data)->json_data);
     }
@@ -367,14 +348,14 @@ cjson_array*  tscl_json_parser_get_array(cjson** data) {
 } // end of func
 
 // Function to create a new cini structure
-void  tscl_ini_parser_create(cini** data) {
+void  fscl_ini_parser_create(cini** data) {
     *data = (cini*)malloc(sizeof(cini));
     (*data)->entries = NULL;
     (*data)->size = 0;
 }
 
 // Function to erase a cini structure
-void  tscl_ini_parser_erase(cini** data) {
+void  fscl_ini_parser_erase(cini** data) {
     if (*data != NULL) {
         free((*data)->entries);
         free(*data);
@@ -383,8 +364,8 @@ void  tscl_ini_parser_erase(cini** data) {
 }
 
 // Function to parse an INI file and populate cini structure
-void  tscl_ini_parser_parse(FILE* file, cini** data) {
-     tscl_ini_parser_erase(data); // Clear existing data
+void  fscl_ini_parser_parse(FILE* file, cini** data) {
+     fscl_ini_parser_erase(data); // Clear existing data
 
     *data = (cini*)malloc(sizeof(cini));
 
@@ -415,7 +396,7 @@ void  tscl_ini_parser_parse(FILE* file, cini** data) {
 }
 
 // Function to update or add an entry in cini structure
-void  tscl_ini_parser_setter(cini** data, const char* update) {
+void  fscl_ini_parser_setter(cini** data, const char* update) {
     char key[TRILO_INI_FILE_LENGTH];
     char value[TRILO_INI_FILE_LENGTH];
 
@@ -440,12 +421,12 @@ void  tscl_ini_parser_setter(cini** data, const char* update) {
 }
 
 // Function to get the cini structure
-cini*  tscl_ini_parser_getter(cini** data) {
+cini*  fscl_ini_parser_getter(cini** data) {
     return *data;
 } // end of func // end of func
 
 // Function to create a ccsv structure
-ccsv*  tscl_csv_parser_create() {
+ccsv*  fscl_csv_parser_create() {
     ccsv* csv = (ccsv*)malloc(sizeof(ccsv));
     if (csv == NULL) {
         perror("Memory allocation error");
@@ -460,7 +441,7 @@ ccsv*  tscl_csv_parser_create() {
 } // end of func
 
 // Function to erase a ccsv structure
-void  tscl_csv_parser_erase(ccsv** data) {
+void  fscl_csv_parser_erase(ccsv** data) {
     if (data != NULL && *data != NULL) {
         // Free memory for each row
         for (size_t i = 0; i < (*data)->num_rows; ++i) {
@@ -482,7 +463,7 @@ void  tscl_csv_parser_erase(ccsv** data) {
 } // end of func
 
 // Function to parse CSV file and populate ccsv structure
-void  tscl_csv_parser_parse(FILE* file, ccsv** data) {
+void  fscl_csv_parser_parse(FILE* file, ccsv** data) {
     char buffer[1024];  // Adjust buffer size as needed
 
     // Count the number of rows and columns in the CSV file
@@ -510,7 +491,7 @@ void  tscl_csv_parser_parse(FILE* file, ccsv** data) {
     fseek(file, 0, SEEK_SET);
 
     // Allocate memory for ccsv structure
-    *data =  tscl_csv_parser_create();
+    *data =  fscl_csv_parser_create();
 
     // Allocate memory for rows array
     (*data)->rows = (char***)malloc(num_rows * sizeof(char**));
@@ -568,7 +549,7 @@ void  tscl_csv_parser_parse(FILE* file, ccsv** data) {
 } // end of func
 
 // Function to update a specific cell in the ccsv structure
-void  tscl_csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update) {
+void  fscl_csv_parser_setter(ccsv** data, size_t row, size_t col, const char* update) {
     // Check if the provided indices are valid
     if (row < (*data)->num_rows && col < (*data)->num_columns) {
         // Free the existing content of the cell
@@ -590,7 +571,7 @@ void  tscl_csv_parser_setter(ccsv** data, size_t row, size_t col, const char* up
 } // end of func
 
 // Function to retrieve the content of a specific cell in the ccsv structure
-const char*  tscl_csv_parser_getter(const ccsv* data, size_t row, size_t col) {
+const char*  fscl_csv_parser_getter(const ccsv* data, size_t row, size_t col) {
     // Check if the provided indices are valid
     if (row < data->num_rows && col < data->num_columns) {
         return data->rows[row][col];

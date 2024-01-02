@@ -1,42 +1,23 @@
-/*  ----------------------------------------------------------------------------
-    File: lambda.c
-
-    Description:
-    This source file contains the code entry point for the Trilobite Stdlib project.
-    It demonstrates the usage of various utilities and functions provided by the
-    Trilobite Stdlib to enhance software development.
-
-    Author: Michael Gene Brockus (Dreamer)
-    Email: michaelbrockus@gmail.com
-    Website: [Trilobite Coder Blog](https://trilobite.home.blog)
-
-    Project: Trilobite Stdlib
-
-    License: Apache License 2.0
-    SPDX Identifier: Apache-2.0
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
-
-    Unless required by applicable law or agreed to in writing, software distributed under the License
-    is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-    or implied. See the License for the specific language governing permissions and limitations
-    under the License.
-
-    Please review the full text of the Apache License 2.0 for the complete terms and conditions.
-
-    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
-    ----------------------------------------------------------------------------
+/*
+==============================================================================
+Author: Michael Gene Brockus (Dreamer)
+Email: michaelbrockus@gmail.com
+Organization: Fossil Logic
+Description: 
+    This file is part of the Fossil Logic project, where innovation meets
+    excellence in software development. Michael Gene Brockus, also known as
+    "Dreamer," is a dedicated contributor to this project. For any inquiries,
+    feel free to contact Michael at michaelbrockus@gmail.com.
+==============================================================================
 */
-#include "trilobite/xcore/lazy.h"
+#include "fossil/xcore/lazy.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
 // Function to create a lazy type
-clazy tscl_lazy_create(clazy_type type) {
+clazy fscl_lazy_create(clazy_type type) {
     clazy lazy;
     lazy.is_evaluated = 0;
     lazy.type = type;
@@ -44,7 +25,7 @@ clazy tscl_lazy_create(clazy_type type) {
 }
 
 // Function to force the evaluation of the lazy type
-void tscl_lazy_force(clazy *lazy) {
+void fscl_lazy_force(clazy *lazy) {
     if (!lazy->is_evaluated) {
         switch (lazy->type) {
             case CLAZY_INT:
@@ -75,28 +56,28 @@ void tscl_lazy_force(clazy *lazy) {
 }
 
 // Function to retrieve the value or default value if not evaluated
-int tscl_lazy_force_int(clazy *lazy) {
-    tscl_lazy_force(lazy);
+int fscl_lazy_force_int(clazy *lazy) {
+    fscl_lazy_force(lazy);
     return lazy->cache.memoized_int;
 }
 
-bool tscl_lazy_force_bool(clazy *lazy) {
-    tscl_lazy_force(lazy);
+bool fscl_lazy_force_bool(clazy *lazy) {
+    fscl_lazy_force(lazy);
     return lazy->cache.memoized_bool;
 }
 
-char tscl_lazy_force_char(clazy *lazy) {
-    tscl_lazy_force(lazy);
+char fscl_lazy_force_char(clazy *lazy) {
+    fscl_lazy_force(lazy);
     return lazy->cache.memoized_char;
 }
 
-const char* tscl_lazy_force_string(clazy *lazy) {
-    tscl_lazy_force(lazy);
+const char* fscl_lazy_force_string(clazy *lazy) {
+    fscl_lazy_force(lazy);
     return lazy->cache.memoized_string.data;
 }
 
 // Function to destroy the resources associated with a string value
-void tscl_lazy_erase(clazy *lazy) {
+void fscl_lazy_erase(clazy *lazy) {
     if (lazy->is_evaluated) {
         switch (lazy->type) {
             case CLAZY_STRING:
@@ -110,7 +91,7 @@ void tscl_lazy_erase(clazy *lazy) {
 }
 
 // Function to create a lazy sequence of integers
-clazy tscl_lazy_sequence() {
+clazy fscl_lazy_sequence() {
     clazy lazy;
     lazy.is_evaluated = 0;
     lazy.type = CLAZY_INT;
@@ -118,7 +99,7 @@ clazy tscl_lazy_sequence() {
 }
 
 // Function to force the evaluation of the lazy sequence
-int tscl_lazy_sequence_force(clazy *lazy, int n) {
+int fscl_lazy_sequence_force(clazy *lazy, int n) {
     if (!lazy->is_evaluated) {
         lazy->data.int_value = n;
         lazy->cache.memoized_int = lazy->data.int_value;
@@ -128,13 +109,13 @@ int tscl_lazy_sequence_force(clazy *lazy, int n) {
 }
 
 // Utility function to set the value of a lazy integer
-void tscl_lazy_set_int(clazy *lazy, int value) {
+void fscl_lazy_set_int(clazy *lazy, int value) {
     lazy->is_evaluated = 1;
     lazy->data.int_value = value;
 }
 
 // Setter function for lazy string
-void tscl_lazy_set_cstring(clazy *lazy, const char *value) {
+void fscl_lazy_set_cstring(clazy *lazy, const char *value) {
     lazy->is_evaluated = 1;
     size_t len = strlen(value);
     lazy->data.string_value.data = malloc(len + 1);
@@ -143,45 +124,45 @@ void tscl_lazy_set_cstring(clazy *lazy, const char *value) {
 }
 
 // Utility function to set the value of a lazy integer
-void tscl_lazy_set_bool(clazy *lazy, bool value) {
+void fscl_lazy_set_bool(clazy *lazy, bool value) {
     lazy->is_evaluated = 1;
     lazy->data.bool_value = value;
 }
 
 // Utility function to set the value of a lazy integer
-void tscl_lazy_set_letter(clazy *lazy, char value) {
+void fscl_lazy_set_letter(clazy *lazy, char value) {
     lazy->is_evaluated = 1;
     lazy->data.char_value = value;
 }
 
 // Utility function for conditional evaluation of lazy type
-void tscl_lazy_conditional_eval(clazy *lazy, int condition) {
+void fscl_lazy_conditional_eval(clazy *lazy, int condition) {
     if (condition) {
-        tscl_lazy_force(lazy);
+        fscl_lazy_force(lazy);
     }
 }
 
 // Utility function to map a function over a lazy integer
-void tscl_lazy_map_int(clazy *lazy, int (*mapFunction)(int)) {
-    tscl_lazy_force(lazy);
+void fscl_lazy_map_int(clazy *lazy, int (*mapFunction)(int)) {
+    fscl_lazy_force(lazy);
     lazy->data.int_value = mapFunction(lazy->data.int_value);
 }
 
 // Utility function to map a function over a lazy bool
-void tscl_lazy_map_bool(clazy *lazy, bool (*mapFunction)(bool)) {
-    tscl_lazy_force(lazy);
+void fscl_lazy_map_bool(clazy *lazy, bool (*mapFunction)(bool)) {
+    fscl_lazy_force(lazy);
     lazy->data.bool_value = mapFunction(lazy->data.bool_value);
 }
 
 // Utility function to map a function over a lazy char
-void tscl_lazy_map_char(clazy *lazy, char (*mapFunction)(char)) {
-    tscl_lazy_force(lazy);
+void fscl_lazy_map_char(clazy *lazy, char (*mapFunction)(char)) {
+    fscl_lazy_force(lazy);
     lazy->data.char_value = mapFunction(lazy->data.char_value);
 }
 
 // Utility function to map a function over a lazy string
-void tscl_lazy_map_cstring(clazy *lazy, const char* (*mapFunction)(const char*)) {
-    tscl_lazy_force(lazy);
+void fscl_lazy_map_cstring(clazy *lazy, const char* (*mapFunction)(const char*)) {
+    fscl_lazy_force(lazy);
     const char* result = mapFunction(lazy->data.string_value.data);
     size_t len = strlen(result);
     lazy->data.string_value.data = realloc(lazy->data.string_value.data, len + 1);
@@ -189,9 +170,9 @@ void tscl_lazy_map_cstring(clazy *lazy, const char* (*mapFunction)(const char*))
 }
 
 // Utility function for string concatenation of two lazy strings
-void tscl_lazy_concat_cstrings(clazy *result, clazy *str1, clazy *str2) {
-    tscl_lazy_force(str1);
-    tscl_lazy_force(str2);
+void fscl_lazy_concat_cstrings(clazy *result, clazy *str1, clazy *str2) {
+    fscl_lazy_force(str1);
+    fscl_lazy_force(str2);
 
     size_t len1 = strlen(str1->cache.memoized_string.data);
     size_t len2 = strlen(str2->cache.memoized_string.data);
@@ -205,8 +186,8 @@ void tscl_lazy_concat_cstrings(clazy *result, clazy *str1, clazy *str2) {
 }
 
 // Utility function to print the value of a lazy type
-void tscl_lazy_print(clazy *lazy) {
-    tscl_lazy_force(lazy);
+void fscl_lazy_print(clazy *lazy) {
+    fscl_lazy_force(lazy);
     switch (lazy->type) {
         case CLAZY_INT:
             printf("Value (int): %d\n", lazy->data.int_value);
