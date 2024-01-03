@@ -1,35 +1,16 @@
-/*  ----------------------------------------------------------------------------
-    File: reader.c
-
-    Description:
-    This source file contains the code entry point for the Trilobite Stdlib project.
-    It demonstrates the usage of various utilities and functions provided by the
-    Trilobite Stdlib to enhance software development.
-
-    Author: Michael Gene Brockus (Dreamer)
-    Email: michaelbrockus@gmail.com
-    Website: [Trilobite Coder Blog](https://trilobite.home.blog)
-
-    Project: Trilobite Stdlib
-
-    License: Apache License 2.0
-    SPDX Identifier: Apache-2.0
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
-
-    Unless required by applicable law or agreed to in writing, software distributed under the License
-    is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-    or implied. See the License for the specific language governing permissions and limitations
-    under the License.
-
-    Please review the full text of the Apache License 2.0 for the complete terms and conditions.
-
-    (Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0)
-    ----------------------------------------------------------------------------
+/*
+==============================================================================
+Author: Michael Gene Brockus (Dreamer)
+Email: michaelbrockus@gmail.com
+Organization: Fossil Logic
+Description: 
+    This file is part of the Fossil Logic project, where innovation meets
+    excellence in software development. Michael Gene Brockus, also known as
+    "Dreamer," is a dedicated contributor to this project. For any inquiries,
+    feel free to contact Michael at michaelbrockus@gmail.com.
+==============================================================================
 */
-#include "trilobite/xcore/console.h"
+#include "fossil/xcore/console.h"
 #ifdef _WIN32
 #include <windows.h>
 #include <conio.h>
@@ -48,7 +29,7 @@ enum {
 };
 
 // General Output Function
-void tscl_console_out(const char *format, ...) {
+void fscl_console_out(const char *format, ...) {
     va_list args;
     va_start(args, format);
     vprintf(format, args);
@@ -56,7 +37,7 @@ void tscl_console_out(const char *format, ...) {
 }
 
 // Error Output Function
-void tscl_console_err(const char *format, ...) {
+void fscl_console_err(const char *format, ...) {
     va_list args;
     va_start(args, format);
     vfprintf(stderr, format, args);
@@ -64,7 +45,7 @@ void tscl_console_err(const char *format, ...) {
 }
 
 // Color Output Function
-void tscl_console_out_color(const char *color_name, const char *format, ...) {
+void fscl_console_out_color(const char *color_name, const char *format, ...) {
     va_list args;
     va_start(args, format);
 
@@ -115,7 +96,7 @@ void tscl_console_out_color(const char *color_name, const char *format, ...) {
 }
 
 // Clear Screen Function
-void tscl_console_clear() {
+void fscl_console_clear() {
 #ifdef _WIN32
     int dummy = system("cls");
 #else
@@ -125,12 +106,12 @@ void tscl_console_clear() {
 }
 
 // Flush Output Function
-void tscl_console_flush() {
+void fscl_console_flush() {
     fflush(stdout);
 }
 
 // Console Progress Function
-void tscl_console_progress(int iterations, int delay) {
+void fscl_console_progress(int iterations, int delay) {
     const char *animation[] = {"|", "/", "-", "\\"};
     int i;
     
@@ -149,13 +130,13 @@ void tscl_console_progress(int iterations, int delay) {
 }
 
 // Console Pause Function
-void tscl_console_pause() {
+void fscl_console_pause() {
     printf("Press Enter to continue...");
     getchar();  // Wait for user input (Enter key)
 }
 
 // Function to get a line of text from the user.
-char* tscl_console_in_get_line() {
+char* fscl_console_in_get_line() {
     static char buffer[MAX_INPUT_LENGTH];
     if (fgets(buffer, sizeof(buffer), stdin)) {
         buffer[strcspn(buffer, "\n")] = '\0';  // Remove the trailing newline
@@ -165,15 +146,15 @@ char* tscl_console_in_get_line() {
 } // end of func
 
 // Function to read a line of text from the user.
-char* tscl_console_in_read_line(const char* prompt) {
+char* fscl_console_in_read_line(const char* prompt) {
     printf("%s: ", prompt);
-    return tscl_console_in_get_line();
+    return fscl_console_in_get_line();
 } // end of func
 
 // Function to validate user input with a specific condition.
-bool tscl_console_in_valid_input(const char* prompt, bool (*validator)(const char*)) {
+bool fscl_console_in_valid_input(const char* prompt, bool (*validator)(const char*)) {
     while (true) {
-        char* input = tscl_console_in_read_line(prompt);
+        char* input = fscl_console_in_read_line(prompt);
         if (input && validator(input)) {
             return true;
         }
@@ -182,9 +163,9 @@ bool tscl_console_in_valid_input(const char* prompt, bool (*validator)(const cha
 } // end of func
 
 // Function to confirm a yes/no question.
-bool tscl_console_in_confirm_yes_no(const char* question) {
+bool fscl_console_in_confirm_yes_no(const char* question) {
     while (true) {
-        char* response = tscl_console_in_read_line(question);
+        char* response = fscl_console_in_read_line(question);
         if (response) {
             if (strncmp(response, "yes", strlen("yes")) == 0 || strncmp(response, "y", strlen("y")) == 0) {
                 return true;
@@ -197,7 +178,7 @@ bool tscl_console_in_confirm_yes_no(const char* question) {
 } // end of func
 
 // Function to confirm a selection from a menu.
-int tscl_console_in_confirm_menu(const char* question, const char** menu, int num_options) {
+int fscl_console_in_confirm_menu(const char* question, const char** menu, int num_options) {
     printf("%s:\n", question);
     for (int i = 0; i < num_options; i++) {
         printf("%d. %s\n", i + 1, menu[i]);
@@ -205,7 +186,7 @@ int tscl_console_in_confirm_menu(const char* question, const char** menu, int nu
 
     int choice;
     while (true) {
-        char* response = tscl_console_in_read_line("Enter your choice");
+        char* response = fscl_console_in_read_line("Enter your choice");
         if (response && sscanf(response, "%d", &choice) == 1 && choice >= 1 && choice <= num_options) {
             return choice - 1;
         }
@@ -214,13 +195,13 @@ int tscl_console_in_confirm_menu(const char* question, const char** menu, int nu
 } // end of func
 
 // Function to confirm multiple selections from a menu.
-void tscl_console_in_confirm_multi_menu(const char* question, const char** menu, bool* selections, int num_options) {
+void fscl_console_in_confirm_multi_menu(const char* question, const char** menu, bool* selections, int num_options) {
     printf("%s (Choose options by entering their numbers, separated by spaces):\n", question);
     for (int i = 0; i < num_options; i++) {
         printf("%d. %s\n", i + 1, menu[i]);
     }
 
-    char* response = tscl_console_in_read_line("Enter your choices (e.g., '1 3 5')");
+    char* response = fscl_console_in_read_line("Enter your choices (e.g., '1 3 5')");
 
     if (response) {
         int choice;
@@ -235,11 +216,11 @@ void tscl_console_in_confirm_multi_menu(const char* question, const char** menu,
 } // end of func
 
 // Function to confirm an exit action.
-bool tscl_console_in_confirm_exit() {
-    return tscl_console_in_confirm_yes_no("Do you want to exit?");
+bool fscl_console_in_confirm_exit() {
+    return fscl_console_in_confirm_yes_no("Do you want to exit?");
 } // end of func
 
-bool tscl_console_in_read_date(const char* prompt, int* year, int* month, int* day) {
+bool fscl_console_in_read_date(const char* prompt, int* year, int* month, int* day) {
     printf("%s", prompt);
     if (scanf("%d-%d-%d", year, month, day) == 3) {
         return true;
@@ -250,7 +231,7 @@ bool tscl_console_in_read_date(const char* prompt, int* year, int* month, int* d
     }
 } // end of func
 
-bool tscl_console_in_read_time(const char* prompt, int* hour, int* minute, int* second) {
+bool fscl_console_in_read_time(const char* prompt, int* hour, int* minute, int* second) {
     printf("%s", prompt);
     if (scanf("%d:%d:%d", hour, minute, second) == 3) {
         return true;
@@ -288,7 +269,7 @@ void enable_echo() {
 }
 
 // Function to read a password without displaying it
-char* tscl_console_in_read_password(const char* prompt) {
+char* fscl_console_in_read_password(const char* prompt) {
     printf("%s", prompt);
 
     disable_echo();
