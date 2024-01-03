@@ -30,7 +30,7 @@ extern "C"
 #include "xcore/observer.h"
 
 inline const char* fscl_codename() {
-    return "Ptychopariida";
+    return "Mesozoic";
 }
 
 // here as a test for teaching users how to include this
