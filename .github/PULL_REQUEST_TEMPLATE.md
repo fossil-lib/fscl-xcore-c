@@ -1,24 +1,29 @@
-# Pull Request
+# TSCL Project Pull Request
 
 ## Description
-Provide a concise overview of the changes made to the TSCL libraries in this pull request.
-
-## Library Affected
-Specify the particular library or libraries impacted by these changes.
+<!-- Briefly describe the purpose and scope of this pull request. -->
 
 ## Changes
-List the key modifications introduced to the library or libraries.
+<!-- List the changes introduced by this pull request. -->
 
 ## Related Issues
-Reference any relevant issues or tasks associated with this pull request.
+<!-- Mention any related issues that are being addressed or resolved by this pull request. -->
 
-## Code Quality
-- [ ] Code adheres to the established coding standards for TSCL libraries.
-- [ ] Tests have been included or updated to validate the changes.
-- [ ] Documentation reflects the latest changes and is comprehensive.
+## Testing
+<!-- Describe the testing process or steps taken to ensure the changes work as expected. -->
 
-## Screenshots or Examples (if applicable)
-Include any visual representations or code snippets that illustrate the changes.
+## Screenshots
+<!-- If applicable, provide screenshots or other media to visually represent the changes made. -->
 
-## Additional Notes
-Share any extra context or information that aids in understanding these changes within the TSCL library.
+## Checklist
+- [ ] Code follows the project's coding standards.
+- [ ] Tests have been added or updated to cover the changes.
+- [ ] Documentation has been updated to reflect the changes.
+- [ ] The code has been reviewed by team members.
+- [ ] All checks and tests pass.
+- [ ] The license header and notices are updated where necessary.
+
+## License
+This project is licensed under the Mozilla Public License - see the [LICENSE](LICENSE) file for details.
+
+<!-- Add any additional information or context that might be helpful for reviewers. -->
