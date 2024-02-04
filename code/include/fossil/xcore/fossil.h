@@ -59,8 +59,9 @@ typedef enum {
     CHAR,
     HEX,
     OCT,
-    NULL_TYPE,      // New: Null type
-    PLACEHOLDER,    // New: Placeholder type
+    NULL_TYPE,
+    PLACEHOLDER,
+    DATETIME,      // New: Datetime type
     ERROR
 } DataType;
 
@@ -110,6 +111,9 @@ void fscl_fossil_print_ast(ASTNode* root, int depth);
 
 // Function to erase an AST node and its children
 void fscl_fossil_erase_node(ASTNode* node);
+
+// Function to create a new constant node with DATETIME type
+ASTNode* fscl_fossil_create_datetime_constant(char* datetime_value);
 
 // Function to create a new variable node
 ASTNode* fscl_fossil_create_variable(DataType data_type, char* variable_name);
