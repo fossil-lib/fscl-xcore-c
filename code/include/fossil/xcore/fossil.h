@@ -39,7 +39,9 @@ typedef enum {
     LINK_LIBRARY,
     PLACEHOLDER_NODE,
     PUBLIC,   // New: Public member visibility
-    PRIVATE   // New: Private member visibility
+    PRIVATE,  // New: Private member visibility
+    INHERITANCE,      // New: Inheritance
+    ENCAPSULATION     // New: Encapsulation
 } NodeType;
 
 // Enumeration for data types
@@ -98,6 +100,8 @@ typedef struct ASTNode {
     struct ASTNode** private_members;
     size_t num_public_members;
     size_t num_private_members;
+    struct ASTNode* parent_class;  // For INHERITANCE
+    size_t encapsulated_member_index;  // For ENCAPSULATION
 } ASTNode;
 
 // =================================================================
