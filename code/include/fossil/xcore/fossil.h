@@ -23,116 +23,143 @@ extern "C"
 #include <stdbool.h>
 #include <string.h>
 
-// Basic DSL Node Types
-typedef enum {
-    DSL_NODE_CONSTANT,
-    DSL_NODE_VARIABLE,
-    DSL_NODE_ASSIGNMENT,
-    DSL_NODE_BINARY_OPERATION,
-    DSL_NODE_SWITCH,
-    DSL_NODE_TRY_CATCH,
-    DSL_NODE_ARRAY,
-    DSL_NODE_STRUCT,
-    DSL_NODE_ENUM,
-    DSL_NODE_CONCURRENT,
-    DSL_NODE_LAMBDA,
-    DSL_NODE_PATTERN_MATCHING,
-    DSL_NODE_ERROR_HANDLING,
-    DSL_NODE_OPTIMIZATION,
-    DSL_NODE_DOCUMENTATION,
-    DSL_NODE_UNIT_TEST,
-    DSL_NODE_INTEROPERABILITY,
-    DSL_NODE_DEBUGGING,
-    DSL_NODE_CODE_PROFILING,
-    DSL_NODE_USER_INTERFACE,
-    DSL_NODE_MAIN,
-    DSL_NODE_INCLUDE,
-    DSL_NODE_BOOL  // New node type for boolean values
-    // Add more node types as needed
-} DSLNodeType;
 
-// DSL Node Structure
-typedef struct DSLNode {
-    DSLNodeType type;
-    union {
-        int constant_value;
-        char* variable_name;
-        struct {
-            char* variable_name;
-            struct DSLNode* expression;
-        } assignment;
-        struct {
-            char operator;
-            struct DSLNode* left;
-            struct DSLNode* right;
-        } binary_operation;
-        struct {
-            struct DSLNode* expression;
-            struct DSLNode* cases;
-            struct DSLNode* default_case;
-        } switch_node;
-        struct {
-            struct DSLNode* try_block;
-            struct DSLNode* catch_block;
-        } try_catch_node;
-        struct {
-            struct DSLNode* elements;
-        } array_node;
-        struct {
-            char* struct_name;
-            struct DSLNode* fields;
-        } struct_node;
-        struct {
-            char* enum_name;
-            struct DSLNode* values;
-        } enum_node;
-        // Add more node structures for new features
-        struct {
-            struct DSLNode* body;
-        } main_node;
-        struct {
-            char* filename;
-        } include_node;
-        struct {
-            int bool_value;
-        } bool_node;
-    } data;
-    struct DSLNode* next;
-    // Add introspection or other necessary fields
-} DSLNode;
 
 // =================================================================
 // DSL functions
 // =================================================================
 
-// Create DSL Node Functions
-DSLNode* fscl_fossil_create_constant_node(int value);
-DSLNode* fscl_fossil_create_variable_node(const char* name, DSLNode* next);
-DSLNode* fscl_fossil_create_assignment_node(const char* variable_name, DSLNode* expression);
-DSLNode* fscl_fossil_create_binary_operation_node(char operator, DSLNode* left, DSLNode* right);
-DSLNode* fscl_fossil_create_switch_node(DSLNode* expression, DSLNode* cases, DSLNode* default_case);
-DSLNode* fscl_fossil_create_try_catch_node(DSLNode* try_block, DSLNode* catch_block);
-DSLNode* fscl_fossil_create_array_node(DSLNode* elements);
-DSLNode* fscl_fossil_create_struct_node(const char* struct_name, DSLNode* fields);
-DSLNode* fscl_fossil_create_enum_node(const char* enum_name, DSLNode* values);
-DSLNode* fscl_fossil_create_main_node(DSLNode* body);
-DSLNode* fscl_fossil_create_include_node(const char* filename);
-DSLNode* fscl_fossil_create_bool_node(int bool_value);  // New function for creating boolean nodes
+#ifndef DSL_AST_H
+#define DSL_AST_H
 
-// Execution and Evaluation Functions
-int fscl_fossil_evaluate(DSLNode* node);
-void fscl_fossil_serialize_to_tape_file(DSLNode* root, const char* filename);
-void fscl_fossil_execute_tape_file(const char* filename);
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
 
-// Introspection Functions
-void fscl_fossil_introspect_dsl(DSLNode* node, int depth);
+// Enumeration for node types
+typedef enum {
+    VARIABLE,
+    CONSTANT,
+    FUNCTION,
+    CLASS,
+    STRUCT,
+    UNARY_OP,
+    RELATIONAL_OP,
+    LOGICAL_OP,
+    IF_STATEMENT,
+    WHILE_LOOP,
+    INCLUDE_FILE,
+    LINK_LIBRARY,
+    PLACEHOLDER_NODE   // New: Placeholder node type
+} NodeType;
 
-// Freeing DSL Nodes
-void fscl_fossil_free_dsl_nodes(DSLNode* node);
+// Enumeration for data types
+typedef enum {
+    INT8,
+    INT16,
+    INT32,
+    INT64,
+    UINT8,
+    UINT16,
+    UINT32,
+    UINT64,
+    FLOAT,
+    STRING,
+    ARRAY,
+    MAP,
+    BOOL,
+    TOFU,
+    CHAR,
+    HEX,
+    OCT,
+    NULL_TYPE,      // New: Null type
+    PLACEHOLDER,    // New: Placeholder type
+    ERROR
+} DataType;
 
-// Helper Functions
-DSLNode* fscl_fossil_create_sequence_node(DSLNode* first, ...);
-void fscl_fossil_print_indent(int depth);
+// Enumeration for operator types
+typedef enum {
+    ADD,
+    SUBTRACT,
+    MULTIPLY,
+    DIVIDE,
+    NEGATION,
+    INCREMENT,
+    DECREMENT,
+    EQUALS,
+    NOT_EQUALS,
+    LESS_THAN,
+    GREATER_THAN,
+    AND,
+    OR
+} OperatorType;
+
+// Structure for AST nodes
+typedef struct ASTNode {
+    NodeType type;
+    DataType data_type;
+    OperatorType operator_type;
+    char* value;
+    int error_flag;
+    struct ASTNode** children;
+    size_t num_children;
+} ASTNode;
+
+// ==========================================
+// DSL script API
+// ==========================================
+
+// Function to create a new AST node
+ASTNode* fscl_fossil_create_node(NodeType type, DataType data_type, OperatorType operator_type, char* value);
+
+// Function to add a child to an AST node
+void fscl_fossil_add_child(ASTNode* parent, ASTNode* child);
+
+// Function to add multiple children to an AST node
+void fscl_fossil_add_children(ASTNode* parent, size_t num_children, ...);
+
+// Function to print the AST in a readable format
+void fscl_fossil_print_ast(ASTNode* root, int depth);
+
+// Function to erase an AST node and its children
+void fscl_fossil_erase_node(ASTNode* node);
+
+// Function to create a new variable node
+ASTNode* fscl_fossil_create_variable(DataType data_type, char* variable_name);
+
+// Function to create a new constant node
+ASTNode* fscl_fossil_create_constant(DataType data_type, char* constant_value);
+
+// Function to create a new function node
+ASTNode* fscl_fossil_create_function(DataType return_type, char* function_name);
+
+// Function to create a new unary operation node
+ASTNode* fscl_fossil_create_unary_op(DataType data_type, OperatorType operator_type, char* operand_value);
+
+// Function to create a new relational operation node
+ASTNode* fscl_fossil_create_relational_op(DataType data_type, OperatorType operator_type, char* operand_value);
+
+// Function to create a new logical operation node
+ASTNode* fscl_fossil_create_logical_op(DataType data_type, OperatorType operator_type, char* operand_value);
+
+// Function to create a new if statement node
+ASTNode* fscl_fossil_create_if_statement(char* condition_value);
+
+// Function to create a new while loop node
+ASTNode* fscl_fossil_create_while_loop(char* condition_value);
+
+// Function to create a new include file node
+ASTNode* fscl_fossil_create_include_file(char* file_name);
+
+// Function to create a new link library node
+ASTNode* fscl_fossil_create_link_library(char* library_name);
+
+// Function to parse declarations from a file and add them to the AST
+void fscl_fossil_parse_declarations_from_file(const char* filename, ASTNode* root);
+
+// Function to process a DSL file and return the AST rooted at the entry point
+ASTNode* fscl_fossil_process_dsl_file(const char* filename, const char* entryPoint);
 
 #ifdef __cplusplus
 }
