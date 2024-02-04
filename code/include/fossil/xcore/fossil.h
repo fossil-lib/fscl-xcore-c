@@ -171,6 +171,12 @@ void fscl_fossil_add_class_member(ASTNode* classNode, ASTNode* member, int is_pu
 // Function to print class-specific details
 void fscl_fossil_print_class_details(ASTNode* classNode);
 
+// Function to create a new inheritance node
+ASTNode* fscl_fossil_create_inheritance(char* child_class_name, char* parent_class_name);
+
+// Function to create a new encapsulation node
+ASTNode* fscl_fossil_create_encapsulation(char* class_name, char* member_name);
+
 #ifdef __cplusplus
 }
 #endif
