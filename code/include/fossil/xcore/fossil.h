@@ -160,6 +160,22 @@ ASTNode* fscl_fossil_create_while_loop(char* condition_value);
 // DSL functions for custom libraries and linking
 // =================================================================
 
+// Function to skip whitespace in the code
+void fscl_fossil_skip_whitespace(const char* code, size_t* index);
+
+// Function to parse an identifier in the code
+char* fscl_fossil_parse_identifier(const char* code, size_t* index);
+
+// Function to parse a data type in the code
+DataType fscl_fossil_parse_data_type(const char* code, size_t* index);
+
+// Function to parse a statement into ASTNode
+ASTNode* fscl_fossil_parse_statement(const char* statement);
+
+// =================================================================
+// DSL functions for custom libraries and linking
+// =================================================================
+
 // Function to create a new include file node
 ASTNode* fscl_fossil_create_include_file(char* file_name);
 
