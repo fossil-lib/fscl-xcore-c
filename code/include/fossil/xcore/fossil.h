@@ -91,9 +91,13 @@ typedef struct ASTNode {
     OperatorType operator_type;
     char* value;
     int error_flag;
-    int is_public;   // New: Member visibility flag
+    int is_public;
     struct ASTNode** children;
     size_t num_children;
+    struct ASTNode** public_members;
+    struct ASTNode** private_members;
+    size_t num_public_members;
+    size_t num_private_members;
 } ASTNode;
 
 // =================================================================
