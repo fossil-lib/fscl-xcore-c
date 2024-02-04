@@ -144,11 +144,18 @@ ASTNode* fscl_fossil_create_relational_op(DataType data_type, OperatorType opera
 // Function to create a new logical operation node
 ASTNode* fscl_fossil_create_logical_op(DataType data_type, OperatorType operator_type, char* operand_value);
 
+// Function to create a new function declaration node
+ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index, const char* entryPoint);
+
 // Function to create a new if statement node
 ASTNode* fscl_fossil_create_if_statement(char* condition_value);
 
 // Function to create a new while loop node
 ASTNode* fscl_fossil_create_while_loop(char* condition_value);
+
+// =================================================================
+// DSL functions for custom libraries and linking
+// =================================================================
 
 // Function to create a new include file node
 ASTNode* fscl_fossil_create_include_file(char* file_name);
@@ -161,6 +168,10 @@ void fscl_fossil_parse_declarations_from_file(const char* filename, ASTNode* roo
 
 // Function to process a DSL file and return the AST rooted at the entry point
 ASTNode* fscl_fossil_process_dsl_file(const char* filename, const char* entryPoint);
+
+// =================================================================
+// DSL functions for classes
+// =================================================================
 
 // Function to create a new class node with details
 ASTNode* fscl_fossil_create_class(char* class_name);
