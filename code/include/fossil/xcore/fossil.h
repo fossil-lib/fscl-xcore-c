@@ -147,6 +147,9 @@ ASTNode* fscl_fossil_create_relational_op(DataType data_type, OperatorType opera
 // Function to create a new logical operation node
 ASTNode* fscl_fossil_create_logical_op(DataType data_type, OperatorType operator_type, char* operand_value);
 
+// Function to create a new variable with type node
+ASTNode* fscl_fossil_create_variable_with_type(DataType data_type, const char* variable_name);
+
 // Function to create a new function declaration node
 ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index, const char* entryPoint);
 
