@@ -37,7 +37,9 @@ typedef enum {
     WHILE_LOOP,
     INCLUDE_FILE,
     LINK_LIBRARY,
-    PLACEHOLDER_NODE   // New: Placeholder node type
+    PLACEHOLDER_NODE,
+    PUBLIC,   // New: Public member visibility
+    PRIVATE   // New: Private member visibility
 } NodeType;
 
 // Enumeration for data types
@@ -89,6 +91,7 @@ typedef struct ASTNode {
     OperatorType operator_type;
     char* value;
     int error_flag;
+    int is_public;   // New: Member visibility flag
     struct ASTNode** children;
     size_t num_children;
 } ASTNode;
@@ -150,6 +153,15 @@ void fscl_fossil_parse_declarations_from_file(const char* filename, ASTNode* roo
 
 // Function to process a DSL file and return the AST rooted at the entry point
 ASTNode* fscl_fossil_process_dsl_file(const char* filename, const char* entryPoint);
+
+// Function to create a new class node with details
+ASTNode* fscl_fossil_create_class(char* class_name);
+
+// Function to add a member to a class with visibility and details
+void fscl_fossil_add_class_member(ASTNode* classNode, ASTNode* member, int is_public);
+
+// Function to print class-specific details
+void fscl_fossil_print_class_details(ASTNode* classNode);
 
 #ifdef __cplusplus
 }
