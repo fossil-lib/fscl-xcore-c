@@ -263,3 +263,50 @@ ASTNode* fscl_fossil_create_link_library(char* library_name) {
     return fscl_fossil_create_node(LINK_LIBRARY, STRING, ADD, library_name);
 }
 
+// Function to create a new class node with details
+ASTNode* fscl_fossil_create_class(char* class_name) {
+    ASTNode* classNode = fscl_fossil_create_node(CLASS, TOFU, ADD, class_name);
+    
+    // Initialize class-specific details
+    classNode->public_members = NULL;
+    classNode->private_members = NULL;
+    classNode->num_public_members = 0;
+    classNode->num_private_members = 0;
+
+    return classNode;
+}
+
+// Function to add a member to a class with visibility and details
+void fscl_fossil_add_class_member(ASTNode* classNode, ASTNode* member, int is_public) {
+    if (classNode == NULL || member == NULL || classNode->error_flag || member->error_flag) {
+        mark_error(classNode);
+        mark_error(member);
+        return;
+    }
+
+    member->is_public = is_public;
+    fscl_fossil_add_child(classNode, member);
+
+    // Add the member to the appropriate list based on visibility
+    if (is_public) {
+        classNode->public_members = (ASTNode**)realloc(classNode->public_members, (classNode->num_public_members + 1) * sizeof(ASTNode*));
+        classNode->public_members[classNode->num_public_members] = member;
+        classNode->num_public_members++;
+    } else {
+        classNode->private_members = (ASTNode**)realloc(classNode->private_members, (classNode->num_private_members + 1) * sizeof(ASTNode*));
+        classNode->private_members[classNode->num_private_members] = member;
+        classNode->num_private_members++;
+    }
+}
+
+// Function to print class-specific details
+void fscl_fossil_print_class_details(ASTNode* classNode) {
+    printf("Class Members:\n");
+    for (size_t i = 0; i < classNode->num_public_members; ++i) {
+        printf("  Public: %s\n", classNode->public_members[i]->value);
+    }
+    for (size_t i = 0; i < classNode->num_private_members; ++i) {
+        printf("  Private: %s\n", classNode->private_members[i]->value);
+    }
+}
+
