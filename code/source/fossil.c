@@ -14,205 +14,240 @@ Description:
 #include <stdlib.h>
 #include <string.h>
 
-// Initialize the DSL with a tape file
-void  fscl_fossil_dsl_create(FossilDSL *dsl, const char *tape_filename) {
-    dsl->tape_file = fopen(tape_filename, "w");
-    if (!dsl->tape_file) {
-        dsl->error_code = EXIT_FAILURE;
-        snprintf(dsl->error_message, sizeof(dsl->error_message), "Error opening tape file");
-        return;
-    }
-    dsl->error_code = 0;
-    dsl->error_message[0] = '\0';
-    dsl->indentation_level = 0;
-    dsl->debug_enabled = 0; // Debugging is disabled by default
-}
-
-// Helper function to add indentation based on the current level
-void  fscl_fossil_dsl_indent(FossilDSL *dsl) {
-    for (int i = 0; i < dsl->indentation_level; ++i) {
-        fprintf(dsl->tape_file, "    ");
+// Function to mark a node as erroneous
+void mark_error(ASTNode* node) {
+    if (node != NULL) {
+        node->error_flag = 1;
     }
 }
 
-// Add a debugging statement to the tape
-void  fscl_fossil_dsl_debug(FossilDSL *dsl, const char *message) {
-    if (dsl->debug_enabled) {
-         fscl_fossil_dsl_indent(dsl);
-        fprintf(dsl->tape_file, "DEBUG \"%s\"\n", message);
-    }
-}
-
-// Enable debugging in the DSL
-void  fscl_fossil_dsl_enable_debug(FossilDSL *dsl) {
-    dsl->debug_enabled = 1;
-}
-
-// Add a condition header to the tape
-void  fscl_fossil_dsl_add_condition_header(FossilDSL *dsl, FossilDSLValue condition, const char *true_branch, const char *false_branch) {
-     fscl_fossil_dsl_indent(dsl);
-    fprintf(dsl->tape_file, "CONDITION ");
-
-    switch (condition.type) {
-        case INTEGER:
-            fprintf(dsl->tape_file, "INT %d", condition.int_value);
-            break;
-        case UNSIGNED_INT:
-            fprintf(dsl->tape_file, "UINT %u", condition.unsigned_int_value);
-            break;
-        case FLOAT:
-            fprintf(dsl->tape_file, "FLOAT %f", condition.float_value);
-            break;
-        case CHAR:
-            fprintf(dsl->tape_file, "CHAR %c", condition.char_value);
-            break;
-        case STRING:
-            fprintf(dsl->tape_file, "STRING %s", condition.string_value);
-            break;
-        case TOFU:
-            fprintf(dsl->tape_file, "TOFU %p", condition.tofu_value);
-            break;
-        case NULL_TYPE:
-            fprintf(dsl->tape_file, "NULL %p", condition.null_type);
-            break;
-        case BOOL:
-            fprintf(dsl->tape_file, "BOOL %s", condition.bool_value ? "TRUE" : "FALSE");
-            break;
-        case ARRAY:
-            fprintf(dsl->tape_file, "ARRAY { ");
-            for (int i = 0; i < DSL_ARRAY_SIZE; ++i) {
-                fprintf(dsl->tape_file, "%d", condition.array[i]);
-                if (i < DSL_ARRAY_SIZE - 1) {
-                    fprintf(dsl->tape_file, ", ");
-                }
-            }
-            fprintf(dsl->tape_file, " }");
-            break;
+// Function to create a new AST node
+ASTNode* fscl_fossil_create_node(NodeType type, DataType data_type, OperatorType operator_type, char* value) {
+    ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    if (node == NULL) {
+        // Handle memory allocation error
+        exit(EXIT_FAILURE);
     }
 
-    fprintf(dsl->tape_file, " THEN %s ELSE %s START\n", true_branch, false_branch);
-    dsl->indentation_level++;
-}
+    node->type = type;
+    node->data_type = data_type;
+    node->operator_type = operator_type;
+    node->value = value;
+    node->error_flag = 0;
+    node->num_children = 0;
 
-// Add a condition statement to the tape
-void  fscl_fossil_dsl_add_condition(FossilDSL *dsl, FossilDSLValue condition, const char *true_branch, const char *false_branch) {
-     fscl_fossil_dsl_add_condition_header(dsl, condition, true_branch, false_branch);
-}
-
-// Call a function in the tape
-void  fscl_fossil_dsl_call_function(FossilDSL *dsl, const char *func_name, FossilDSLValue *arguments, int num_arguments) {
-    // Check for valid arguments and handle the function call
-    if (dsl == NULL || func_name == NULL) {
-        fprintf(stderr, "Error: Invalid arguments for function call\n");
-        return;
-    }
-
-    // Print the function call to the tape
-    fprintf(dsl->tape_file, "%s(", func_name);
-
-    // Print function arguments
-    for (int i = 0; i < num_arguments; ++i) {
-         fscl_fossil_dsl_print_value(dsl->tape_file, arguments[i]);
-
-        // Add a comma for multiple arguments
-        if (i < num_arguments - 1) {
-            fprintf(dsl->tape_file, ", ");
+    if (type == PLACEHOLDER_NODE) {
+        // Special handling for placeholder nodes
+        // You might customize this based on how you want to represent placeholders
+    } else {
+        // For other node types, create space for children
+        node->children = (ASTNode**)malloc(sizeof(ASTNode*));
+        if (node->children == NULL) {
+            // Handle memory allocation error
+            exit(EXIT_FAILURE);
         }
     }
 
-    // Close the function call
-    fprintf(dsl->tape_file, "):\n");
-
-    // Add indentation for the function block
-     fscl_fossil_dsl_indent(dsl);
+    return node;
 }
 
-// Add a function definition to the tape
-void  fscl_fossil_dsl_add_function(FossilDSL *dsl, const char *func_name) {
-     fscl_fossil_dsl_debug(dsl, "Entering function");
-     fscl_fossil_dsl_indent(dsl);
-    fprintf(dsl->tape_file, "FUNCTION %s()\n", func_name);
-    dsl->indentation_level++;
+// Function to add a child to an AST node
+void fscl_fossil_add_child(ASTNode* parent, ASTNode* child) {
+    if (parent == NULL || child == NULL || parent->error_flag || child->error_flag) {
+        mark_error(parent);
+        mark_error(child);
+        return;
+    }
+
+    parent->children = (ASTNode**)realloc(parent->children, (parent->num_children + 1) * sizeof(ASTNode*));
+    if (parent->children == NULL) {
+        // Handle memory allocation error
+        mark_error(parent);
+        return;
+    }
+
+    parent->children[parent->num_children] = child;
+    parent->num_children++;
 }
 
-// Helper function to print a value based on its type
-void  fscl_fossil_dsl_print_value(FILE *tape_file, FossilDSLValue value) {
-    switch (value.type) {
-        case INTEGER:
-            fprintf(tape_file, "INT %d", value.int_value);
-            break;
-        case UNSIGNED_INT:
-            fprintf(tape_file, "UINT %u", value.unsigned_int_value);
-            break;
-        case FLOAT:
-            fprintf(tape_file, "FLOAT %f", value.float_value);
-            break;
-        case CHAR:
-            fprintf(tape_file, "CHAR %c", value.char_value);
-            break;
-        case STRING:
-            fprintf(tape_file, "STRING %s", value.string_value);
-            break;
-        case TOFU:
-            fprintf(tape_file, "TOFU %p", value.tofu_value);
-            break;
-        case NULL_TYPE:
-            fprintf(tape_file, "NULL %p", value.null_type);
-            break;
-        case BOOL:
-            fprintf(tape_file, "BOOL %s", value.bool_value? "TRUE" : "FALSE");
-            break;
-        case ARRAY:
-            fprintf(tape_file, "ARRAY { ");
-            for (int i = 0; i < DSL_ARRAY_SIZE; ++i) {
-                fprintf(tape_file, "%d", value.array[i]);
-                if (i < DSL_ARRAY_SIZE - 1) {
-                    fprintf(tape_file, ", ");
-                }
-            }
-            fprintf(tape_file, " }");
-            break;
+// Function to add multiple children to an AST node
+void fscl_fossil_add_children(ASTNode* parent, size_t num_children, ...) {
+    va_list args;
+    va_start(args, num_children);
+
+    for (size_t i = 0; i < num_children; ++i) {
+        ASTNode* child = va_arg(args, ASTNode*);
+        fscl_fossil_add_child(parent, child);
+    }
+
+    va_end(args);
+}
+
+// Function to print the AST in a readable format
+void fscl_fossil_print_ast(ASTNode* root, int depth) {
+    if (root == NULL || root->error_flag) {
+        return;
+    }
+
+    // Print the current node
+    for (int i = 0; i < depth; ++i) {
+        printf("  ");
+    }
+
+    printf("Type: %d, Data Type: %d, Operator Type: %d, Value: %s\n", root->type, root->data_type, root->operator_type, root->value);
+
+    // Recursively print children
+    for (size_t i = 0; i < root->num_children; ++i) {
+        fscl_fossil_print_ast(root->children[i], depth + 1);
     }
 }
 
-// Helper function to add a binary operation to the tape
-void  fscl_fossil_dsl_add_binary_operation(FossilDSL *dsl, const char *operation, const char *type, FossilDSLValue operand1, FossilDSLValue operand2) {
-     fscl_fossil_dsl_indent(dsl);
-    fprintf(dsl->tape_file, "%s_%s(", operation, type);
-     fscl_fossil_dsl_print_value(dsl->tape_file, operand1);
-    fprintf(dsl->tape_file, ", ");
-     fscl_fossil_dsl_print_value(dsl->tape_file, operand2);
-    fprintf(dsl->tape_file, ")\n");
+// Function to erase an AST node and its children
+void fscl_fossil_erase_node(ASTNode* node) {
+    if (node == NULL) {
+        return;
+    }
+
+    for (size_t i = 0; i < node->num_children; ++i) {
+        fscl_fossil_erase_node(node->children[i]);
+    }
+
+    free(node->children);
+    free(node);
 }
 
-// Add a bitwise operation to the tape
-void  fscl_fossil_dsl_add_bitwise_operation(FossilDSL *dsl, const char *operation, FossilDSLValue operand1, FossilDSLValue operand2) {
-     fscl_fossil_dsl_add_binary_operation(dsl, "BITWISE", operation, operand1, operand2);
+// Function to create a new variable node
+ASTNode* fscl_fossil_create_variable(DataType data_type, char* variable_name) {
+    return fscl_fossil_create_node(VARIABLE, data_type, ADD, variable_name);
 }
 
-// Add a loop header to the tape
-void  fscl_fossil_dsl_add_loop_header(FossilDSL *dsl, const char *loop_variable, int start_value, int end_value) {
-     fscl_fossil_dsl_indent(dsl);
-    fprintf(dsl->tape_file, "LOOP %s FROM %d TO %d START\n", loop_variable, start_value, end_value);
-    dsl->indentation_level++;
+// Function to create a new constant node
+ASTNode* fscl_fossil_create_constant(DataType data_type, char* constant_value) {
+    return fscl_fossil_create_node(CONSTANT, data_type, ADD, constant_value);
 }
 
-// Add a loop to the tape
-void  fscl_fossil_dsl_add_loop(FossilDSL *dsl, const char *loop_variable, int start_value, int end_value) {
-     fscl_fossil_dsl_add_loop_header(dsl, loop_variable, start_value, end_value);
+// Function to create a new function node
+ASTNode* fscl_fossil_create_function(DataType return_type, char* function_name) {
+    return fscl_fossil_create_node(FUNCTION, return_type, ADD, function_name);
 }
 
-// Helper function to close the current block in the tape
-void  fscl_fossil_dsl_close_block(FossilDSL *dsl) {
-    dsl->indentation_level--;
-     fscl_fossil_dsl_indent(dsl);
-    fprintf(dsl->tape_file, "END\n");
+// Function to create a new unary operation node
+ASTNode* fscl_fossil_create_unary_op(DataType data_type, OperatorType operator_type, char* operand_value) {
+    return fscl_fossil_create_node(UNARY_OP, data_type, operator_type, operand_value);
 }
 
-// Finalize and close the tape file
-void  fscl_fossil_dsl_erase(FossilDSL *dsl) {
-     fscl_fossil_dsl_debug(dsl, "End of program");
-    if (dsl->tape_file) {
-        fclose(dsl->tape_file);
+// Function to create a new relational operation node
+ASTNode* fscl_fossil_create_relational_op(DataType data_type, OperatorType operator_type, char* operand_value) {
+    return fscl_fossil_create_node(RELATIONAL_OP, data_type, operator_type, operand_value);
+}
+
+// Function to create a new logical operation node
+ASTNode* fscl_fossil_create_logical_op(DataType data_type, OperatorType operator_type, char* operand_value) {
+    return fscl_fossil_create_node(LOGICAL_OP, data_type, operator_type, operand_value);
+}
+
+// Function to create a new if statement node
+ASTNode* fscl_fossil_create_if_statement(char* condition_value) {
+    return fscl_fossil_create_node(IF_STATEMENT, BOOL, ADD, condition_value);
+}
+
+// Function to create a new while loop node
+ASTNode* fscl_fossil_create_while_loop(char* condition_value) {
+    return fscl_fossil_create_node(WHILE_LOOP, BOOL, ADD, condition_value);
+}
+
+// Function to create a new include file node
+ASTNode* fscl_fossil_create_include_file(char* file_name) {
+    return fscl_fossil_create_node(INCLUDE_FILE, STRING, ADD, file_name);
+}
+
+// Function to create a new link library node
+ASTNode* fscl_fossil_create_link_library(char* library_name) {
+    return fscl_fossil_create_node(LINK_LIBRARY, STRING, ADD, library_name);
+}
+
+// Function to set a parsing error
+void setParseError(ParseError errorType) {
+    parseError = errorType;
+}
+
+// Function to reset the parsing error
+void resetParseError() {
+    parseError = NO_ERROR;
+}
+
+// Function to get the parsing error message
+const char* getParseErrorMessage() {
+    switch (parseError) {
+        case UNKNOWN_KEYWORD_ERROR:
+            return "Unknown keyword encountered during parsing.";
+        case PARSING_ERROR:
+            return "Error occurred while parsing.";
+        default:
+            return "No error.";
     }
 }
+
+// Function to parse and create a function declaration node
+ASTNode* fscl_fossil_parse_function_declaration(char* declaration) {
+    char* returnType = strtok(declaration, " ");
+    char* functionName = strtok(NULL, "( ");
+    char* params = strtok(NULL, ")");
+
+    if (returnType == NULL || functionName == NULL || params == NULL) {
+        setParseError(PARSING_ERROR);
+        return NULL;
+    }
+
+    DataType returnDataType;
+    if (strcmp(returnType, "int") == 0) {
+        returnDataType = INT32;
+    } else if (strcmp(returnType, "float") == 0) {
+        returnDataType = FLOAT;
+    } else {
+        setParseError(PARSING_ERROR);
+        return NULL;
+    }
+
+    ASTNode* functionNode = fscl_fossil_create_function(returnDataType, functionName);
+
+    // Parse function parameters
+    char* param = strtok(params, ",");
+    while (param != NULL) {
+        char* paramType = strtok(param, " ");
+        char* paramName = strtok(NULL, " ,");
+
+        if (paramType == NULL || paramName == NULL) {
+            setParseError(PARSING_ERROR);
+            return NULL;
+        }
+
+        DataType paramDataType;
+        if (strcmp(paramType, "int") == 0) {
+            paramDataType = INT32;
+        } else if (strcmp(paramType, "float") == 0) {
+            paramDataType = FLOAT;
+        } else {
+            setParseError(PARSING_ERROR);
+            return NULL;
+        }
+
+        ASTNode* paramNode = fscl_fossil_create_variable(paramDataType, paramName);
+        fscl_fossil_add_child(functionNode, paramNode);
+
+        param = strtok(NULL, ",");
+    }
+
+    return functionNode;
+}
+
+// Function to create a new include file node
+ASTNode* fscl_fossil_create_include_file(char* file_name) {
+    return fscl_fossil_create_node(INCLUDE_FILE, STRING, ADD, file_name);
+}
+
+// Function to create a new link library node
+ASTNode* fscl_fossil_create_link_library(char* library_name) {
+    return fscl_fossil_create_node(LINK_LIBRARY, STRING, ADD, library_name);
+}
+
