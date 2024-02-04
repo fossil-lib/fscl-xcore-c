@@ -20,20 +20,6 @@ extern "C"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-
-
-
-// =================================================================
-// DSL functions
-// =================================================================
-
-#ifndef DSL_AST_H
-#define DSL_AST_H
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 
@@ -106,9 +92,9 @@ typedef struct ASTNode {
     size_t num_children;
 } ASTNode;
 
-// ==========================================
-// DSL script API
-// ==========================================
+// =================================================================
+// DSL functions
+// =================================================================
 
 // Function to create a new AST node
 ASTNode* fscl_fossil_create_node(NodeType type, DataType data_type, OperatorType operator_type, char* value);
