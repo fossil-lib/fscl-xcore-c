@@ -108,6 +108,9 @@ typedef struct ASTNode {
 // DSL functions
 // =================================================================
 
+// Function to read the content of a DSL file
+char* fscl_fossil_read_dsl(const char* filename);
+
 // Function to create a new AST node
 ASTNode* fscl_fossil_create_node(NodeType type, DataType data_type, OperatorType operator_type, char* value);
 
