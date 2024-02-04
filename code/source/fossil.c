@@ -193,6 +193,11 @@ ASTNode* fscl_fossil_create_variable(DataType data_type, char* variable_name) {
     return fscl_fossil_create_node(VARIABLE, data_type, ADD, variable_name);
 }
 
+// Function to create a new variable node
+ASTNode* fscl_fossil_create_function(DataType data_type, char* variable_name) {
+    return fscl_fossil_create_node(FUNCTION, data_type, ADD, variable_name);
+}
+
 // Function to create a new constant node
 ASTNode* fscl_fossil_create_constant(DataType data_type, char* constant_value) {
     return fscl_fossil_create_node(CONSTANT, data_type, ADD, constant_value);
@@ -258,6 +263,7 @@ const char* getParseErrorMessage() {
         default:
             return "No error.";
     }
+    return "Error case not working Error";
 }
 
 // Function to skip whitespace in the code
@@ -268,7 +274,7 @@ void fscl_fossil_skip_whitespace(const char* code, size_t* index) {
 }
 
 // Function to parse an identifier in the code
-char* fscl_fossil_parse_identifier(const char* code, size_t* index) {
+char* fscl_fossil_parse_identifier(char* code, size_t* index) {
     // Implementation of identifier parsing logic
     // Adjust based on your DSL syntax
     // For simplicity, assuming an identifier is a sequence of letters and digits
@@ -279,7 +285,7 @@ char* fscl_fossil_parse_identifier(const char* code, size_t* index) {
     }
 
     // Create a copy of the identifier
-    char* identifier = fscl_fossil_strdup(code + start, *index - start);
+    char* identifier = fscl_fossil_strdup(code + start);
 
     return identifier;
 }
