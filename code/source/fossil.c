@@ -116,6 +116,13 @@ void fscl_fossil_erase_node(ASTNode* node) {
     free(node);
 }
 
+// Function to create a new variable node with visibility
+ASTNode* fscl_fossil_create_variable_with_visibility(DataType data_type, char* variable_name, int is_public) {
+    ASTNode* variableNode = fscl_fossil_create_node(VARIABLE, data_type, ADD, variable_name);
+    variableNode->is_public = is_public;
+    return variableNode;
+}
+
 // Function to create a new constant node with DATETIME type
 ASTNode* fscl_fossil_create_datetime_constant(char* datetime_value) {
     return fscl_fossil_create_node(CONSTANT, DATETIME, ADD, datetime_value);
