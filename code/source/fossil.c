@@ -13,6 +13,30 @@ Description:
 #include "fossil/xcore/fossil.h"
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+
+// Custom strdup function
+char* fscl_fossil_strdup(const char* str) {
+    if (str == NULL) {
+        return NULL;
+    }
+
+    // Calculate the length of the string
+    size_t length = strlen(str);
+
+    // Allocate memory for the new string (including the null terminator)
+    char* newStr = (char*)malloc(length + 1);
+
+    // Check if memory allocation was successful
+    if (newStr == NULL) {
+        return NULL; // Memory allocation failed
+    }
+
+    // Copy the string content to the newly allocated memory
+    strcpy(newStr, str);
+
+    return newStr;
+}
 
 // Function to mark a node as erroneous
 void mark_error(ASTNode* node) {
@@ -236,6 +260,61 @@ const char* getParseErrorMessage() {
     }
 }
 
+// Function to skip whitespace in the code
+void fscl_fossil_skip_whitespace(const char* code, size_t* index) {
+    while (isspace(code[*index])) {
+        (*index)++;
+    }
+}
+
+// Function to parse an identifier in the code
+char* fscl_fossil_parse_identifier(const char* code, size_t* index) {
+    // Implementation of identifier parsing logic
+    // Adjust based on your DSL syntax
+    // For simplicity, assuming an identifier is a sequence of letters and digits
+
+    size_t start = *index;
+    while (isalnum(code[*index]) || code[*index] == '_') {
+        (*index)++;
+    }
+
+    // Create a copy of the identifier
+    char* identifier = fscl_fossil_strdup(code + start, *index - start);
+
+    return identifier;
+}
+
+// Function to parse a data type in the code
+DataType fscl_fossil_parse_data_type(const char* code, size_t* index) {
+    // Implementation of data type parsing logic
+    // Adjust based on your DSL syntax
+
+    // For simplicity, assuming data types are represented as strings (e.g., "int", "float")
+    char* dataTypeString = fscl_fossil_parse_identifier(code, index);
+
+    // Convert the data type string to the corresponding enumeration (adjust as needed)
+    DataType dataType = INT;  // Default to INT for simplicity
+    // Add logic to map dataTypeString to the actual DataType enumeration
+
+    free(dataTypeString);  // Free the memory allocated for the data type string
+
+    return dataType;
+}
+
+// Function to parse a statement into ASTNode
+ASTNode* fscl_fossil_parse_statement(const char* statement) {
+    // Implementation of statement parsing logic
+    // Adjust based on your DSL syntax
+
+    // For this example, return a dummy ASTNode
+    ASTNode* statementNode = (ASTNode*)malloc(sizeof(ASTNode));
+    statementNode->type = "Statement";
+    statementNode->value = statement;
+    // Initialize other fields as needed
+
+    return statementNode;
+}
+
 // Function to parse a function declaration
 ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index, const char* entryPoint) {
     // Skip whitespace
@@ -328,16 +407,6 @@ ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index,
     }
 
     return functionNode;
-}
-
-// Function to create a new include file node
-ASTNode* fscl_fossil_create_include_file(char* file_name) {
-    return fscl_fossil_create_node(INCLUDE_FILE, STRING, ADD, file_name);
-}
-
-// Function to create a new link library node
-ASTNode* fscl_fossil_create_link_library(char* library_name) {
-    return fscl_fossil_create_node(LINK_LIBRARY, STRING, ADD, library_name);
 }
 
 // Function to create a new class node with details
