@@ -21,6 +21,42 @@ void mark_error(ASTNode* node) {
     }
 }
 
+// Function to read the content of a DSL file
+char* fscl_fossil_read_dsl(const char* filename) {
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Get the file size
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    // Allocate memory to store the file content
+    char* content = (char*)malloc(file_size + 1);
+    if (content == NULL) {
+        perror("Error allocating memory");
+        exit(EXIT_FAILURE);
+    }
+
+    // Read the content of the file
+    size_t read_size = fread(content, 1, file_size, file);
+    if (read_size != (size_t)file_size) {
+        perror("Error reading file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Null-terminate the content
+    content[file_size] = '\0';
+
+    // Close the file
+    fclose(file);
+
+    return content;
+}
+
 // Function to create a new AST node
 ASTNode* fscl_fossil_create_node(NodeType type, DataType data_type, OperatorType operator_type, char* value) {
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
