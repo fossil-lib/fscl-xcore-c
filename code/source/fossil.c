@@ -200,54 +200,95 @@ const char* getParseErrorMessage() {
     }
 }
 
-// Function to parse and create a function declaration node
-ASTNode* fscl_fossil_parse_function_declaration(char* declaration) {
-    char* returnType = strtok(declaration, " ");
-    char* functionName = strtok(NULL, "( ");
-    char* params = strtok(NULL, ")");
+// Function to parse a function declaration
+ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index, const char* entryPoint) {
+    // Skip whitespace
+    fscl_fossil_skip_whitespace(code, index);
 
-    if (returnType == NULL || functionName == NULL || params == NULL) {
-        setParseError(PARSING_ERROR);
-        return NULL;
-    }
+    // Parse function name
+    char* functionName = fscl_fossil_parse_identifier(code, index);
 
-    DataType returnDataType;
-    if (strcmp(returnType, "int") == 0) {
-        returnDataType = INT32;
-    } else if (strcmp(returnType, "float") == 0) {
-        returnDataType = FLOAT;
-    } else {
-        setParseError(PARSING_ERROR);
-        return NULL;
-    }
-
-    ASTNode* functionNode = fscl_fossil_create_function(returnDataType, functionName);
+    // Create function node
+    ASTNode* functionNode = fscl_fossil_create_function(functionName);
 
     // Parse function parameters
-    char* param = strtok(params, ",");
-    while (param != NULL) {
-        char* paramType = strtok(param, " ");
-        char* paramName = strtok(NULL, " ,");
+    if (code[*index] == '(') {
+        (*index)++;  // Move past '('
 
-        if (paramType == NULL || paramName == NULL) {
-            setParseError(PARSING_ERROR);
-            return NULL;
+        // Parse each parameter
+        while (code[*index] != ')' && code[*index] != '\0') {
+            // Parse parameter type
+            DataType paramType = fscl_fossil_parse_data_type(code, index);
+
+            // Parse parameter name
+            char* paramName = fscl_fossil_parse_identifier(code, index);
+
+            // Create parameter node
+            ASTNode* paramNode = fscl_fossil_create_variable_with_type(paramType, paramName);
+
+            // Check for default value
+            if (code[*index] == '=') {
+                (*index)++;  // Move past '='
+
+                // Parse default value (assuming integers for simplicity)
+                int defaultValue = strtol(code + *index, NULL, 10);
+                // You might need a more sophisticated way to parse default values based on your DSL
+
+                // Create a constant node for the default value
+                ASTNode* defaultValueNode = fscl_fossil_create_constant(INT, itoa(defaultValue));
+                fscl_fossil_add_child(paramNode, defaultValueNode);
+
+                // Skip the default value in the code
+                while (isdigit(code[*index])) {
+                    (*index)++;
+                }
+            }
+
+            // Add parameter node to function node
+            fscl_fossil_add_child(functionNode, paramNode);
+
+            // Skip whitespace and check for a comma (,)
+            fscl_fossil_skip_whitespace(code, index);
+            if (code[*index] == ',') {
+                (*index)++;  // Move past ','
+                fscl_fossil_skip_whitespace(code, index);
+            }
         }
 
-        DataType paramDataType;
-        if (strcmp(paramType, "int") == 0) {
-            paramDataType = INT32;
-        } else if (strcmp(paramType, "float") == 0) {
-            paramDataType = FLOAT;
+        // Skip closing parenthesis ')'
+        if (code[*index] == ')') {
+            (*index)++;
         } else {
-            setParseError(PARSING_ERROR);
-            return NULL;
+            // Handle error: Missing closing parenthesis
+            mark_error(functionNode);
+            printf("Error: Missing closing parenthesis in function declaration.\n");
+        }
+    }
+
+    // Parse function body (if any)
+    if (code[*index] == '{') {
+        (*index)++;  // Move past '{'
+
+        // Parse statements within the function body
+        while (code[*index] != '}' && code[*index] != '\0') {
+            // Parse statement
+            ASTNode* statementNode = fscl_fossil_parse_statement(code, index);
+
+            // Add statement node to function node
+            fscl_fossil_add_child(functionNode, statementNode);
+
+            // Skip whitespace and check for next statement
+            fscl_fossil_skip_whitespace(code, index);
         }
 
-        ASTNode* paramNode = fscl_fossil_create_variable(paramDataType, paramName);
-        fscl_fossil_add_child(functionNode, paramNode);
-
-        param = strtok(NULL, ",");
+        // Skip closing brace '}'
+        if (code[*index] == '}') {
+            (*index)++;
+        } else {
+            // Handle error: Missing closing brace
+            mark_error(functionNode);
+            printf("Error: Missing closing brace in function body.\n");
+        }
     }
 
     return functionNode;
@@ -308,5 +349,27 @@ void fscl_fossil_print_class_details(ASTNode* classNode) {
     for (size_t i = 0; i < classNode->num_private_members; ++i) {
         printf("  Private: %s\n", classNode->private_members[i]->value);
     }
+}
+
+// Function to create a new inheritance node
+ASTNode* fscl_fossil_create_inheritance(char* child_class_name, char* parent_class_name) {
+    ASTNode* inheritanceNode = fscl_fossil_create_node(INHERITANCE, TOFU, ADD, child_class_name);
+
+    // Setting parent class as a child node
+    ASTNode* parentClassNode = fscl_fossil_create_node(CLASS, TOFU, ADD, parent_class_name);
+    fscl_fossil_add_child(inheritanceNode, parentClassNode);
+
+    return inheritanceNode;
+}
+
+// Function to create a new encapsulation node
+ASTNode* fscl_fossil_create_encapsulation(char* class_name, char* member_name) {
+    ASTNode* encapsulationNode = fscl_fossil_create_node(ENCAPSULATION, TOFU, ADD, class_name);
+
+    // Adding the member name as a child
+    ASTNode* memberNode = fscl_fossil_create_node(VARIABLE, TOFU, ADD, member_name);
+    fscl_fossil_add_child(encapsulationNode, memberNode);
+
+    return encapsulationNode;
 }
 
