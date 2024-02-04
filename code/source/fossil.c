@@ -116,6 +116,11 @@ void fscl_fossil_erase_node(ASTNode* node) {
     free(node);
 }
 
+// Function to create a new constant node with DATETIME type
+ASTNode* fscl_fossil_create_datetime_constant(char* datetime_value) {
+    return fscl_fossil_create_node(CONSTANT, DATETIME, ADD, datetime_value);
+}
+
 // Function to create a new variable node
 ASTNode* fscl_fossil_create_variable(DataType data_type, char* variable_name) {
     return fscl_fossil_create_node(VARIABLE, data_type, ADD, variable_name);
