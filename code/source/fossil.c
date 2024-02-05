@@ -209,7 +209,7 @@ ASTNode* fscl_fossil_create_variable_with_visibility(DataType data_type, char* v
 
 // Function to create a new constant node with DATETIME type
 ASTNode* fscl_fossil_create_datetime_constant(char* datetime_value) {
-    return fscl_fossil_create_node(CONSTANT, DATETIME, ADD, datetime_value);
+    return fscl_fossil_create_node(CONSTANT, FOSSIL_DATETIME, ADD, datetime_value);
 }
 
 // Function to create a new variable node
@@ -244,22 +244,22 @@ ASTNode* fscl_fossil_create_logical_op(DataType data_type, OperatorType operator
 
 // Function to create a new if statement node
 ASTNode* fscl_fossil_create_if_statement(char* condition_value) {
-    return fscl_fossil_create_node(IF_STATEMENT, BOOL, ADD, condition_value);
+    return fscl_fossil_create_node(IF_STATEMENT, FOSSIL_BOOL, ADD, condition_value);
 }
 
 // Function to create a new while loop node
 ASTNode* fscl_fossil_create_while_loop(char* condition_value) {
-    return fscl_fossil_create_node(WHILE_LOOP, BOOL, ADD, condition_value);
+    return fscl_fossil_create_node(WHILE_LOOP, FOSSIL_BOOL, ADD, condition_value);
 }
 
 // Function to create a new include file node
 ASTNode* fscl_fossil_create_include_file(char* file_name) {
-    return fscl_fossil_create_node(INCLUDE_FILE, STRING, ADD, file_name);
+    return fscl_fossil_create_node(INCLUDE_FILE, FOSSIL_STRING, ADD, file_name);
 }
 
 // Function to create a new link library node
 ASTNode* fscl_fossil_create_link_library(char* library_name) {
-    return fscl_fossil_create_node(LINK_LIBRARY, STRING, ADD, library_name);
+    return fscl_fossil_create_node(LINK_LIBRARY, FOSSIL_STRING, ADD, library_name);
 }
 
 // Function to set a parsing error
@@ -317,55 +317,55 @@ DataType fscl_fossil_parse_data_type(const char* code, size_t* index) {
     char* dataTypeString = fscl_fossil_parse_identifier(code, index);
 
     // Convert the data type string to the corresponding enumeration
-    DataType dataType = ERROR;  // Default to ERROR
+    DataType dataType = FOSSIL_ERROR;  // Default to ERROR
 
     // Map data type string to the enumeration
     if (strcmp(dataTypeString, "int") == 0) {
-        dataType = INT;
+        dataType = FOSSIL_INT;
     } else if (strcmp(dataTypeString, "int8") == 0) {
-        dataType = INT8;
+        dataType = FOSSIL_INT8;
     } else if (strcmp(dataTypeString, "int16") == 0) {
-        dataType = INT16;
+        dataType = FOSSIL_INT16;
     } else if (strcmp(dataTypeString, "int32") == 0) {
-        dataType = INT32;
+        dataType = FOSSIL_INT32;
     } else if (strcmp(dataTypeString, "int64") == 0) {
-        dataType = INT64;
+        dataType = FOSSIL_INT64;
     } else if (strcmp(dataTypeString, "uint") == 0) {
-        dataType = UINT;
+        dataType = FOSSIL_UINT;
     } else if (strcmp(dataTypeString, "uint8") == 0) {
-        dataType = UINT8;
+        dataType = FOSSIL_UINT8;
     } else if (strcmp(dataTypeString, "uint16") == 0) {
-        dataType = UINT16;
+        dataType = FOSSIL_UINT16;
     } else if (strcmp(dataTypeString, "uint32") == 0) {
-        dataType = UINT32;
+        dataType = FOSSIL_UINT32;
     } else if (strcmp(dataTypeString, "uint64") == 0) {
-        dataType = UINT64;
+        dataType = FOSSIL_UINT64;
     } else if (strcmp(dataTypeString, "float") == 0) {
-        dataType = FLOAT;
+        dataType = FOSSIL_FLOAT;
     } else if (strcmp(dataTypeString, "string") == 0) {
-        dataType = STRING;
+        dataType = FOSSIL_STRING;
     } else if (strcmp(dataTypeString, "array") == 0) {
-        dataType = ARRAY;
+        dataType = FOSSIL_ARRAY;
     } else if (strcmp(dataTypeString, "map") == 0) {
-        dataType = MAP;
+        dataType = FOSSIL_MAP;
     } else if (strcmp(dataTypeString, "bool") == 0) {
-        dataType = BOOL;
+        dataType = FOSSIL_BOOL;
     } else if (strcmp(dataTypeString, "tofu") == 0) {
-        dataType = TOFU;
+        dataType = FOSSIL_TOFU;
     } else if (strcmp(dataTypeString, "char") == 0) {
-        dataType = CHAR;
+        dataType = FOSSIL_CHAR;
     } else if (strcmp(dataTypeString, "hex") == 0) {
-        dataType = HEX;
+        dataType = FOSSIL_HEX;
     } else if (strcmp(dataTypeString, "oct") == 0) {
-        dataType = OCT;
+        dataType = FOSSIL_OCT;
     } else if (strcmp(dataTypeString, "null") == 0) {
-        dataType = NULL_TYPE;
+        dataType = FOSSIL_NULL_TYPE;
     } else if (strcmp(dataTypeString, "comedy") == 0) {
-        dataType = COMEDY_ERROR;
+        dataType = FOSSIL_COMEDY_ERROR;
     } else if (strcmp(dataTypeString, "placeholder") == 0) {
-        dataType = PLACEHOLDER;
+        dataType = FOSSIL_PLACEHOLDER;
     } else if (strcmp(dataTypeString, "datetime") == 0) {
-        dataType = DATETIME;
+        dataType = FOSSIL_DATETIME;
     } else {
         // If the type is not recognized, set it to ERROR
     }
@@ -398,7 +398,7 @@ ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index,
     char* functionName = fscl_fossil_parse_identifier(code, index);
 
     // Create function node
-    ASTNode* functionNode = fscl_fossil_create_function(TOFU, functionName);
+    ASTNode* functionNode = fscl_fossil_create_function(FOSSIL_TOFU, functionName);
 
     // Parse function parameters
     if (code[*index] == '(') {
@@ -424,7 +424,7 @@ ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index,
                 // You might need a more sophisticated way to parse default values based on your DSL
 
                 // Create a constant node for the default value
-                ASTNode* defaultValueNode = fscl_fossil_create_constant(INT8, fscl_fossil_itoa(defaultValue));
+                ASTNode* defaultValueNode = fscl_fossil_create_constant(FOSSIL_INT8, fscl_fossil_itoa(defaultValue));
                 fscl_fossil_add_child(paramNode, defaultValueNode);
 
                 // Skip the default value in the code
@@ -485,7 +485,7 @@ ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index,
 
 // Function to create a new class node with details
 ASTNode* fscl_fossil_create_class(char* class_name) {
-    ASTNode* classNode = fscl_fossil_create_node(CLASS, TOFU, ADD, class_name);
+    ASTNode* classNode = fscl_fossil_create_node(CLASS, FOSSIL_TOFU, ADD, class_name);
     
     // Initialize class-specific details
     classNode->public_members = NULL;
@@ -576,7 +576,7 @@ ASTNode* fscl_fossil_parse_dsl_file(const char* filename) {
     resetParseError();
 
     // Create a root node for the AST
-    ASTNode* rootNode = fscl_fossil_create_node(PLACEHOLDER_NODE, PLACEHOLDER, ADD, NULL);
+    ASTNode* rootNode = fscl_fossil_create_node(PLACEHOLDER_NODE, FOSSIL_PLACEHOLDER, ADD, NULL);
 
     size_t index = 0;
 

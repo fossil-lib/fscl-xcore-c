@@ -119,30 +119,30 @@ typedef enum {
 
 // Enumeration for data types
 typedef enum {
-    INT,
-    INT8,
-    INT16,
-    INT32,
-    INT64,
-    UINT,
-    UINT8,
-    UINT16,
-    UINT32,
-    UINT64,
-    FLOAT,
-    STRING,
-    ARRAY,
-    MAP,
-    BOOL,
-    TOFU,
-    CHAR,
-    HEX,
-    OCT,
-    NULL_TYPE,
-    PLACEHOLDER,
-    DATETIME,      // New: Datetime type
-    COMEDY_ERROR,  // New: Comedy error type
-    ERROR
+    FOSSIL_INT,
+    FOSSIL_INT8,
+    FOSSIL_INT16,
+    FOSSIL_INT32,
+    FOSSIL_INT64,
+    FOSSIL_UINT,
+    FOSSIL_UINT8,
+    FOSSIL_UINT16,
+    FOSSIL_UINT32,
+    FOSSIL_UINT64,
+    FOSSIL_FLOAT,
+    FOSSIL_STRING,
+    FOSSIL_ARRAY,
+    FOSSIL_MAP,
+    FOSSIL_BOOL,
+    FOSSIL_TOFU,
+    FOSSIL_CHAR,
+    FOSSIL_HEX,
+    FOSSIL_OCT,
+    FOSSIL_NULL_TYPE,
+    FOSSIL_PLACEHOLDER,
+    FOSSIL_DATETIME,      // New: Datetime type
+    FOSSIL_COMEDY_ERROR,  // New: Comedy error type
+    FOSSIL_ERROR
 } DataType;
 
 // Enumeration for operator types
