@@ -13,8 +13,8 @@ Description:
 #include "fossil/xcore/fossil.h"
 
 // Global variables for custom names
-char* OPEN_BRACE_KEYWORD = '{';
-char* CLOSE_BRACE_KEYWORD = '}';
+char OPEN_BRACE_KEYWORD = '{';
+char CLOSE_BRACE_KEYWORD = '}';
 char* FUNCTION_KEYWORD = "fossil";
 
 // Global variable to track parse error

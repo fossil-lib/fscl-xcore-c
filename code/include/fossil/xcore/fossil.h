@@ -189,8 +189,8 @@ typedef enum {
 } ParseError;
 
 // Global variables for custom names
-extern char* OPEN_BRACE_KEYWORD;
-extern char* CLOSE_BRACE_KEYWORD;
+extern char OPEN_BRACE_KEYWORD;
+extern char CLOSE_BRACE_KEYWORD;
 extern char* FUNCTION_KEYWORD;
 
 // =================================================================
