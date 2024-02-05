@@ -16,12 +16,12 @@ Description:
 #include <fossil/xassert.h> // extra asserts
 
 // Function to create ASTNode from generic DSL code
-ASTNode* create_dsl_from_code(const char* dslCode, const char* rootType) {
+ASTNode* create_dsl_from_code(const char* dslCode, NodeType rootType) {
 
     // For this example, return a dummy ASTNode
     ASTNode* rootNode = (ASTNode*)malloc(sizeof(ASTNode));
     rootNode->type = rootType;
-    rootNode->value = "Root Node (Generic)";
+    rootNode->value = "Node Type (Generic)";
     // Initialize other fields as needed
 
     return rootNode;
