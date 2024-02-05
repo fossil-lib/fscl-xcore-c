@@ -40,24 +40,26 @@ char* fscl_fossil_itoa(int value) {
 }
 
 // Custom strdup function
-char* fscl_fossil_strdup(const char* str, size_t length) {
+char* fscl_fossil_strdup(const char* str) {
     if (str == NULL) {
         return NULL;
     }
 
-    // Allocate memory for the new string (including the null terminator)
-    char* newStr = (char*)malloc(length + 1);
+    // Calculate the length of the string
+    size_t length = strlen(str);
 
-    // Check if memory allocation was successful
-    if (newStr == NULL) {
-        return NULL; // Memory allocation failed
+    // Allocate memory for the new string
+    char* duplicate = (char*)malloc(length + 1); // +1 for the null terminator
+
+    if (duplicate == NULL) {
+        // Memory allocation failed
+        return NULL;
     }
 
-    // Copy the string content to the newly allocated memory
-    strncpy(newStr, str, length);
-    newStr[length] = '\0'; // Null-terminate the string
+    // Copy the string to the new memory
+    strcpy(duplicate, str);
 
-    return newStr;
+    return duplicate;
 }
 
 // Function to mark a node as erroneous
