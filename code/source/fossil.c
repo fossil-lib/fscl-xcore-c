@@ -13,8 +13,8 @@ Description:
 #include "fossil/xcore/fossil.h"
 
 // Global variables for custom names
-char* OPEN_BRACE_KEYWORD = "{";
-char* CLOSE_BRACE_KEYWORD = "}";
+char* OPEN_BRACE_KEYWORD = '{';
+char* CLOSE_BRACE_KEYWORD = '}';
 char* FUNCTION_KEYWORD = "fossil";
 
 // Global variable to track parse error
@@ -381,7 +381,7 @@ ASTNode* fscl_fossil_parse_statement(const char* statement) {
     // For this example, return a dummy ASTNode
     ASTNode* statementNode = (ASTNode*)malloc(sizeof(ASTNode));
     statementNode->type = VARIABLE;
-    statementNode->value = strdup(statement);
+    statementNode->value = fscl_fossil_strdup(statement);
     // Initialize other fields as needed
 
     return statementNode;
