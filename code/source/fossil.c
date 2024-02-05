@@ -303,7 +303,7 @@ char* fscl_fossil_parse_identifier(const char* code, size_t* index) {
     }
 
     // Create a copy of the identifier
-    char* identifier = fscl_fossil_strdup(code + start, *index - start);
+    char* identifier = fscl_fossil_strdup(code + start);
 
     return identifier;
 }
