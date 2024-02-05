@@ -11,18 +11,39 @@ Description:
 ==============================================================================
 */
 #include "fossil/xcore/fossil.h"
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+
+// Global variables for custom names
+char* OPEN_BRACE_KEYWORD = "{";
+char* CLOSE_BRACE_KEYWORD = "}";
+char* FUNCTION_KEYWORD = "fossil";
+
+// Global variable to track parse error
+static ParseError parseError = NO_ERROR;
+
+// Function to convert an integer to a string
+char* fscl_fossil_itoa(int value) {
+    // Determine the length of the string
+    int length = snprintf(NULL, 0, "%d", value);
+    
+    // Allocate memory for the string (including the null terminator)
+    char* str = (char*)malloc(length + 1);
+    
+    // Check if memory allocation was successful
+    if (str == NULL) {
+        return NULL; // Memory allocation failed
+    }
+    
+    // Convert the integer to a string
+    snprintf(str, length + 1, "%d", value);
+    
+    return str;
+}
 
 // Custom strdup function
-char* fscl_fossil_strdup(const char* str) {
+char* fscl_fossil_strdup(const char* str, size_t length) {
     if (str == NULL) {
         return NULL;
     }
-
-    // Calculate the length of the string
-    size_t length = strlen(str);
 
     // Allocate memory for the new string (including the null terminator)
     char* newStr = (char*)malloc(length + 1);
@@ -33,7 +54,8 @@ char* fscl_fossil_strdup(const char* str) {
     }
 
     // Copy the string content to the newly allocated memory
-    strcpy(newStr, str);
+    strncpy(newStr, str, length);
+    newStr[length] = '\0'; // Null-terminate the string
 
     return newStr;
 }
@@ -193,19 +215,14 @@ ASTNode* fscl_fossil_create_variable(DataType data_type, char* variable_name) {
     return fscl_fossil_create_node(VARIABLE, data_type, ADD, variable_name);
 }
 
-// Function to create a new variable node
-ASTNode* fscl_fossil_create_function(DataType data_type, char* variable_name) {
-    return fscl_fossil_create_node(FUNCTION, data_type, ADD, variable_name);
+// Function to create a new function node
+ASTNode* fscl_fossil_create_function(DataType return_type, char* function_name) {
+    return fscl_fossil_create_node(FUNCTION, return_type, ADD, function_name);
 }
 
 // Function to create a new constant node
 ASTNode* fscl_fossil_create_constant(DataType data_type, char* constant_value) {
     return fscl_fossil_create_node(CONSTANT, data_type, ADD, constant_value);
-}
-
-// Function to create a new function node
-ASTNode* fscl_fossil_create_function(DataType return_type, char* function_name) {
-    return fscl_fossil_create_node(FUNCTION, return_type, ADD, function_name);
 }
 
 // Function to create a new unary operation node
@@ -263,7 +280,6 @@ const char* getParseErrorMessage() {
         default:
             return "No error.";
     }
-    return "Error case not working Error";
 }
 
 // Function to skip whitespace in the code
@@ -274,7 +290,7 @@ void fscl_fossil_skip_whitespace(const char* code, size_t* index) {
 }
 
 // Function to parse an identifier in the code
-char* fscl_fossil_parse_identifier(char* code, size_t* index) {
+char* fscl_fossil_parse_identifier(const char* code, size_t* index) {
     // Implementation of identifier parsing logic
     // Adjust based on your DSL syntax
     // For simplicity, assuming an identifier is a sequence of letters and digits
@@ -285,22 +301,72 @@ char* fscl_fossil_parse_identifier(char* code, size_t* index) {
     }
 
     // Create a copy of the identifier
-    char* identifier = fscl_fossil_strdup(code + start);
+    char* identifier = fscl_fossil_strdup(code + start, *index - start);
 
     return identifier;
 }
 
 // Function to parse a data type in the code
 DataType fscl_fossil_parse_data_type(const char* code, size_t* index) {
-    // Implementation of data type parsing logic
-    // Adjust based on your DSL syntax
+    // Skip whitespace
+    fscl_fossil_skip_whitespace(code, index);
 
-    // For simplicity, assuming data types are represented as strings (e.g., "int", "float")
+    // Parse the identifier (assumed to represent the data type)
     char* dataTypeString = fscl_fossil_parse_identifier(code, index);
 
-    // Convert the data type string to the corresponding enumeration (adjust as needed)
-    DataType dataType = INT;  // Default to INT for simplicity
-    // Add logic to map dataTypeString to the actual DataType enumeration
+    // Convert the data type string to the corresponding enumeration
+    DataType dataType = ERROR;  // Default to ERROR
+
+    // Map data type string to the enumeration
+    if (strcmp(dataTypeString, "int") == 0) {
+        dataType = INT;
+    } else if (strcmp(dataTypeString, "int8") == 0) {
+        dataType = INT8;
+    } else if (strcmp(dataTypeString, "int16") == 0) {
+        dataType = INT16;
+    } else if (strcmp(dataTypeString, "int32") == 0) {
+        dataType = INT32;
+    } else if (strcmp(dataTypeString, "int64") == 0) {
+        dataType = INT64;
+    } else if (strcmp(dataTypeString, "uint") == 0) {
+        dataType = UINT;
+    } else if (strcmp(dataTypeString, "uint8") == 0) {
+        dataType = UINT8;
+    } else if (strcmp(dataTypeString, "uint16") == 0) {
+        dataType = UINT16;
+    } else if (strcmp(dataTypeString, "uint32") == 0) {
+        dataType = UINT32;
+    } else if (strcmp(dataTypeString, "uint64") == 0) {
+        dataType = UINT64;
+    } else if (strcmp(dataTypeString, "float") == 0) {
+        dataType = FLOAT;
+    } else if (strcmp(dataTypeString, "string") == 0) {
+        dataType = STRING;
+    } else if (strcmp(dataTypeString, "array") == 0) {
+        dataType = ARRAY;
+    } else if (strcmp(dataTypeString, "map") == 0) {
+        dataType = MAP;
+    } else if (strcmp(dataTypeString, "bool") == 0) {
+        dataType = BOOL;
+    } else if (strcmp(dataTypeString, "tofu") == 0) {
+        dataType = TOFU;
+    } else if (strcmp(dataTypeString, "char") == 0) {
+        dataType = CHAR;
+    } else if (strcmp(dataTypeString, "hex") == 0) {
+        dataType = HEX;
+    } else if (strcmp(dataTypeString, "oct") == 0) {
+        dataType = OCT;
+    } else if (strcmp(dataTypeString, "null") == 0) {
+        dataType = NULL_TYPE;
+    } else if (strcmp(dataTypeString, "comedy") == 0) {
+        dataType = COMEDY_ERROR;
+    } else if (strcmp(dataTypeString, "placeholder") == 0) {
+        dataType = PLACEHOLDER;
+    } else if (strcmp(dataTypeString, "datetime") == 0) {
+        dataType = DATETIME;
+    } else {
+        // If the type is not recognized, set it to ERROR
+    }
 
     free(dataTypeString);  // Free the memory allocated for the data type string
 
@@ -314,8 +380,8 @@ ASTNode* fscl_fossil_parse_statement(const char* statement) {
 
     // For this example, return a dummy ASTNode
     ASTNode* statementNode = (ASTNode*)malloc(sizeof(ASTNode));
-    statementNode->type = "Statement";
-    statementNode->value = statement;
+    statementNode->type = VARIABLE;
+    statementNode->value = strdup(statement);
     // Initialize other fields as needed
 
     return statementNode;
@@ -330,7 +396,7 @@ ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index,
     char* functionName = fscl_fossil_parse_identifier(code, index);
 
     // Create function node
-    ASTNode* functionNode = fscl_fossil_create_function(functionName);
+    ASTNode* functionNode = fscl_fossil_create_function(TOFU, functionName);
 
     // Parse function parameters
     if (code[*index] == '(') {
@@ -345,7 +411,7 @@ ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index,
             char* paramName = fscl_fossil_parse_identifier(code, index);
 
             // Create parameter node
-            ASTNode* paramNode = fscl_fossil_create_variable_with_type(paramType, paramName);
+            ASTNode* paramNode = fscl_fossil_create_variable_with_visibility(paramType, paramName, 0);
 
             // Check for default value
             if (code[*index] == '=') {
@@ -356,7 +422,7 @@ ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index,
                 // You might need a more sophisticated way to parse default values based on your DSL
 
                 // Create a constant node for the default value
-                ASTNode* defaultValueNode = fscl_fossil_create_constant(INT, itoa(defaultValue));
+                ASTNode* defaultValueNode = fscl_fossil_create_constant(INT8, fscl_fossil_itoa(defaultValue));
                 fscl_fossil_add_child(paramNode, defaultValueNode);
 
                 // Skip the default value in the code
@@ -387,13 +453,13 @@ ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index,
     }
 
     // Parse function body (if any)
-    if (code[*index] == '{') {
+    if (code[*index] == OPEN_BRACE_KEYWORD) {
         (*index)++;  // Move past '{'
 
         // Parse statements within the function body
-        while (code[*index] != '}' && code[*index] != '\0') {
+        while (code[*index] != CLOSE_BRACE_KEYWORD && code[*index] != '\0') {
             // Parse statement
-            ASTNode* statementNode = fscl_fossil_parse_statement(code, index);
+            ASTNode* statementNode = fscl_fossil_parse_statement(code);
 
             // Add statement node to function node
             fscl_fossil_add_child(functionNode, statementNode);
@@ -403,7 +469,7 @@ ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index,
         }
 
         // Skip closing brace '}'
-        if (code[*index] == '}') {
+        if (code[*index] == CLOSE_BRACE_KEYWORD) {
             (*index)++;
         } else {
             // Handle error: Missing closing brace
@@ -451,36 +517,100 @@ void fscl_fossil_add_class_member(ASTNode* classNode, ASTNode* member, int is_pu
     }
 }
 
-// Function to print class-specific details
-void fscl_fossil_print_class_details(ASTNode* classNode) {
-    printf("Class Members:\n");
-    for (size_t i = 0; i < classNode->num_public_members; ++i) {
-        printf("  Public: %s\n", classNode->public_members[i]->value);
+// Function to parse a class declaration
+ASTNode* fscl_fossil_parse_class_declaration(const char* code, size_t* index) {
+    // Skip whitespace
+    fscl_fossil_skip_whitespace(code, index);
+
+    // Parse class name
+    char* className = fscl_fossil_parse_identifier(code, index);
+
+    // Create class node
+    ASTNode* classNode = fscl_fossil_create_class(className);
+
+    // Parse class body
+    if (code[*index] == OPEN_BRACE_KEYWORD) {
+        (*index)++;  // Move past '{'
+
+        // Parse members within the class body
+        while (code[*index] != CLOSE_BRACE_KEYWORD && code[*index] != '\0') {
+            // Parse member
+            ASTNode* memberNode = fscl_fossil_parse_statement(code);
+
+            // Check if the member is a variable with visibility
+            if (memberNode->type == VARIABLE) {
+                int isPublic = memberNode->is_public;
+                free(memberNode);
+                memberNode = fscl_fossil_parse_statement(code);
+                fscl_fossil_add_class_member(classNode, memberNode, isPublic);
+            } else {
+                // Add member node to class node
+                fscl_fossil_add_class_member(classNode, memberNode, 1);  // Default to public visibility
+            }
+
+            // Skip whitespace and check for next member
+            fscl_fossil_skip_whitespace(code, index);
+        }
+
+        // Skip closing brace '}'
+        if (code[*index] == CLOSE_BRACE_KEYWORD) {
+            (*index)++;
+        } else {
+            // Handle error: Missing closing brace
+            mark_error(classNode);
+            printf("Error: Missing closing brace in class body.\n");
+        }
     }
-    for (size_t i = 0; i < classNode->num_private_members; ++i) {
-        printf("  Private: %s\n", classNode->private_members[i]->value);
+
+    return classNode;
+}
+
+// Function to parse a DSL file into an AST
+ASTNode* fscl_fossil_parse_dsl_file(const char* filename) {
+    // Read the content of the DSL file
+    char* code = fscl_fossil_read_dsl(filename);
+
+    // Initialize parsing error
+    resetParseError();
+
+    // Create a root node for the AST
+    ASTNode* rootNode = fscl_fossil_create_node(PLACEHOLDER_NODE, PLACEHOLDER, ADD, NULL);
+
+    size_t index = 0;
+
+    // Parse DSL statements and populate the AST
+    while (code[index] != '\0') {
+        // Parse function declaration
+        if (strncmp(code + index, FUNCTION_KEYWORD, 8) == 0) {
+            ASTNode* functionNode = fscl_fossil_parse_function_declaration(code, &index, NULL);
+            fscl_fossil_add_child(rootNode, functionNode);
+        }
+        // Parse class declaration
+        else if (strncmp(code + index, "class", 5) == 0) {
+            ASTNode* classNode = fscl_fossil_parse_class_declaration(code, &index);
+            fscl_fossil_add_child(rootNode, classNode);
+        }
+        // Skip unknown statements
+        else {
+            // Handle unknown keyword error
+            setParseError(UNKNOWN_KEYWORD_ERROR);
+            printf("Error: Unknown keyword encountered during parsing.\n");
+            break;
+        }
+
+        // Skip whitespace and check for next statement
+        fscl_fossil_skip_whitespace(code, &index);
     }
+
+    // Free the memory allocated for the code
+    free(code);
+
+    // Check for parsing errors
+    if (parseError != NO_ERROR) {
+        // Erase the partial AST in case of errors
+        fscl_fossil_erase_node(rootNode);
+        return NULL;
+    }
+
+    return rootNode;
 }
-
-// Function to create a new inheritance node
-ASTNode* fscl_fossil_create_inheritance(char* child_class_name, char* parent_class_name) {
-    ASTNode* inheritanceNode = fscl_fossil_create_node(INHERITANCE, TOFU, ADD, child_class_name);
-
-    // Setting parent class as a child node
-    ASTNode* parentClassNode = fscl_fossil_create_node(CLASS, TOFU, ADD, parent_class_name);
-    fscl_fossil_add_child(inheritanceNode, parentClassNode);
-
-    return inheritanceNode;
-}
-
-// Function to create a new encapsulation node
-ASTNode* fscl_fossil_create_encapsulation(char* class_name, char* member_name) {
-    ASTNode* encapsulationNode = fscl_fossil_create_node(ENCAPSULATION, TOFU, ADD, class_name);
-
-    // Adding the member name as a child
-    ASTNode* memberNode = fscl_fossil_create_node(VARIABLE, TOFU, ADD, member_name);
-    fscl_fossil_add_child(encapsulationNode, memberNode);
-
-    return encapsulationNode;
-}
-
