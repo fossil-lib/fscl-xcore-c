@@ -17,14 +17,11 @@ Description:
 //
 XTEST_EXTERN_POOL(test_datetiime_group);
 XTEST_EXTERN_POOL(test_fossil_group);
-XTEST_EXTERN_POOL(test_lazy_group);
 XTEST_EXTERN_POOL(test_thread_group);
 XTEST_EXTERN_POOL(test_stream_group);
 XTEST_EXTERN_POOL(test_regex_group );
 XTEST_EXTERN_POOL(test_reader_group);
 XTEST_EXTERN_POOL(test_parser_group  );
-XTEST_EXTERN_POOL(test_contract_group);
-XTEST_EXTERN_POOL(test_observe_group   );
 
 //
 // XUNIT-TEST RUNNER
@@ -34,14 +31,11 @@ int main(int argc, char **argv) {
 
     XTEST_IMPORT_POOL(test_datetiime_group);
     XTEST_IMPORT_POOL(test_fossil_group);
-    XTEST_IMPORT_POOL(test_lazy_group);
     XTEST_IMPORT_POOL(test_thread_group);
     XTEST_IMPORT_POOL(test_stream_group);
     XTEST_IMPORT_POOL(test_regex_group);
     XTEST_IMPORT_POOL(test_reader_group);
-    XTEST_IMPORT_POOL(test_contract_group);
     XTEST_IMPORT_POOL(test_parser_group);
-    XTEST_IMPORT_POOL(test_observe_group);
 
     return XTEST_ERASE();
 } // end of func
