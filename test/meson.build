@@ -13,8 +13,9 @@ if get_option('with_test').enabled()
 
     test_src = ['xunit_runner.c']
     test_cubes = [
-        'observer', 'parser', 'contract', 'lazy', 'fossil', 'datetime',
-        'console', 'regex', 'stream', 'thread']
+        'parser', 'fossil',
+        'datetime', 'console',
+        'regex', 'stream', 'thread']
 
     foreach cube : test_cubes
         test_src += ['xtest_' + cube + '.c']

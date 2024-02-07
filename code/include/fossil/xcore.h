@@ -21,13 +21,10 @@ extern "C"
 #include "xcore/datetime.h"
 #include "xcore/thread.h"
 #include "xcore/stream.h"
-#include "xcore/lazy.h"
 #include "xcore/fossil.h"
 #include "xcore/console.h"
 #include "xcore/regex.h"
 #include "xcore/parser.h"
-#include "xcore/contract.h"
-#include "xcore/observer.h"
 
 inline const char* fscl_codename() {
     return "Mesozoic";
