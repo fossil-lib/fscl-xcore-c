@@ -13,6 +13,7 @@ Description:
 #define _GNU_SOURCE // Define _GNU_SOURCE to enable strcasestr and strcasecmp
 
 #include "fossil/xcore/soap.h"
+#include <strings.h>
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
