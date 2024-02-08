@@ -12,6 +12,10 @@ Description:
 */
 #include "fossil/xcore/error.h"
 
+enum {
+    MAX_ERROR_BUFFER_SIZE = 1024
+};
+
 // Uppercase global variables
 static cerror FSCL_CURRENT_ERROR = FSCL_CERROR_SUCCESS;
 static const char* FSCL_ERROR_MESSAGES[] = {
@@ -62,13 +66,27 @@ const char* fscl_error_what() {
     return FSCL_ERROR_MESSAGES[FSCL_CURRENT_ERROR];
 }
 
-// Logging function
+// Logging function with memorization
 void fscl_error_log(const char* message) {
-    error_log_file = fopen("error_log.txt", "a");
-    if (error_log_file != NULL) {
-        fprintf(error_log_file, "Error: %s\n", message);
-        fclose(error_log_file);
-    } else {
-        fscl_error_set(FSCL_CERROR_LOGGING_FAILED);
+    size_t message_len = strlen(message);
+
+    // If the message plus the current buffer exceeds the maximum size,
+    // flush the buffer to the log file
+    if (error_buffer_len + message_len >= MAX_ERROR_BUFFER_SIZE) {
+        FILE* error_log_file = fopen("error_log.txt", "a");
+        if (error_log_file != NULL) {
+            fprintf(error_log_file, "%s", error_buffer);
+            fclose(error_log_file);
+            // Reset the buffer and length after flushing
+            error_buffer[0] = '\0';
+            error_buffer_len = 0;
+        } else {
+            // Set logging failed error if unable to open log file
+            fscl_error_set(FSCL_CERROR_LOGGING_FAILED);
+        }
     }
+
+    // Append the new message to the buffer
+    strncat(error_buffer, message, MAX_ERROR_BUFFER_SIZE - error_buffer_len);
+    error_buffer_len += message_len;
 }
