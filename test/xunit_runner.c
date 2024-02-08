@@ -21,7 +21,10 @@ XTEST_EXTERN_POOL(test_thread_group);
 XTEST_EXTERN_POOL(test_stream_group);
 XTEST_EXTERN_POOL(test_regex_group );
 XTEST_EXTERN_POOL(test_reader_group);
-XTEST_EXTERN_POOL(test_parser_group  );
+XTEST_EXTERN_POOL(test_parser_group);
+XTEST_EXTERN_POOL(test_error_group);
+
+
 
 //
 // XUNIT-TEST RUNNER
@@ -36,6 +39,7 @@ int main(int argc, char **argv) {
     XTEST_IMPORT_POOL(test_regex_group);
     XTEST_IMPORT_POOL(test_reader_group);
     XTEST_IMPORT_POOL(test_parser_group);
+    XTEST_IMPORT_POOL(test_error_group);
 
     return XTEST_ERASE();
 } // end of func
