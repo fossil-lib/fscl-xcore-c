@@ -28,25 +28,6 @@ static const char *offensive_words[] = {
     // Add more offensive words and phrases as needed
 };
 
-// Fallback implementation for platforms that don't support strcasecmp
-static int custom_strcasecmp(const char *s1, const char *s2) {
-    while (*s1 && tolower((unsigned char)*s1) == tolower((unsigned char)*s2)) {
-        s1++;
-        s2++;
-    }
-    return tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
-}
-
-// Custom strdup utility function
-char *fscl_soap_strdup(const char *str) {
-    size_t len = strlen(str) + 1;
-    char *dup = (char *)malloc(len);
-    if (dup != NULL) {
-        memcpy(dup, str, len);
-    }
-    return dup;
-}
-
 // Fallback implementation for platforms that don't support strcasestr
 static char *custom_strcasestr(const char *haystack, const char *needle) {
     while (*haystack) {
@@ -62,12 +43,31 @@ static char *custom_strcasestr(const char *haystack, const char *needle) {
     return NULL;
 }
 
+// Custom strdup utility function
+char *fscl_soap_strdup(const char *str) {
+    size_t len = strlen(str) + 1;
+    char *dup = (char *)malloc(len);
+    if (dup != NULL) {
+        memcpy(dup, str, len);
+    }
+    return dup;
+}
+
 // Function to replace a substring in a string (case-insensitive)
 static void replace_substring_case_insensitive(char *str, const char *old_substr, const char *new_substr) {
     char *position = custom_strcasestr(str, old_substr);
     if (position != NULL) {
-        memmove(position + strlen(new_substr), position + strlen(old_substr), strlen(position + strlen(old_substr)) + 1);
-        strncpy(position, new_substr, strlen(new_substr));
+        size_t old_len = strlen(old_substr);
+        size_t new_len = strlen(new_substr);
+        size_t tail_len = strlen(position + old_len);
+
+        // Check if the new length is greater than the old length
+        if (new_len > old_len) {
+            memmove(position + new_len, position + old_len, tail_len + 1);
+        } else {
+            memmove(position + new_len, position + old_len, tail_len + 1);
+            memcpy(position, new_substr, new_len);
+        }
     }
 }
 
