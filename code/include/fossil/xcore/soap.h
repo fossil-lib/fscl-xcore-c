@@ -33,6 +33,9 @@ bool fscl_soap_is_offensive(const char *word);
 // Function to get the number of offensive words found in a string
 int fscl_soap_count_offensive(const char *input);
 
+// Custom strdup utility function
+char *fscl_soap_strdup(const char *str);
+
 #ifdef __cplusplus
 }
 #endif
