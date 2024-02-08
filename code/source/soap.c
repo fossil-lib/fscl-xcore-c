@@ -29,7 +29,11 @@ static const char *offensive_words[] = {
 static char *custom_strcasestr(const char *haystack, const char *needle) {
     size_t len = strlen(needle);
     while (*haystack) {
-        if (strncasecmp(haystack, needle, len) == 0) {
+        size_t i = 0;
+        while (tolower((unsigned char)haystack[i]) == tolower((unsigned char)needle[i]) && needle[i] != '\0') {
+            i++;
+        }
+        if (needle[i] == '\0') {
             return (char *)haystack;
         }
         haystack++;
