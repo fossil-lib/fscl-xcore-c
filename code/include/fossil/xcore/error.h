@@ -57,6 +57,17 @@ typedef enum {
     FSCL_CERROR_THREAD_JOIN_FAILED
 } cerror;
 
+// Uppercase global variables
+extern cerror FSCL_CURRENT_ERROR;
+extern const char* FSCL_ERROR_MESSAGES[];
+
+// File for error logs
+extern FILE* error_log_file;
+
+// Last logged error message and its length
+extern char last_logged_error[];
+extern size_t last_logged_error_len;
+
 // =================================================================
 // error functions
 // =================================================================
