@@ -1,5 +1,5 @@
 code = files(
-    'parser.c', 'fossil.c',
+    'parser.c', 'fossil.c', 'error.c',
     'datetime.c', 'console.c',
     'regex.c', 'stream.c', 'thread.c',
 )
