@@ -25,6 +25,27 @@ static const char *offensive_words[] = {
     // Add more offensive words and phrases as needed
 };
 
+// Fallback implementation for platforms that don't support strcasestr
+static char *custom_strcasestr(const char *haystack, const char *needle) {
+    size_t len = strlen(needle);
+    while (*haystack) {
+        if (strncasecmp(haystack, needle, len) == 0) {
+            return (char *)haystack;
+        }
+        haystack++;
+    }
+    return NULL;
+}
+
+// Fallback implementation for platforms that don't support strcasecmp
+static int custom_strcasecmp(const char *s1, const char *s2) {
+    while (*s1 && tolower((unsigned char)*s1) == tolower((unsigned char)*s2)) {
+        s1++;
+        s2++;
+    }
+    return tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
+}
+
 // Custom strdup utility function
 static char *fscl_soap_strdup(const char *str) {
     size_t len = strlen(str) + 1;
@@ -37,7 +58,7 @@ static char *fscl_soap_strdup(const char *str) {
 
 // Function to replace a substring in a string (case-insensitive)
 static void replace_substring_case_insensitive(char *str, const char *old_substr, const char *new_substr) {
-    char *position = strcasestr(str, old_substr);
+    char *position = custom_strcasestr(str, old_substr);
     if (position != NULL) {
         memmove(position + strlen(new_substr), position + strlen(old_substr), strlen(position + strlen(old_substr)) + 1);
         strncpy(position, new_substr, strlen(new_substr));
@@ -47,7 +68,7 @@ static void replace_substring_case_insensitive(char *str, const char *old_substr
 // Function to sanitize a string by replacing offensive words and phrases with asterisks
 void fscl_soap_sanitize(char *input) {
     for (size_t i = 0; i < sizeof(offensive_words) / sizeof(offensive_words[0]); ++i) {
-        while (strcasestr(input, offensive_words[i]) != NULL) {
+        while (custom_strcasestr(input, offensive_words[i]) != NULL) {
             replace_substring_case_insensitive(input, offensive_words[i], "***");
         }
     }
@@ -56,7 +77,7 @@ void fscl_soap_sanitize(char *input) {
 // Function to check if a word is an offensive word or phrase
 bool fscl_soap_is_offensive(const char *word) {
     for (size_t i = 0; i < sizeof(offensive_words) / sizeof(offensive_words[0]); ++i) {
-        if (strcasecmp(word, offensive_words[i]) == 0) {
+        if (custom_strcasecmp(word, offensive_words[i]) == 0) {
             return true;
         }
     }
