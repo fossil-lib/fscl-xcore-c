@@ -59,6 +59,10 @@ static const char* FSCL_ERROR_MESSAGES[] = {
 // File for error logs
 static FILE* error_log_file;
 
+// Last logged error message and its length
+static char last_logged_error[MAX_ERROR_BUFFER_SIZE] = "";
+static size_t last_logged_error_len = 0;
+
 // Function to set error code
 void fscl_error_set(cerror code) {
     FSCL_CURRENT_ERROR = code;
