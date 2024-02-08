@@ -25,6 +25,8 @@ extern "C"
 #include "xcore/console.h"
 #include "xcore/regex.h"
 #include "xcore/parser.h"
+#include "xcore/error.h"
+#include "xcore/soap.h"
 
 inline const char* fscl_codename() {
     return "Mesozoic";
