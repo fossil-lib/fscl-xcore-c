@@ -23,6 +23,7 @@ XTEST_EXTERN_POOL(test_regex_group );
 XTEST_EXTERN_POOL(test_reader_group);
 XTEST_EXTERN_POOL(test_parser_group);
 XTEST_EXTERN_POOL(test_error_group);
+XTEST_EXTERN_POOL(test_soap_group);
 
 
 
@@ -40,6 +41,7 @@ int main(int argc, char **argv) {
     XTEST_IMPORT_POOL(test_reader_group);
     XTEST_IMPORT_POOL(test_parser_group);
     XTEST_IMPORT_POOL(test_error_group);
+    XTEST_IMPORT_POOL(test_soap_group);
 
     return XTEST_ERASE();
 } // end of func

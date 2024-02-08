@@ -1,6 +1,6 @@
 code = files(
     'parser.c', 'fossil.c', 'error.c',
-    'datetime.c', 'console.c',
+    'datetime.c', 'console.c', 'soap.c',
     'regex.c', 'stream.c', 'thread.c',
 )
 
