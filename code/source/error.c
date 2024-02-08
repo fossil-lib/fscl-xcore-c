@@ -11,6 +11,9 @@ Description:
 ==============================================================================
 */
 #include "fossil/xcore/error.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 enum {
     MAX_ERROR_BUFFER_SIZE = 1024
