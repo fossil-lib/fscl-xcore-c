@@ -77,23 +77,19 @@ const char* fscl_error_what() {
 void fscl_error_log(const char* message) {
     size_t message_len = strlen(message);
 
-    // If the message plus the current buffer exceeds the maximum size,
-    // flush the buffer to the log file
-    if (error_buffer_len + message_len >= MAX_ERROR_BUFFER_SIZE) {
-        FILE* error_log_file = fopen("error_log.txt", "a");
+    // Check if the message is different from the last logged error
+    if (message_len != last_logged_error_len || strncmp(message, last_logged_error, message_len) != 0) {
+        error_log_file = fopen("error_log.txt", "a");
         if (error_log_file != NULL) {
-            fprintf(error_log_file, "%s", error_buffer);
+            fprintf(error_log_file, "Error: %s\n", message);
             fclose(error_log_file);
-            // Reset the buffer and length after flushing
-            error_buffer[0] = '\0';
-            error_buffer_len = 0;
+
+            // Update the last logged error
+            strncpy(last_logged_error, message, sizeof(last_logged_error) - 1);
+            last_logged_error[sizeof(last_logged_error) - 1] = '\0';
+            last_logged_error_len = message_len;
         } else {
-            // Set logging failed error if unable to open log file
             fscl_error_set(FSCL_CERROR_LOGGING_FAILED);
         }
     }
-
-    // Append the new message to the buffer
-    strncat(error_buffer, message, MAX_ERROR_BUFFER_SIZE - error_buffer_len);
-    error_buffer_len += message_len;
 }
