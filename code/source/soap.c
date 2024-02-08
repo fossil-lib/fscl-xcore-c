@@ -28,21 +28,6 @@ static const char *offensive_words[] = {
     // Add more offensive words and phrases as needed
 };
 
-// Fallback implementation for platforms that don't support strcasestr
-static char *custom_strcasestr(const char *haystack, const char *needle) {
-    while (*haystack) {
-        size_t i = 0;
-        while (tolower((unsigned char)haystack[i]) == tolower((unsigned char)needle[i]) && needle[i] != '\0') {
-            i++;
-        }
-        if (needle[i] == '\0') {
-            return (char *)haystack;
-        }
-        haystack++;
-    }
-    return NULL;
-}
-
 // Fallback implementation for platforms that don't support strcasecmp
 static int custom_strcasecmp(const char *s1, const char *s2) {
     while (*s1 && tolower((unsigned char)*s1) == tolower((unsigned char)*s2)) {
@@ -60,6 +45,21 @@ char *fscl_soap_strdup(const char *str) {
         memcpy(dup, str, len);
     }
     return dup;
+}
+
+// Fallback implementation for platforms that don't support strcasestr
+static char *custom_strcasestr(const char *haystack, const char *needle) {
+    while (*haystack) {
+        size_t i = 0;
+        while (tolower((unsigned char)haystack[i]) == tolower((unsigned char)needle[i]) && needle[i] != '\0') {
+            i++;
+        }
+        if (needle[i] == '\0') {
+            return (char *)haystack;
+        }
+        haystack++;
+    }
+    return NULL;
 }
 
 // Function to replace a substring in a string (case-insensitive)
