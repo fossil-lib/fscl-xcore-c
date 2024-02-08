@@ -13,7 +13,7 @@ if get_option('with_test').enabled()
 
     test_src = ['xunit_runner.c']
     test_cubes = [
-        'parser', 'fossil', 'error'
+        'parser', 'fossil', 'error',
         'datetime', 'console',
         'regex', 'stream', 'thread']
 
