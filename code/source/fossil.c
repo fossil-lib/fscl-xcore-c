@@ -18,7 +18,7 @@ char CLOSE_BRACE_KEYWORD = '}';
 char* FUNCTION_KEYWORD = "fossil";
 
 // Global variable to track parse error
-static ParseError parseError = NO_ERROR;
+static ParseError parseError = NO_ERRORS;
 
 // Function to convert an integer to a string
 char* fscl_fossil_itoa(int value) {
@@ -317,7 +317,7 @@ DataType fscl_fossil_parse_data_type(const char* code, size_t* index) {
     char* dataTypeString = fscl_fossil_parse_identifier(code, index);
 
     // Convert the data type string to the corresponding enumeration
-    DataType dataType = FOSSIL_ERRORS;  // Default to ERROR
+    DataType dataType = FOSSIL_ERROR;  // Default to ERROR
 
     // Map data type string to the enumeration
     if (strcmp(dataTypeString, "int") == 0) {
