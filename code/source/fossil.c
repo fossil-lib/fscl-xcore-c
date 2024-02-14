@@ -269,7 +269,7 @@ void setParseError(ParseError errorType) {
 
 // Function to reset the parsing error
 void resetParseError() {
-    parseError = NO_ERROR;
+    parseError = NO_ERRORS;
 }
 
 // Function to get the parsing error message
@@ -317,7 +317,7 @@ DataType fscl_fossil_parse_data_type(const char* code, size_t* index) {
     char* dataTypeString = fscl_fossil_parse_identifier(code, index);
 
     // Convert the data type string to the corresponding enumeration
-    DataType dataType = FOSSIL_ERROR;  // Default to ERROR
+    DataType dataType = FOSSIL_ERRORS;  // Default to ERROR
 
     // Map data type string to the enumeration
     if (strcmp(dataTypeString, "int") == 0) {
@@ -608,7 +608,7 @@ ASTNode* fscl_fossil_parse_dsl_file(const char* filename) {
     free(code);
 
     // Check for parsing errors
-    if (parseError != NO_ERROR) {
+    if (parseError != NO_ERRORS) {
         // Erase the partial AST in case of errors
         fscl_fossil_erase_node(rootNode);
         return NULL;
