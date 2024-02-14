@@ -182,7 +182,7 @@ typedef struct ASTNode {
 
 // Define ParseError type
 typedef enum {
-    NO_ERRORS,
+    NO_ERROR = 0,
     UNKNOWN_KEYWORD_ERROR,
     PARSING_ERROR,
     // Add more error types as needed
