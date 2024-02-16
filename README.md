@@ -86,4 +86,4 @@ Thank you for choosing this project with the Meson build system. Happy coding an
 
 ## Contact
 
-If you have questions or want to get in touch regarding programming solutions, you can find a way to contact me on my [website](https://trilobite.code.blog/contact/).
+If you have questions or want to get in touch regarding programming solutions, you can find a way to contact me on my [website](https://fossillogic.com/contact/).
