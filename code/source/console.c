@@ -29,6 +29,54 @@ enum {
 };
 
 // General Output Function
+void fscl_console_puts(const char *message) {
+    puts(message);
+}
+
+// Color Output Function
+void fscl_console_puts_color(const char *color_name, const char *message) {
+    if (strcmp(color_name, "reset") == 0) {
+        printf("\033[0m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "black") == 0) {
+        printf("\033[0;30m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "dark_gray") == 0) {
+        printf("\033[1;30m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "light_gray") == 0) {
+        printf("\033[2;37m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "white") == 0) {
+        printf("\033[1;37m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "dark_red") == 0) {
+        printf("\033[0;31m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "light_red") == 0) {
+        printf("\033[1;31m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "dark_green") == 0) {
+        printf("\033[0;32m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "light_green") == 0) {
+        printf("\033[1;32m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "dark_yellow") == 0) {
+        printf("\033[0;33m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "light_yellow") == 0) {
+        printf("\033[1;33m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "dark_blue") == 0) {
+        printf("\033[0;34m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "light_blue") == 0) {
+        printf("\033[1;34m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "dark_magenta") == 0) {
+        printf("\033[0;35m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "light_magenta") == 0) {
+        printf("\033[1;35m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "dark_cyan") == 0) {
+        printf("\033[0;36m%s\033[0m\n", message);
+    } else if (strcmp(color_name, "light_cyan") == 0) {
+        printf("\033[1;36m%s\033[0m\n", message);
+    } else {
+        // Default to classic output if an unsupported color is specified
+        puts(message);
+        return;
+    }
+}
+
+// General Output Function
 void fscl_console_out(const char *format, ...) {
     va_list args;
     va_start(args, format);
