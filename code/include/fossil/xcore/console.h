@@ -46,9 +46,11 @@ extern "C"
 // =================================================================
 // output functions
 // =================================================================
+void fscl_console_puts(const char *message);
+void fscl_console_puts_color(const char *color_name, const char *message);
 void fscl_console_out(const char *format, ...);
-void fscl_console_err(const char *format, ...);
 void fscl_console_out_color(const char *color_name, const char *format, ...);
+void fscl_console_err(const char *format, ...);
 void fscl_console_clear(void);
 void fscl_console_flush(void);
 void fscl_console_progress(int iterations, int delay);
