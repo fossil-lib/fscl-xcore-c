@@ -72,13 +72,25 @@ extern size_t last_logged_error_len;
 // error functions
 // =================================================================
 
-// Function to set error code
+/**
+ * Set the error code for the current state.
+ *
+ * @param code The error code to be set.
+ */
 void fscl_error_set(cerror code);
 
-// Function to retrieve error message
+/**
+ * Retrieve the error message associated with the current error code.
+ *
+ * @return A constant string containing the error message.
+ */
 const char* fscl_error_what();
 
-// Logging function
+/**
+ * Log an error message.
+ *
+ * @param message The error message to be logged.
+ */
 void fscl_error_log(const char* message);
 
 #ifdef __cplusplus
