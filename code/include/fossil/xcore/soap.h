@@ -24,16 +24,35 @@ extern "C"
 // Clean soap functions
 // =================================================================
 
-// Function to sanitize a string by replacing curse words with asterisks
+/**
+ * Sanitize a string by replacing curse words with asterisks.
+ *
+ * @param input The input string to be sanitized in-place.
+ */
 void fscl_soap_sanitize(char *input);
 
-// Function to check if a word is a curse word or racist phrase
+/**
+ * Check if a word is a curse word or racist phrase.
+ *
+ * @param word The word to be checked for offensiveness.
+ * @return     True if the word is offensive, false otherwise.
+ */
 bool fscl_soap_is_offensive(const char *word);
 
-// Function to get the number of offensive words found in a string
+/**
+ * Get the number of offensive words found in a string.
+ *
+ * @param input The input string to be checked for offensive words.
+ * @return      The number of offensive words found.
+ */
 int fscl_soap_count_offensive(const char *input);
 
-// Custom strdup utility function
+/**
+ * Duplicate a string using a custom strdup utility function.
+ *
+ * @param str The string to be duplicated.
+ * @return    A dynamically allocated string containing the duplicated content.
+ */
 char *fscl_soap_strdup(const char *str);
 
 #ifdef __cplusplus
