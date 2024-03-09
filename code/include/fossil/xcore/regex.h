@@ -24,16 +24,53 @@ typedef struct {
 } cregex;
 
 // =================================================================
-// create and erase
+// Create and erase
 // =================================================================
+
+/**
+ * Create a new regex pattern instance.
+ *
+ * @param preg    Pointer to the cregex structure to store the created regex pattern.
+ * @param pattern The regex pattern to be compiled.
+ * @return        0 on success, non-zero on failure.
+ */
 int fscl_regex_create(cregex *preg, const char *pattern);
+
+/**
+ * Match a text against a compiled regex pattern.
+ *
+ * @param preg Pointer to the cregex structure containing the compiled pattern.
+ * @param text The text to be matched against the regex pattern.
+ * @return     0 if there is a match, non-zero otherwise.
+ */
 int fscl_regex_match(cregex *preg, const char *text);
 
 // =================================================================
-// avaliable functions
+// Available Functions
 // =================================================================
+
+/**
+ * Reset the regex pattern instance to the initial state.
+ *
+ * @param preg Pointer to the cregex structure.
+ */
 void fscl_regex_reset(cregex *preg);
+
+/**
+ * Match a text against a compiled regex pattern and extract the matched substring.
+ *
+ * @param preg Pointer to the cregex structure containing the compiled pattern.
+ * @param text The text to be matched against the regex pattern.
+ * @return     A constant string containing the matched substring or NULL if no match.
+ */
 const char *fscl_regex_match_and_extract(cregex *preg, const char *text);
+
+/**
+ * Get the matched substring from the last successful match.
+ *
+ * @param preg Pointer to the cregex structure.
+ * @return     A constant string containing the matched substring or NULL if no match.
+ */
 const char *fscl_regex_get_matched_substring(cregex *preg);
 
 #ifdef __cplusplus
