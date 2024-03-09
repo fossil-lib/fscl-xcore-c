@@ -197,85 +197,240 @@ extern char* FUNCTION_KEYWORD;
 // DSL functions
 // =================================================================
 
-// Function to read the content of a DSL file
+/**
+ * Read the content of a DSL file and return it as a string.
+ *
+ * @param filename The name of the DSL file to be read.
+ * @return         A dynamically allocated string containing the file content.
+ */
 char* fscl_fossil_read_dsl(const char* filename);
 
-// Function to create a new AST node
+/**
+ * Create a new AST node with specified attributes.
+ *
+ * @param type          The type of the AST node.
+ * @param data_type     The data type associated with the node.
+ * @param operator_type The operator type for operator nodes.
+ * @param value         The value associated with the node.
+ * @return              A pointer to the created AST node.
+ */
 ASTNode* fscl_fossil_create_node(NodeType type, DataType data_type, OperatorType operator_type, char* value);
 
-// Function to add a child to an AST node
+/**
+ * Add a child node to the specified parent AST node.
+ *
+ * @param parent The parent AST node.
+ * @param child  The child AST node to be added.
+ */
 void fscl_fossil_add_child(ASTNode* parent, ASTNode* child);
 
-// Function to add multiple children to an AST node
+/**
+ * Add multiple children to the specified parent AST node.
+ *
+ * @param parent       The parent AST node.
+ * @param num_children The number of children to be added.
+ * @param ...          Variable arguments representing the child nodes.
+ */
 void fscl_fossil_add_children(ASTNode* parent, size_t num_children, ...);
 
-// Function to print the AST in a readable format
+/**
+ * Print the AST in a readable format with specified depth.
+ *
+ * @param root  The root AST node.
+ * @param depth The initial depth for indentation.
+ */
 void fscl_fossil_print_ast(ASTNode* root, int depth);
 
-// Function to erase an AST node and its children
+/**
+ * Erase an AST node and its children from memory.
+ *
+ * @param node The AST node to be erased.
+ */
 void fscl_fossil_erase_node(ASTNode* node);
 
-// Function to create a new variable node with visibility
+/**
+ * Create a new variable node with visibility attribute.
+ *
+ * @param data_type     The data type associated with the variable.
+ * @param variable_name The name of the variable.
+ * @param is_public     Visibility attribute indicating public or private.
+ * @return              A pointer to the created variable node.
+ */
 ASTNode* fscl_fossil_create_variable_with_visibility(DataType data_type, char* variable_name, int is_public);
 
-// Function to create a new constant node with DATETIME type
+/**
+ * Create a new constant node with DATETIME type.
+ *
+ * @param datetime_value The value associated with the DATETIME constant.
+ * @return               A pointer to the created DATETIME constant node.
+ */
 ASTNode* fscl_fossil_create_datetime_constant(char* datetime_value);
 
-// Function to create a new variable node
+/**
+ * Create a new variable node.
+ *
+ * @param data_type     The data type associated with the variable.
+ * @param variable_name The name of the variable.
+ * @return              A pointer to the created variable node.
+ */
 ASTNode* fscl_fossil_create_variable(DataType data_type, char* variable_name);
 
-// Function to create a new function node
+/**
+ * Create a new function node.
+ *
+ * @param return_type   The return data type of the function.
+ * @param function_name The name of the function.
+ * @return              A pointer to the created function node.
+ */
 ASTNode* fscl_fossil_create_function(DataType return_type, char* function_name);
 
-// Function to create a new constant node
+/**
+ * Create a new constant node.
+ *
+ * @param data_type      The data type associated with the constant.
+ * @param constant_value The value associated with the constant.
+ * @return               A pointer to the created constant node.
+ */
 ASTNode* fscl_fossil_create_constant(DataType data_type, char* constant_value);
 
-// Function to create a new unary operation node
+/**
+ * Create a new unary operation node.
+ *
+ * @param data_type     The data type associated with the operation.
+ * @param operator_type The type of unary operator.
+ * @param operand_value The value of the operand.
+ * @return              A pointer to the created unary operation node.
+ */
 ASTNode* fscl_fossil_create_unary_op(DataType data_type, OperatorType operator_type, char* operand_value);
 
-// Function to create a new relational operation node
+/**
+ * Create a new relational operation node.
+ *
+ * @param data_type     The data type associated with the operation.
+ * @param operator_type The type of relational operator.
+ * @param operand_value The value of the operand.
+ * @return              A pointer to the created relational operation node.
+ */
 ASTNode* fscl_fossil_create_relational_op(DataType data_type, OperatorType operator_type, char* operand_value);
 
-// Function to create a new logical operation node
+/**
+ * Create a new logical operation node.
+ *
+ * @param data_type     The data type associated with the operation.
+ * @param operator_type The type of logical operator.
+ * @param operand_value The value of the operand.
+ * @return              A pointer to the created logical operation node.
+ */
 ASTNode* fscl_fossil_create_logical_op(DataType data_type, OperatorType operator_type, char* operand_value);
 
-// Function to create a new if statement node
+/**
+ * Create a new if statement node with a specified condition.
+ *
+ * @param condition_value The value of the condition for the if statement.
+ * @return                A pointer to the created if statement node.
+ */
 ASTNode* fscl_fossil_create_if_statement(char* condition_value);
 
-// Function to create a new while loop node
+/**
+ * Create a new while loop node with a specified condition.
+ *
+ * @param condition_value The value of the condition for the while loop.
+ * @return                A pointer to the created while loop node.
+ */
 ASTNode* fscl_fossil_create_while_loop(char* condition_value);
 
-// Function to create a new include file node
+/**
+ * Create a new include file node with the specified file name.
+ *
+ * @param file_name The name of the file to be included.
+ * @return          A pointer to the created include file node.
+ */
 ASTNode* fscl_fossil_create_include_file(char* file_name);
 
-// Function to create a new link library node
+/**
+ * Create a new link library node with the specified library name.
+ *
+ * @param library_name The name of the library to be linked.
+ * @return             A pointer to the created link library node.
+ */
 ASTNode* fscl_fossil_create_link_library(char* library_name);
 
-// Function to skip whitespace in the code
+/**
+ * Skip whitespace in the code by updating the index.
+ *
+ * @param code  The code string to skip whitespace in.
+ * @param index Pointer to the index in the code string.
+ */
 void fscl_fossil_skip_whitespace(const char* code, size_t* index);
 
-// Function to parse an identifier in the code
+/**
+ * Parse an identifier in the code and update the index.
+ *
+ * @param code  The code string to parse.
+ * @param index Pointer to the index in the code string.
+ * @return      A dynamically allocated string containing the parsed identifier.
+ */
 char* fscl_fossil_parse_identifier(const char* code, size_t* index);
 
-// Function to parse a data type in the code
+/**
+ * Parse a data type in the code and update the index.
+ *
+ * @param code  The code string to parse.
+ * @param index Pointer to the index in the code string.
+ * @return      The parsed data type.
+ */
 DataType fscl_fossil_parse_data_type(const char* code, size_t* index);
 
-// Function to parse a statement into ASTNode
+/**
+ * Parse a statement in the code and return the corresponding ASTNode.
+ *
+ * @param statement The statement string to parse.
+ * @return          A pointer to the created ASTNode representing the statement.
+ */
 ASTNode* fscl_fossil_parse_statement(const char* statement);
 
-// Function to parse a function declaration
+/**
+ * Parse a function declaration in the code and return the corresponding ASTNode.
+ *
+ * @param code      The code string to parse.
+ * @param index     Pointer to the index in the code string.
+ * @param entryPoint The entry point for the function.
+ * @return          A pointer to the created ASTNode representing the function declaration.
+ */
 ASTNode* fscl_fossil_parse_function_declaration(const char* code, size_t* index, const char* entryPoint);
 
-// Function to create a new class node with details
+/**
+ * Create a new class node with the specified class name.
+ *
+ * @param class_name The name of the class.
+ * @return           A pointer to the created class node.
+ */
 ASTNode* fscl_fossil_create_class(char* class_name);
 
-// Function to add a member to a class with visibility and details
+/**
+ * Add a member to a class node with visibility and details.
+ *
+ * @param classNode The class ASTNode to which the member will be added.
+ * @param member    The ASTNode representing the class member.
+ * @param is_public Visibility attribute indicating public or private.
+ */
 void fscl_fossil_add_class_member(ASTNode* classNode, ASTNode* member, int is_public);
 
-// Function to parse a class declaration
+/**
+ * Parse a class declaration in the code and return the corresponding ASTNode.
+ *
+ * @param code  The code string to parse.
+ * @param index Pointer to the index in the code string.
+ * @return      A pointer to the created ASTNode representing the class declaration.
+ */
 ASTNode* fscl_fossil_parse_class_declaration(const char* code, size_t* index);
 
-// Function to parse a DSL file into an AST
+/**
+ * Parse a DSL file into an AST and return the root ASTNode.
+ *
+ * @param filename The name of the DSL file to be parsed.
+ * @return         A pointer to the root ASTNode representing the parsed DSL file.
+ */
 ASTNode* fscl_fossil_parse_dsl_file(const char* filename);
 
 #ifdef __cplusplus
