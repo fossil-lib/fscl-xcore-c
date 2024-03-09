@@ -28,12 +28,20 @@ extern "C"
 #include "xcore/error.h"
 #include "xcore/soap.h"
 
+/**
+ * Get the codename associated with the library.
+ *
+ * @return A constant string representing the library's codename.
+ */
 inline const char* fscl_codename() {
-    return "Mesozoic";
+    return "Paleozoic";
 }
 
-// here as a test for teaching users how to include this
-// library in the step by step page
+/**
+ * Return a greeting message.
+ *
+ * @return A constant string containing a simple greeting message.
+ */
 inline const char* fscl_hello() {
     return "Hello, World!";
 }
